@@ -408,9 +408,11 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-right space-y-1 ml-4">
-                  <Badge variant="outline" className="text-xs">
-                    {report.status}
-                  </Badge>
+                  <div className="flex flex-col gap-1">
+                    <Button variant="outline" size="sm" className="h-6 text-xs">View</Button>
+                    <Button variant="outline" size="sm" className="h-6 text-xs">Download</Button>
+                    <Button variant="outline" size="sm" className="h-6 text-xs">Share</Button>
+                  </div>
                 </div>
               </div>
             ))}
