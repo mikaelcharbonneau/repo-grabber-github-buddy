@@ -90,7 +90,7 @@ const Dashboard = () => {
     },
     {
       id: "AUD-2024-003",
-      location: "DC-CENTRAL / Hall-C",
+      location: "Dallas, United States - Island 3",
       technician: "Mike Johnson",
       date: "2024-01-13",
       issues: 5,
