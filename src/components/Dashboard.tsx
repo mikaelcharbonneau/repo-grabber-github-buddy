@@ -141,7 +141,7 @@ const Dashboard = () => {
     {
       id: "RPT-2024-003",
       reportType: "Audits",
-      location: "DC-EAST",
+      location: "Rjukan, Norway - Island 1",
       description: "Audits from 2024-12-01 to 2024-12-31",
       generated: "2024-01-13 14:45",
       size: "945 KB",
