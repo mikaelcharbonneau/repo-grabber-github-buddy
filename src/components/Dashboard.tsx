@@ -320,23 +320,24 @@ const Dashboard = () => {
               {recentAudits.map((audit) => (
                 <div 
                   key={audit.id} 
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => navigate(`/audit/details/${audit.id}`)}
                 >
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex-1">
                     <div className="font-medium text-sm">{audit.id}</div>
                     <div className="text-sm text-gray-600">{audit.location}</div>
                     <div className="text-xs text-gray-500">
                       {audit.technician} • {audit.date}
                     </div>
                   </div>
+                  <div className="text-center flex-1">
+                    <div className="text-xs text-gray-500 mb-1">Issues Found</div>
+                    <div className="text-lg font-semibold">{audit.issues}</div>
+                  </div>
                   <div className="text-right space-y-1">
                     <Badge className={getSeverityColor(audit.severity)}>
                       {audit.severity}
                     </Badge>
-                    <div className="text-xs text-gray-500">
-                      {audit.issues} issues
-                    </div>
                   </div>
                 </div>
               ))}
@@ -357,7 +358,7 @@ const Dashboard = () => {
               {recentIncidents.map((incident) => (
                 <div 
                   key={incident.id} 
-                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => navigate(`/incident/details/${incident.id}`)}
                 >
                   <div className="space-y-1 flex-1">
