@@ -120,7 +120,7 @@ const Dashboard = () => {
   const recentReports = [
     {
       id: "RPT-2024-001",
-      name: "January Audit Summary",
+      name: "Incident Report | Quebec, Canada - All Datahalls",
       type: "Audit Summary Report",
       generated: "2024-01-15 16:30",
       size: "2.3 MB",
