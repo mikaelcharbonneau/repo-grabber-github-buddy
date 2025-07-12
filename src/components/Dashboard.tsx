@@ -81,7 +81,7 @@ const Dashboard = () => {
       severity: "Medium"
     },
     {
-      id: "AUD-2024-002", 
+      id: "AUDIT #21", 
       location: "Rjukan, Norway - Island 1",
       technician: "Jane Smith",
       date: "2024-01-14",
