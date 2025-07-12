@@ -89,7 +89,7 @@ const Dashboard = () => {
       severity: "None"
     },
     {
-      id: "AUD-2024-003",
+      id: "AUDIT #20",
       location: "Dallas, United States - Island 3",
       technician: "Mike Johnson",
       date: "2024-01-13",
