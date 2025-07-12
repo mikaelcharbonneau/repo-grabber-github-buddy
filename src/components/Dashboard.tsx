@@ -82,7 +82,7 @@ const Dashboard = () => {
     },
     {
       id: "AUD-2024-002", 
-      location: "DC-WEST / Hall-B",
+      location: "Rjukan, Norway - Island 1",
       technician: "Jane Smith",
       date: "2024-01-14",
       issues: 0,
