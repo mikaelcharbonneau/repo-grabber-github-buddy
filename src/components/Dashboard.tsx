@@ -13,7 +13,8 @@ import {
   FileText,
   Building,
   Filter,
-  Calendar
+  Calendar,
+  ExternalLink
 } from "lucide-react";
 
 import { useState } from "react";
@@ -395,10 +396,19 @@ const Dashboard = () => {
             {recentReports.map((report) => (
               <div 
                 key={report.id} 
-                className="flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                className="relative flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                 onClick={() => navigate(`/report/details/${report.id}`)}
               >
-                <div className="space-y-1 flex-1">
+                <button 
+                  className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/report/details/${report.id}`);
+                  }}
+                >
+                  <ExternalLink className="h-3 w-3 text-gray-600" />
+                </button>
+                <div className="space-y-1 flex-1 pr-8">
                   <div className="font-medium text-sm">{report.reportType} | {report.location}</div>
                   <div className="text-sm text-gray-600">{report.description}</div>
                   <div className="text-xs text-gray-500">
@@ -407,14 +417,9 @@ const Dashboard = () => {
                   <div className="text-xs text-gray-500">
                     Size: {report.size} • {report.format}
                   </div>
-                </div>
-                <div className="text-right space-y-1 ml-4">
-                  <div className="flex flex-col gap-2">
-                    <Button className="bg-hpe-green hover:bg-hpe-green/90 h-7 text-xs">View</Button>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Download</Button>
-                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
-                    </div>
+                  <div className="flex gap-1 pt-2">
+                    <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Download</Button>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
                   </div>
                 </div>
               </div>
