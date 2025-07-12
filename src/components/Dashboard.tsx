@@ -74,7 +74,7 @@ const Dashboard = () => {
   const recentAudits = [
     {
       id: "AUD-2024-001",
-      location: "Canada - Quebec",
+      location: "Quebec, Canada - Island 1",
       technician: "John Doe",
       date: "2024-01-15",
       issues: 2,
