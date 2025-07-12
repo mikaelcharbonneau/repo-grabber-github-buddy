@@ -120,8 +120,9 @@ const Dashboard = () => {
   const recentReports = [
     {
       id: "RPT-2024-001",
-      name: "Incident Report | Quebec, Canada - All Datahalls",
-      type: "Audit Summary Report",
+      reportType: "Incidents",
+      location: "Quebec, Canada - All Datahalls",
+      description: "Incidents from 2025-01-01 to 2025-01-15",
       generated: "2024-01-15 16:30",
       size: "2.3 MB",
       format: "PDF",
@@ -129,8 +130,9 @@ const Dashboard = () => {
     },
     {
       id: "RPT-2024-002", 
-      name: "Critical Incidents Q1",
-      type: "Incident Detail Report",
+      reportType: "Incidents",
+      location: "All Locations",
+      description: "Incidents from 2024-10-01 to 2024-12-31",
       generated: "2024-01-14 09:15",
       size: "1.8 MB", 
       format: "CSV",
@@ -138,8 +140,9 @@ const Dashboard = () => {
     },
     {
       id: "RPT-2024-003",
-      name: "DC-EAST Compliance",
-      type: "Compliance Report",
+      reportType: "Compliance",
+      location: "DC-EAST",
+      description: "Compliance from 2024-12-01 to 2024-12-31",
       generated: "2024-01-13 14:45",
       size: "945 KB",
       format: "PDF",
@@ -147,8 +150,9 @@ const Dashboard = () => {
     },
     {
       id: "RPT-2024-004",
-      name: "Performance Metrics Dec",
-      type: "Performance Report",
+      reportType: "Performance",
+      location: "All Locations",
+      description: "Performance from 2024-12-01 to 2024-12-31",
       generated: "2024-01-12 11:20",
       size: "1.2 MB",
       format: "CSV",
@@ -156,8 +160,9 @@ const Dashboard = () => {
     },
     {
       id: "RPT-2024-005",
-      name: "Weekly Infrastructure",
-      type: "Infrastructure Report",
+      reportType: "Infrastructure",
+      location: "All Locations",
+      description: "Infrastructure from 2024-01-04 to 2024-01-11",
       generated: "2024-01-11 08:45",
       size: "678 KB",
       format: "PDF",
@@ -165,8 +170,9 @@ const Dashboard = () => {
     },
     {
       id: "RPT-2024-006",
-      name: "Security Assessment",
-      type: "Security Report",
+      reportType: "Security",
+      location: "All Locations",
+      description: "Security from 2024-01-01 to 2024-01-10",
       generated: "2024-01-10 15:30",
       size: "3.1 MB",
       format: "PDF",
@@ -392,8 +398,8 @@ const Dashboard = () => {
                 onClick={() => navigate(`/report/details/${report.id}`)}
               >
                 <div className="space-y-1 flex-1">
-                  <div className="font-medium text-sm">{report.name}</div>
-                  <div className="text-sm text-gray-600">{report.type}</div>
+                  <div className="font-medium text-sm">{report.reportType} | {report.location}</div>
+                  <div className="text-sm text-gray-600">{report.description}</div>
                   <div className="text-xs text-gray-500">
                     Generated: {report.generated}
                   </div>
