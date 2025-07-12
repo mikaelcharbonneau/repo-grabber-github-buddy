@@ -1,0 +1,230 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { Plus, Clipboard } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { DateRange } from "react-day-picker";
+import { locationData, getDataHallsByDatacenter } from "@/data/locations";
+
+const AuditList = () => {
+  const navigate = useNavigate();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [filters, setFilters] = useState({
+    datacenter: "all",
+    dataHall: "all"
+  });
+
+  // Get available data halls based on selected datacenter
+  const availableDataHalls = filters.datacenter === "all" ? [] : getDataHallsByDatacenter(filters.datacenter);
+
+  // Reset data hall when datacenter changes
+  const handleDatacenterChange = (value: string) => {
+    setFilters({...filters, datacenter: value, dataHall: "all"});
+  };
+
+  const audits = [
+    {
+      id: "AUD-2024-001",
+      location: "DC-EAST / Hall-A",
+      technician: "John Doe",
+      date: "2024-01-15",
+      time: "14:30",
+      issues: 2,
+      severity: "Medium",
+      status: "Completed",
+      description: "Routine quarterly inspection"
+    },
+    {
+      id: "AUD-2024-002",
+      location: "DC-WEST / Hall-B", 
+      technician: "Jane Smith",
+      date: "2024-01-14",
+      time: "09:15",
+      issues: 0,
+      severity: "None",
+      status: "Completed",
+      description: "Monthly infrastructure check"
+    },
+    {
+      id: "AUD-2024-003",
+      location: "DC-CENTRAL / Hall-C",
+      technician: "Mike Johnson", 
+      date: "2024-01-13",
+      time: "16:45",
+      issues: 5,
+      severity: "Critical",
+      status: "Under Review",
+      description: "Emergency inspection - power anomalies"
+    },
+    {
+      id: "AUD-2024-004",
+      location: "DC-EAST / Hall-B",
+      technician: "Sarah Wilson",
+      date: "2024-01-12",
+      time: "11:20",
+      issues: 1,
+      severity: "Low",
+      status: "Completed",
+      description: "Follow-up inspection"
+    }
+  ];
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity.toLowerCase()) {
+      case 'critical': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      case 'none': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'under review': return 'bg-blue-100 text-blue-800';
+      case 'in progress': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const filteredAudits = audits.filter(audit => {
+    // For demo purposes, we'll filter based on location text matching
+    // In a real app, audits would have datacenter/datahall IDs
+    const matchesDatacenter = filters.datacenter === "all" || 
+      locationData.find(dc => dc.id === filters.datacenter)?.name.split(' - ')[0] === audit.location.split(' / ')[0];
+    
+    const matchesDataHall = filters.dataHall === "all" || 
+      availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
+    
+    return matchesDatacenter && matchesDataHall;
+  });
+
+  return (
+    <div className="p-6 space-y-6">
+
+      {/* Filters */}
+      <Card className="w-full">
+        <CardHeader className="p-6 pb-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <CardTitle className="text-2xl font-bold text-gray-900 mb-4">Audit Management</CardTitle>
+            </div>
+            <div></div>
+            <div className="flex justify-end">
+              <Button 
+                className="bg-hpe-green hover:bg-hpe-green/90"
+                onClick={() => navigate('/audit/start')}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Start New Audit
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <DatePickerWithRange 
+                date={dateRange} 
+                setDate={setDateRange}
+                className="w-full h-12"
+              />
+            </div>
+            
+            <Select value={filters.datacenter} onValueChange={handleDatacenterChange}>
+              <SelectTrigger className="h-12">
+                <SelectValue placeholder="All Datacenters" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Datacenters</SelectItem>
+                {locationData.map((datacenter) => (
+                  <SelectItem key={datacenter.id} value={datacenter.id}>
+                    {datacenter.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select 
+              value={filters.dataHall} 
+              onValueChange={(value) => setFilters({...filters, dataHall: value})}
+              disabled={filters.datacenter === "all"}
+            >
+              <SelectTrigger className="h-12">
+                <SelectValue placeholder="All Data Halls" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Data Halls</SelectItem>
+                {availableDataHalls.map((hall) => (
+                  <SelectItem key={hall.id} value={hall.id}>
+                    {hall.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Audit List */}
+      <div className="grid gap-4">
+        {filteredAudits.map((audit) => (
+          <Card key={audit.id} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="space-y-2 flex-1">
+                  <div className="flex items-center space-x-3">
+                    <h3 className="font-semibold text-lg">{audit.id}</h3>
+                    <Badge className={getSeverityColor(audit.severity)}>
+                      {audit.severity}
+                    </Badge>
+                    <Badge variant="outline" className={getStatusColor(audit.status)}>
+                      {audit.status}
+                    </Badge>
+                  </div>
+                  <p className="text-gray-900 font-medium">{audit.location}</p>
+                  <p className="text-gray-600">{audit.description}</p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <span>Technician: {audit.technician}</span>
+                    <span>•</span>
+                    <span>{audit.date} at {audit.time}</span>
+                    <span>•</span>
+                    <span>{audit.issues} issues found</span>
+                  </div>
+                </div>
+                <div className="flex space-x-2 ml-4">
+                  <Button variant="outline" size="sm">
+                    View Details
+                  </Button>
+                  {audit.status === "Completed" && (
+                    <Button variant="outline" size="sm">
+                      Generate Report
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {filteredAudits.length === 0 && (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-500">
+              <Clipboard className="mx-auto h-12 w-12 mb-4" />
+              <h3 className="text-lg font-medium mb-2">No audits found</h3>
+              <p>Try adjusting your search criteria or create a new audit.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default AuditList;

@@ -1,0 +1,275 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* HPE 2025 Brand - Primary HPE Green */
+    --primary: 159 82% 43%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 159 82% 96%;
+    --secondary-foreground: 159 82% 20%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 159 82% 96%;
+    --accent-foreground: 159 82% 20%;
+
+    --destructive: 0 62% 55%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 159 82% 43%;
+
+    --radius: 0.5rem;
+
+    /* HPE 2025 Updated Brand Colors */
+    --hpe-green-brand: 159 82% 43%; /* #01a982 - Primary brand green */
+    --hpe-green-light: 159 82% 62%; /* #17eba0 - Light variant */
+    --hpe-green-emphasis: 174 100% 58%; /* #00e8cf - Teal emphasis */
+    
+    /* HPE Core Palette */
+    --hpe-purple: 258 71% 53%; /* #7630EA */
+    --hpe-teal: 174 100% 47%; /* #00739d */
+    --hpe-blue: 197 100% 31%; /* #00739d */
+    --hpe-red: 5 59% 53%; /* #c54e4b */
+    --hpe-orange: 32 100% 50%; /* #FF8300 */
+    --hpe-yellow: 49 99% 50%; /* #fec901 */
+    
+    /* HPE Light Theme Variants */
+    --hpe-purple-light: 289 100% 63%; /* #f740ff */
+    --hpe-teal-light: 174 100% 76%; /* #82fff2 */
+    --hpe-blue-light: 197 100% 50%; /* #00c8ff */
+    --hpe-red-light: 5 95% 68%; /* #fc6161 */
+    --hpe-orange-light: 32 100% 63%; /* #ffbc44 */
+    --hpe-yellow-light: 49 100% 67%; /* #ffeb59 */
+    
+    /* HPE Neutral Colors */
+    --hpe-gray-50: 220 13% 95%;
+    --hpe-gray-100: 220 13% 91%;
+    --hpe-gray-200: 220 13% 82%;
+    --hpe-gray-300: 220 9% 65%;
+    --hpe-gray-400: 220 9% 46%;
+    --hpe-gray-500: 220 9% 36%;
+    --hpe-gray-600: 220 9% 26%;
+    --hpe-gray-700: 220 9% 16%;
+    --hpe-gray-800: 220 9% 10%;
+    --hpe-gray-900: 220 9% 6%;
+    
+    /* HPE Gradients */
+    --hpe-gradient-primary: linear-gradient(135deg, hsl(var(--hpe-green-brand)), hsl(var(--hpe-green-emphasis)));
+    --hpe-gradient-hero: linear-gradient(135deg, hsl(var(--hpe-green-brand)) 0%, hsl(var(--hpe-teal)) 50%, hsl(var(--hpe-blue)) 100%);
+    --hpe-gradient-accent: linear-gradient(90deg, hsl(var(--hpe-purple)) 0%, hsl(var(--hpe-blue)) 100%);
+    
+    /* HPE Shadows */
+    --hpe-shadow-sm: 0 1px 2px 0 hsl(var(--hpe-gray-900) / 0.05);
+    --hpe-shadow-md: 0 4px 6px -1px hsl(var(--hpe-gray-900) / 0.1), 0 2px 4px -1px hsl(var(--hpe-gray-900) / 0.06);
+    --hpe-shadow-lg: 0 10px 15px -3px hsl(var(--hpe-gray-900) / 0.1), 0 4px 6px -2px hsl(var(--hpe-gray-900) / 0.05);
+    --hpe-shadow-brand: 0 10px 30px -10px hsl(var(--hpe-green-brand) / 0.3);
+    --hpe-shadow-glow: 0 0 40px hsl(var(--hpe-green-emphasis) / 0.4);
+    
+    /* HPE Animation Timing */
+    --hpe-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --hpe-transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --hpe-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --hpe-transition-bounce: 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    /* HPE 2025 Dark Theme */
+    --primary: 159 82% 62%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 159 82% 62%;
+    
+    /* HPE Dark Theme Overrides */
+    --hpe-green-brand: 159 82% 62%;
+    --hpe-green-light: 159 82% 43%;
+    --hpe-green-emphasis: 174 100% 47%;
+    
+    /* HPE Dark Core Palette */
+    --hpe-purple: 258 71% 63%;
+    --hpe-teal: 174 100% 57%;
+    --hpe-blue: 197 100% 41%;
+    --hpe-red: 5 59% 63%;
+    --hpe-orange: 32 100% 60%;
+    --hpe-yellow: 49 99% 60%;
+    
+    /* HPE Dark Shadows */
+    --hpe-shadow-brand: 0 10px 30px -10px hsl(var(--hpe-green-brand) / 0.4);
+    --hpe-shadow-glow: 0 0 40px hsl(var(--hpe-green-emphasis) / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Metric', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  /* HPE 2025 Brand Utilities */
+  .hpe-gradient {
+    background: var(--hpe-gradient-primary);
+  }
+  
+  .hpe-gradient-hero {
+    background: var(--hpe-gradient-hero);
+  }
+  
+  .hpe-gradient-accent {
+    background: var(--hpe-gradient-accent);
+  }
+  
+  /* HPE Brand Colors */
+  .text-hpe-brand {
+    color: hsl(var(--hpe-green-brand));
+  }
+  
+  .bg-hpe-brand {
+    background-color: hsl(var(--hpe-green-brand));
+  }
+  
+  .bg-hpe-brand-light {
+    background-color: hsl(var(--hpe-green-light));
+  }
+  
+  .border-hpe-brand {
+    border-color: hsl(var(--hpe-green-brand));
+  }
+  
+  /* HPE Shadows */
+  .shadow-hpe-brand {
+    box-shadow: var(--hpe-shadow-brand);
+  }
+  
+  .shadow-hpe-glow {
+    box-shadow: var(--hpe-shadow-glow);
+  }
+  
+  /* HPE Animations */
+  .animate-hpe-pulse {
+    animation: hpe-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-hpe-bounce {
+    animation: hpe-bounce 1s var(--hpe-transition-bounce) infinite;
+  }
+  
+  .animate-hpe-glow {
+    animation: hpe-glow 3s ease-in-out infinite alternate;
+  }
+  
+  .transition-hpe-fast {
+    transition: all var(--hpe-transition-fast);
+  }
+  
+  .transition-hpe {
+    transition: all var(--hpe-transition-base);
+  }
+  
+  .transition-hpe-slow {
+    transition: all var(--hpe-transition-slow);
+  }
+  
+  /* HPE Interactive Elements */
+  .hpe-button-primary {
+    @apply bg-hpe-brand text-white hover:shadow-hpe-brand transition-hpe;
+  }
+  
+  .hpe-button-secondary {
+    @apply border-hpe-brand text-hpe-brand hover:bg-hpe-brand hover:text-white transition-hpe;
+  }
+  
+  .hpe-card {
+    @apply bg-card rounded-lg border border-border shadow-hpe-brand transition-hpe hover:shadow-lg;
+  }
+  
+  .hpe-glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  /* HPE Typography */
+  .hpe-heading {
+    font-family: 'Metric', 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  
+  .hpe-text {
+    font-family: 'Metric', 'Inter', sans-serif;
+    font-weight: 400;
+  }
+}
+
+@keyframes hpe-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes hpe-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes hpe-glow {
+  from {
+    filter: drop-shadow(0 0 20px hsl(var(--hpe-green-brand) / 0.6));
+  }
+  to {
+    filter: drop-shadow(0 0 40px hsl(var(--hpe-green-emphasis) / 0.8));
+  }
+}
