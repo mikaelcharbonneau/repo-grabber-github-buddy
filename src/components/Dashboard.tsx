@@ -408,10 +408,12 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-right space-y-1 ml-4">
-                  <div className="flex flex-col gap-1">
-                    <Button variant="outline" size="sm" className="h-6 text-xs">View</Button>
-                    <Button variant="outline" size="sm" className="h-6 text-xs">Download</Button>
-                    <Button variant="outline" size="sm" className="h-6 text-xs">Share</Button>
+                  <div className="flex flex-col gap-2">
+                    <Button className="bg-hpe-green hover:bg-hpe-green/90 h-7 text-xs">View</Button>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Download</Button>
+                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
+                    </div>
                   </div>
                 </div>
               </div>
