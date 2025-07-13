@@ -36,7 +36,8 @@ const AuditList = () => {
     issues: 2,
     severity: "Medium",
     status: "Completed",
-    description: "Routine quarterly inspection"
+    description: "Routine quarterly inspection",
+    deviceIssues: { RDHX: 1, PDU: 0, PSU: 1, CDU: 0 }
   }, {
     id: "AUD-2024-002",
     location: "DC-WEST / Hall-B",
@@ -46,7 +47,8 @@ const AuditList = () => {
     issues: 0,
     severity: "None",
     status: "Completed",
-    description: "Monthly infrastructure check"
+    description: "Monthly infrastructure check",
+    deviceIssues: { RDHX: 0, PDU: 0, PSU: 0, CDU: 0 }
   }, {
     id: "AUD-2024-003",
     location: "DC-CENTRAL / Hall-C",
@@ -56,7 +58,8 @@ const AuditList = () => {
     issues: 5,
     severity: "Critical",
     status: "Under Review",
-    description: "Emergency inspection - power anomalies"
+    description: "Emergency inspection - power anomalies",
+    deviceIssues: { RDHX: 2, PDU: 2, PSU: 1, CDU: 0 }
   }, {
     id: "AUD-2024-004",
     location: "DC-EAST / Hall-B",
@@ -66,7 +69,8 @@ const AuditList = () => {
     issues: 1,
     severity: "Low",
     status: "Completed",
-    description: "Follow-up inspection"
+    description: "Follow-up inspection",
+    deviceIssues: { RDHX: 0, PDU: 0, PSU: 0, CDU: 1 }
   }];
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -172,6 +176,22 @@ const AuditList = () => {
                     <span>•</span>
                     <span>{audit.issues} issues found</span>
                   </div>
+                  {audit.issues > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <p className="text-sm text-gray-700 font-medium mb-2">Issues by Device Type:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(audit.deviceIssues).map(([device, count]) => (
+                          <Badge
+                            key={device}
+                            variant={count > 0 ? "destructive" : "secondary"}
+                            className="text-xs"
+                          >
+                            {device}: {count}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="flex space-x-2 ml-4">
                   <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
