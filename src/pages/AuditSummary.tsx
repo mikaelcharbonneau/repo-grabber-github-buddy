@@ -153,7 +153,7 @@ const AuditSummary = () => {
                           <div className="font-medium">{issue.device} - {issue.alertType}</div>
                           {issue.rack && (
                             <div className="text-sm text-gray-600">
-                              Location: {issue.rack}{issue.tile ? ` / ${issue.tile}` : ''}
+                              Location: {issue.rack}
                             </div>
                           )}
                           {issue.device && (
