@@ -142,7 +142,7 @@ const AuditList = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6 pt-0 h-full py-[14px]">
+        <CardContent className="p-6 pt-0 h-full py-14px bg-white py-[14px]">
           <div className="flex justify-center items-center max-h-full h-full ">
             <div className="grid grid-cols-1 grid-cols-3 gap-8 items-stretch max-h-full w-full max-w-8xl">
             <div className="h-12">
