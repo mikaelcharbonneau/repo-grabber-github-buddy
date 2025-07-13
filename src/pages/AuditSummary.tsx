@@ -150,7 +150,15 @@ const AuditSummary = () => {
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <div className="font-medium">{issue.device} - {issue.alertType}</div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="font-medium">{issue.device} - {issue.alertType}</div>
+                            <Badge 
+                              variant={issue.resolved ? "secondary" : "destructive"}
+                              className="text-xs"
+                            >
+                              {issue.resolved ? "Solved" : "Active"}
+                            </Badge>
+                          </div>
                           {issue.device && (
                             <div className="text-sm text-gray-600">
                               {issue.device}{issue.impactedUnit ? `-${issue.impactedUnit}` : ''} : {issue.alertType}
