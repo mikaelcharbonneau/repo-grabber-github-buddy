@@ -188,10 +188,8 @@ const AuditList = () => {
                     <h3 className="font-semibold text-lg">{audit.id}</h3>
                   </div>
                   <p className="text-gray-900 font-medium">{audit.location}</p>
-                  <p className="text-gray-600">{audit.description}</p>
+                  <p className="text-gray-600">{audit.technician}</p>
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>Technician: {audit.technician}</span>
-                    <span>•</span>
                     <span>{audit.date} at {audit.time}</span>
                     <span>•</span>
                     <span>{audit.issues} issues found</span>
