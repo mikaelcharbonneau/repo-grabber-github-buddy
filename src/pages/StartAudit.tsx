@@ -35,7 +35,7 @@ const StartAudit = () => {
   };
   const canStart = selectedDatacenter && selectedDataHall;
   return <div className="h-full flex items-center justify-center px-6 bg-black/[0.02]">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl my-[50px]">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Start New Audit</h1>
           <p className="text-gray-600">Select the datacenter and data hall to begin your audit.</p>
@@ -44,7 +44,7 @@ const StartAudit = () => {
         <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <MapPin className="h-5 w-5 text-hpe-brand" />
+            <MapPin className="h-5 w-5 text-hpe-green" />
             <span>Location Selection</span>
           </CardTitle>
         </CardHeader>
@@ -84,7 +84,7 @@ const StartAudit = () => {
             <Button variant="outline" onClick={() => navigate("/")}>
               Cancel
             </Button>
-            <Button onClick={handleStartAudit} disabled={!canStart} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+            <Button onClick={handleStartAudit} disabled={!canStart} className="bg-hpe-green hover:bg-hpe-green/90">
               Begin Audit
             </Button>
           </div>
