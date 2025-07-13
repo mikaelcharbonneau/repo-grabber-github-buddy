@@ -102,7 +102,8 @@ const AuditList = () => {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 flex flex-col items-center">
+      <div className="w-full max-w-4xl space-y-6">
 
       {/* Filters */}
       <Card className="w-full">
@@ -215,6 +216,7 @@ const AuditList = () => {
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   );
 };
