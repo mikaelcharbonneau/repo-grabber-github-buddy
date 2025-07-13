@@ -44,7 +44,7 @@ const StartAudit = () => {
         <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <MapPin className="h-5 w-5 text-hpe-green" />
+            <MapPin className="h-5 w-5 text-hpe-brand" />
             <span>Location Selection</span>
           </CardTitle>
         </CardHeader>
@@ -84,7 +84,7 @@ const StartAudit = () => {
             <Button variant="outline" onClick={() => navigate("/")}>
               Cancel
             </Button>
-            <Button onClick={handleStartAudit} disabled={!canStart} className="bg-hpe-green hover:bg-hpe-green/90">
+            <Button onClick={handleStartAudit} disabled={!canStart} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
               Begin Audit
             </Button>
           </div>
