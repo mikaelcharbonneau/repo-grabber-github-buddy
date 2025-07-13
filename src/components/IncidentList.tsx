@@ -171,7 +171,7 @@ const IncidentList = () => {
       {/* Incident List */}
       <div className="grid gap-4">
         {filteredIncidents.map((incident) => (
-          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-md transition-shadow">
+          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-3 flex-1">
