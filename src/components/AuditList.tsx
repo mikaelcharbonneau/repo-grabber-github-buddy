@@ -167,7 +167,7 @@ const AuditList = () => {
                 ...filters,
                 dataHall: value
               })} disabled={filters.datacenter === "all"}>
-                <SelectTrigger className="h-full">
+                <SelectTrigger className="h-full text-center">
                   <SelectValue placeholder="All Data Halls" />
                 </SelectTrigger>
                 <SelectContent>
