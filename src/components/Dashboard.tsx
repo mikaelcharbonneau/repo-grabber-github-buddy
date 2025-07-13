@@ -184,7 +184,7 @@ const Dashboard = () => {
               </div>
               <div></div>
               <div className="flex justify-end">
-                <Button className="bg-hpe-green hover:bg-hpe-green/90" onClick={() => navigate('/audit/start')}>
+                <Button onClick={() => navigate('/audit/start')} className="bg-hpe-green hover:bg-hpe-green/90 text-slate-950">
                   <Plus className="mr-2 h-4 w-4" />
                   Start New Audit
                 </Button>
@@ -241,7 +241,10 @@ const Dashboard = () => {
                     <span className="text-sm font-medium text-gray-600 leading-none">
                       {stat.title}
                     </span>
-                    <stat.icon className={`h-4 w-4 ${stat.color} shrink-0`} style={{ marginTop: 0, marginBottom: 0 }} />
+                    <stat.icon className={`h-4 w-4 ${stat.color} shrink-0`} style={{
+                  marginTop: 0,
+                  marginBottom: 0
+                }} />
                   </div>
                 </CardHeader>
                 <CardContent>
