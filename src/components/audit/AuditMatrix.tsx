@@ -168,9 +168,8 @@ const AuditMatrix = ({
                         
                         {units.map(unit => (
                           <DropdownMenuSub key={unit}>
-                            <DropdownMenuSubTrigger className="flex items-center">
+                            <DropdownMenuSubTrigger>
                               <span>{unit}</span>
-                              <ChevronRight className="h-4 w-4 ml-auto" />
                             </DropdownMenuSubTrigger>
                             <DropdownMenuSubContent className="w-56">
                               {alertTypes.filter(alert => alert.value !== 'none').map(alert => (
