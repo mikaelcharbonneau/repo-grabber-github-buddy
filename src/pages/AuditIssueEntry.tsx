@@ -65,6 +65,8 @@ const AuditIssueEntry = () => {
       <AuditMatrix
         racks={racks}
         issues={issues}
+        datacenter={auditDetails.datacenter}
+        dataHall={auditDetails.dataHall}
         onAddRack={addRack}
         onRemoveRack={removeRack}
         onUpdateRack={updateRack}

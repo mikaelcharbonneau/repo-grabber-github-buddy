@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Plus, Trash2, AlertTriangle, ChevronDown } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, ChevronDown, MapPin } from "lucide-react";
 import { getCabinetsByDataHall, getDatacenterById } from "@/data/locations";
 interface Rack {
   id: number;
@@ -22,6 +22,8 @@ interface Issue {
 interface AuditMatrixProps {
   racks: Rack[];
   issues: Issue[];
+  datacenter: string;
+  dataHall: string;
   onAddRack: () => void;
   onRemoveRack: (id: number) => void;
   onUpdateRack: (id: number, field: string, value: string) => void;
@@ -65,6 +67,8 @@ const alertTypes = [{
 const AuditMatrix = ({
   racks,
   issues,
+  datacenter,
+  dataHall,
   onAddRack,
   onRemoveRack,
   onUpdateRack,
@@ -93,9 +97,15 @@ const AuditMatrix = ({
   return <Card className="mb-6">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
-            <span>Incidents</span>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              <span>Incidents</span>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-600 text-sm font-normal">
+              <MapPin className="h-4 w-4" />
+              <span>{datacenter} / {dataHall}</span>
+            </div>
           </div>
           <Button onClick={onAddRack} variant="outline" size="sm">
             <Plus className="h-4 w-4 mr-2" />
