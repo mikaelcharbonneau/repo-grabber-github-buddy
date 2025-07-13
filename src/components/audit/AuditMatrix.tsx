@@ -112,6 +112,7 @@ const AuditMatrix = ({
     if (values.length === 0 || (values.length === 1 && values[0] === 'none')) return;
     
     const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
+    console.log('Drag start:', { rackId, rackIndex, device, values });
     
     setDragState({
       isDragging: true,
@@ -128,6 +129,8 @@ const AuditMatrix = ({
     if (!dragState.isDragging || dragState.sourceDevice !== device) return;
     
     const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
+    console.log('Drag over:', { rackId, rackIndex, device });
+    
     setDragState(prev => ({
       ...prev,
       currentRackIndex: rackIndex
@@ -135,20 +138,70 @@ const AuditMatrix = ({
   };
 
   const handleDragEnd = () => {
-    if (!dragState.isDragging || dragState.sourceRackIndex === null || dragState.currentRackIndex === null) return;
+    console.log('Drag end:', dragState);
+    
+    if (!dragState.isDragging || dragState.sourceRackIndex === null || dragState.currentRackIndex === null) {
+      console.log('Early return - invalid drag state');
+      return;
+    }
     
     // Determine the range of racks to fill
     const startIndex = Math.min(dragState.sourceRackIndex, dragState.currentRackIndex);
     const endIndex = Math.max(dragState.sourceRackIndex, dragState.currentRackIndex);
     
+    console.log('Filling range:', { startIndex, endIndex, totalRacks: prePopulatedRacks.length });
+    
     // Apply the source values to all racks in the range
     for (let i = startIndex; i <= endIndex; i++) {
       const rack = prePopulatedRacks[i];
+      console.log('Filling rack:', { index: i, rack, device: dragState.sourceDevice });
+      
       if (rack && dragState.sourceDevice) {
         onUpdateIssue(rack.id, dragState.sourceDevice, dragState.sourceValues);
       }
     }
     
+    setDragState({
+      isDragging: false,
+      sourceRackId: null,
+      sourceRackIndex: null,
+      sourceDevice: null,
+      sourceValues: [],
+      currentRackIndex: null
+    });
+  };
+
+  // Alternative approach: Handle drop on any cell and calculate range based on drop position
+  const handleDrop = (e: React.DragEvent, targetRackId: number, targetDevice: string) => {
+    e.preventDefault();
+    console.log('Drop event:', { targetRackId, targetDevice });
+    
+    if (!dragState.isDragging || dragState.sourceDevice !== targetDevice) return;
+    
+    const targetRackIndex = prePopulatedRacks.findIndex(rack => rack.id === targetRackId);
+    const sourceRackIndex = dragState.sourceRackIndex;
+    
+    if (sourceRackIndex === null) return;
+    
+    console.log('Drop calculation:', { sourceRackIndex, targetRackIndex });
+    
+    // Calculate range and fill
+    const startIndex = Math.min(sourceRackIndex, targetRackIndex);
+    const endIndex = Math.max(sourceRackIndex, targetRackIndex);
+    
+    console.log('Drop range:', { startIndex, endIndex });
+    
+    // Apply the source values to all racks in the range
+    for (let i = startIndex; i <= endIndex; i++) {
+      const rack = prePopulatedRacks[i];
+      console.log('Drop filling rack:', { index: i, rack });
+      
+      if (rack && dragState.sourceDevice) {
+        onUpdateIssue(rack.id, dragState.sourceDevice, dragState.sourceValues);
+      }
+    }
+    
+    // Reset drag state
     setDragState({
       isDragging: false,
       sourceRackId: null,
@@ -239,6 +292,7 @@ const AuditMatrix = ({
                     key={device} 
                     className={`relative ${isInDragRange ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
                     onDragOver={(e) => handleDragOver(e, rack.id, device)}
+                    onDrop={(e) => handleDrop(e, rack.id, device)}
                   >
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -304,6 +358,7 @@ const AuditMatrix = ({
                   key={device} 
                   className={`relative ${isInDragRange ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
                   onDragOver={(e) => handleDragOver(e, rack.id, device)}
+                  onDrop={(e) => handleDrop(e, rack.id, device)}
                 >
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
