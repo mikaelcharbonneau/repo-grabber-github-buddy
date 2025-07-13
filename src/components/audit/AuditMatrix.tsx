@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { AlertTriangle, ChevronDown, MapPin, ChevronRight, GripVertical } from "lucide-react";
+import { AlertTriangle, ChevronDown, MapPin, ChevronRight } from "lucide-react";
 import { getCabinetsByDataHall, getDatacenterById } from "@/data/locations";
 interface Rack {
   id: number;
@@ -75,21 +75,6 @@ const AuditMatrix = ({
   getIssueValues
 }: AuditMatrixProps) => {
   const [prePopulatedRacks, setPrePopulatedRacks] = useState<Rack[]>([]);
-  const [dragState, setDragState] = useState<{
-    isDragging: boolean;
-    sourceRackId: number | null;
-    sourceRackIndex: number | null;
-    sourceDevice: string | null;
-    sourceValues: string[];
-    currentRackIndex: number | null;
-  }>({
-    isDragging: false,
-    sourceRackId: null,
-    sourceRackIndex: null,
-    sourceDevice: null,
-    sourceValues: [],
-    currentRackIndex: null
-  });
 
   // Pre-populate table with all available cabinets
   useEffect(() => {
@@ -106,103 +91,6 @@ const AuditMatrix = ({
       setPrePopulatedRacks(rackData);
     }
   }, []);
-
-  const handleMouseDown = (rackId: number, device: string) => {
-    const values = getIssueValues(rackId, device);
-    if (values.length === 0 || (values.length === 1 && values[0] === 'none')) return;
-    
-    const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
-    console.log('Mouse down (drag start):', { rackId, rackIndex, device, values });
-    
-    setDragState({
-      isDragging: true,
-      sourceRackId: rackId,
-      sourceRackIndex: rackIndex,
-      sourceDevice: device,
-      sourceValues: values,
-      currentRackIndex: rackIndex
-    });
-  };
-
-  const handleMouseEnter = (rackId: number, device: string) => {
-    if (!dragState.isDragging || dragState.sourceDevice !== device) return;
-    
-    const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
-    console.log('Mouse enter (drag over):', { rackId, rackIndex, device });
-    
-    setDragState(prev => ({
-      ...prev,
-      currentRackIndex: rackIndex
-    }));
-  };
-
-  const handleMouseUp = () => {
-    console.log('Mouse up (drag end):', dragState);
-    
-    if (!dragState.isDragging || dragState.sourceRackIndex === null || dragState.currentRackIndex === null) {
-      console.log('Early return - invalid drag state');
-      setDragState({
-        isDragging: false,
-        sourceRackId: null,
-        sourceRackIndex: null,
-        sourceDevice: null,
-        sourceValues: [],
-        currentRackIndex: null
-      });
-      return;
-    }
-    
-    // Determine the range of racks to fill
-    const startIndex = Math.min(dragState.sourceRackIndex, dragState.currentRackIndex);
-    const endIndex = Math.max(dragState.sourceRackIndex, dragState.currentRackIndex);
-    
-    console.log('Filling range:', { startIndex, endIndex, totalRacks: prePopulatedRacks.length });
-    
-    // Apply the source values to all racks in the range
-    for (let i = startIndex; i <= endIndex; i++) {
-      const rack = prePopulatedRacks[i];
-      console.log('Filling rack:', { index: i, rack, device: dragState.sourceDevice });
-      
-      if (rack && dragState.sourceDevice) {
-        onUpdateIssue(rack.id, dragState.sourceDevice, dragState.sourceValues);
-      }
-    }
-    
-    setDragState({
-      isDragging: false,
-      sourceRackId: null,
-      sourceRackIndex: null,
-      sourceDevice: null,
-      sourceValues: [],
-      currentRackIndex: null
-    });
-  };
-
-  // Add global mouse up listener
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      if (dragState.isDragging) {
-        handleMouseUp();
-      }
-    };
-
-    document.addEventListener('mouseup', handleGlobalMouseUp);
-    return () => document.removeEventListener('mouseup', handleGlobalMouseUp);
-  }, [dragState.isDragging]);
-
-  // Helper function to determine if a cell should be highlighted
-  const isCellInDragRange = (rackId: number, device: string): boolean => {
-    if (!dragState.isDragging || dragState.sourceDevice !== device || 
-        dragState.sourceRackIndex === null || dragState.currentRackIndex === null) {
-      return false;
-    }
-    
-    const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
-    const startIndex = Math.min(dragState.sourceRackIndex, dragState.currentRackIndex);
-    const endIndex = Math.max(dragState.sourceRackIndex, dragState.currentRackIndex);
-    
-    return rackIndex >= startIndex && rackIndex <= endIndex;
-  };
   const getSeverityColors = (severities: string[]) => {
     if (severities.includes('Critical')) return 'bg-red-100 border-red-300';
     if (severities.includes('Medium')) return 'bg-yellow-100 border-yellow-300';
@@ -263,14 +151,8 @@ const AuditMatrix = ({
                 // Use multi-level dropdown for PSUs and PDUs
                 if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
                   const units = device === "Power Supply Unit" ? psuUnits : pduUnits;
-                  const hasIssues = currentValues.length > 0 && !(currentValues.length === 1 && currentValues[0] === 'none');
-                  const isInDragRange = isCellInDragRange(rack.id, device);
                   
-                  return <TableCell 
-                    key={device} 
-                    className={`relative ${isInDragRange ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
-                    onMouseEnter={() => handleMouseEnter(rack.id, device)}
-                  >
+                  return <TableCell key={device}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="w-full justify-between text-left">
@@ -312,33 +194,10 @@ const AuditMatrix = ({
                         ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    
-                    {/* Drag handle - positioned outside the dropdown */}
-                    {hasIssues && (
-                      <div
-                        className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity z-10"
-                        style={{ 
-                          clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
-                          pointerEvents: 'auto'
-                        }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          handleMouseDown(rack.id, device);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    )}
                   </TableCell>;
                 }
 
-                const hasIssues = currentValues.length > 0 && !(currentValues.length === 1 && currentValues[0] === 'none');
-                const isInDragRange = isCellInDragRange(rack.id, device);
-
-                return <TableCell 
-                  key={device} 
-                  className={`relative ${isInDragRange ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
-                  onMouseEnter={() => handleMouseEnter(rack.id, device)}
-                >
+                return <TableCell key={device}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="w-full justify-between text-left">
@@ -372,22 +231,6 @@ const AuditMatrix = ({
                               </DropdownMenuCheckboxItem>)}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        
-                        {/* Drag handle - positioned outside the dropdown */}
-                        {hasIssues && (
-                          <div
-                            className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity z-10"
-                            style={{ 
-                              clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
-                              pointerEvents: 'auto'
-                            }}
-                            onMouseDown={(e) => {
-                              e.stopPropagation();
-                              handleMouseDown(rack.id, device);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        )}
                       </TableCell>;
               })}
                 </TableRow>)}
