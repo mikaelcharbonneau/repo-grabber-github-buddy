@@ -15,15 +15,13 @@ import AuditDetails from "../pages/AuditDetails";
 import IncidentDetails from "../pages/IncidentDetails";
 import ReportDetails from "../pages/ReportDetails";
 import Settings from "../pages/Settings";
-
 const AppLayout: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-white font-hpe flex flex-col">
+  return <div className="min-h-screen bg-white font-hpe flex flex-col">
       {/* Top header spanning full width */}
       <Header />
       {/* Main content area */}
       <div className="flex-1 overflow-auto pt-24 bg-gray-50">
-        <div className="w-full">
+        <div className="mx-0 px-40 sm:px-6 lg:px-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/audits" element={<AuditList />} />
@@ -46,8 +44,6 @@ const AppLayout: React.FC = () => {
           </Routes>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AppLayout;
