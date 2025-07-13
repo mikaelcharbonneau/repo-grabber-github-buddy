@@ -33,7 +33,7 @@ const Dashboard = () => {
     change: "+12%",
     changeType: "increase" as const,
     icon: ClipboardCheck,
-    color: "text-hpe-green"
+    color: "text-hpe-brand"
   }, {
     title: "Active Incidents",
     value: "8",
@@ -184,7 +184,7 @@ const Dashboard = () => {
               </div>
               <div className="bg-inherit"></div>
               <div className="flex justify-end">
-                <Button onClick={() => navigate('/audit/start')} className="bg-hpe-green hover:bg-hpe-green/90 text-slate-950">
+                <Button onClick={() => navigate('/audit/start')} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
                   <Plus className="mr-2 h-4 w-4" />
                   Start New Audit
                 </Button>

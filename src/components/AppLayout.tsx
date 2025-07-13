@@ -16,12 +16,12 @@ import IncidentDetails from "../pages/IncidentDetails";
 import ReportDetails from "../pages/ReportDetails";
 import Settings from "../pages/Settings";
 const AppLayout: React.FC = () => {
-  return <div className="h-screen font-hpe flex flex-col bg-inherit">
+  return <div className="min-h-screen font-hpe flex flex-col bg-inherit">
       {/* Top header spanning full width */}
       <Header />
       {/* Main content area */}
-      <div className="flex-1">
-        <div className="h-full w-full">
+      <div className="flex-1 pt-20">
+        <div className="h-full w-full overflow-y-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/audits" element={<AuditList />} />

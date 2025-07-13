@@ -11,7 +11,7 @@ const NotificationItem = ({
   notification,
   onClick
 }) => <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0" onClick={onClick}>
-    <div className={`w-2 h-2 rounded-full mt-2 ${notification.read ? 'bg-gray-300' : 'bg-hpe-green'}`}></div>
+    <div className={`w-2 h-2 rounded-full mt-2 ${notification.read ? 'bg-gray-300' : 'bg-hpe-brand'}`}></div>
     <div className="flex-1 min-w-0">
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -137,7 +137,7 @@ const Header = () => {
         {/* Navigation Menu - Centered */}
         <div className="flex-1 flex justify-center">
           <div className="flex flex-wrap justify-evenly divide-x divide-gray-200">
-              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/"]) ? "text-hpe-green" : ""}`} onClick={() => navigate("/")}>
+              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/"]) ? "text-hpe-brand" : ""}`} onClick={() => navigate("/")}>
               <Grid2x2 className="h-6 w-6" />
               <span>Dashboard</span>
             </Button>
@@ -150,7 +150,7 @@ const Header = () => {
                     Start New Audit
                   </NavigationItem>
                 </div>}>
-              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/audits", "/audit"]) ? "text-hpe-green" : ""}`} onClick={() => navigate("/audits")}>
+              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/audits", "/audit"]) ? "text-hpe-brand" : ""}`} onClick={() => navigate("/audits")}>
                 <Clipboard className="h-6 w-6" />
                 <span>Audits</span>
               </Button>
@@ -164,7 +164,7 @@ const Header = () => {
                     Report New Incident
                   </NavigationItem>
                 </div>}>
-              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/incidents", "/incident"]) ? "text-hpe-green" : ""}`} onClick={() => navigate("/incidents")}>
+              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/incidents", "/incident"]) ? "text-hpe-brand" : ""}`} onClick={() => navigate("/incidents")}>
                 <Shield className="h-6 w-6" />
                 <span>Incidents</span>
               </Button>
@@ -178,7 +178,7 @@ const Header = () => {
                     Generate Report
                   </NavigationItem>
                 </div>}>
-              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/reports", "/report"]) ? "text-hpe-green" : ""}`} onClick={() => navigate("/reports")}>
+              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/reports", "/report"]) ? "text-hpe-brand" : ""}`} onClick={() => navigate("/reports")}>
                 <Database className="h-6 w-6" />
                 <span>Reports</span>
               </Button>
