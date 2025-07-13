@@ -268,7 +268,7 @@ const Dashboard = () => {
 
       {/* Main Dashboard Content - Centered */}
       <div className="flex justify-center">
-        <div className="w-full max-w-7xl space-y-6">
+        <div className="w-full space-y-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat) => (
