@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Building } from "lucide-react";
 import { locationData, getDataHallsByDatacenter } from "@/data/locations";
-
 const StartAudit = () => {
   const navigate = useNavigate();
   const [selectedDatacenter, setSelectedDatacenter] = useState("");
@@ -21,10 +19,8 @@ const StartAudit = () => {
       sessionStorage.removeItem('preselectedDatacenter');
     }
   }, []);
-
   const datacenters = locationData;
   const dataHalls = selectedDatacenter ? getDataHallsByDatacenter(selectedDatacenter) : [];
-
   const handleStartAudit = () => {
     if (selectedDatacenter && selectedDataHall) {
       // Store audit details in sessionStorage for the workflow
@@ -37,11 +33,8 @@ const StartAudit = () => {
       navigate("/audit/issues");
     }
   };
-
   const canStart = selectedDatacenter && selectedDataHall;
-
-  return (
-    <div className="h-full flex items-center justify-center px-6 overflow-hidden">
+  return <div className="h-full flex items-center justify-center px-6 overflow-hidden bg-neutral-300">
       <div className="w-full max-w-2xl">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Start New Audit</h1>
@@ -63,34 +56,26 @@ const StartAudit = () => {
                 <SelectValue placeholder="Select datacenter" />
               </SelectTrigger>
               <SelectContent>
-                {datacenters.map((dc) => (
-                  <SelectItem key={dc.id} value={dc.id}>
+                {datacenters.map(dc => <SelectItem key={dc.id} value={dc.id}>
                     <div className="flex items-center space-x-2">
                       <Building className="h-4 w-4" />
                       <span className="text-sm">{dc.name}</span>
                     </div>
-                  </SelectItem>
-                ))}
+                  </SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="datahall">Data Hall</Label>
-            <Select 
-              value={selectedDataHall} 
-              onValueChange={setSelectedDataHall}
-              disabled={!selectedDatacenter}
-            >
+            <Select value={selectedDataHall} onValueChange={setSelectedDataHall} disabled={!selectedDatacenter}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a data hall" />
               </SelectTrigger>
               <SelectContent>
-                {dataHalls.map((hall) => (
-                  <SelectItem key={hall.id} value={hall.id}>
+                {dataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>
                     {hall.name}
-                  </SelectItem>
-                ))}
+                  </SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -99,19 +84,13 @@ const StartAudit = () => {
             <Button variant="outline" onClick={() => navigate("/")}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleStartAudit}
-              disabled={!canStart}
-              className="bg-hpe-green hover:bg-hpe-green/90"
-            >
+            <Button onClick={handleStartAudit} disabled={!canStart} className="bg-hpe-green hover:bg-hpe-green/90">
               Begin Audit
             </Button>
           </div>
         </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default StartAudit;

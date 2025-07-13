@@ -35,7 +35,7 @@ const App: React.FC = () => {
   return <ErrorBoundary onError={handleError} resetOnRouteChange>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <SidebarProvider className="justify-center ">
+          <SidebarProvider className="bg-amber-200 py-0">
             <BrowserRouter>
               <AppLayout />
               {/* Toast notifications */}
