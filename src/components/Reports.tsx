@@ -17,11 +17,19 @@ const Reports = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedDatacenters, setSelectedDatacenters] = useState<string[]>([]);
-  const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
+  const [selectedDataHalls, setSelectedDataHalls] = useState<string[]>([]);
   const [reportType, setReportType] = useState("");
 
   const datacenters = locationData.map(dc => dc.name);
-  const severities = ["Critical", "Medium", "Low"];
+  
+  // Get available data halls based on selected datacenters
+  const availableDataHalls = selectedDatacenters.length > 0 
+    ? locationData
+        .filter(dc => selectedDatacenters.includes(dc.name))
+        .flatMap(dc => dc.dataHalls)
+        .map(dh => dh.name)
+    : [];
+
   const reportTypes = [
     { value: "audits", label: "Audits Report" },
     { value: "incidents", label: "Incidents Report" }
@@ -62,11 +70,11 @@ const Reports = () => {
     }
   };
 
-  const handleSeverityChange = (severity: string, checked: boolean) => {
+  const handleDataHallChange = (dataHall: string, checked: boolean) => {
     if (checked) {
-      setSelectedSeverities([...selectedSeverities, severity]);
+      setSelectedDataHalls([...selectedDataHalls, dataHall]);
     } else {
-      setSelectedSeverities(selectedSeverities.filter(s => s !== severity));
+      setSelectedDataHalls(selectedDataHalls.filter(dh => dh !== dataHall));
     }
   };
 
@@ -75,7 +83,7 @@ const Reports = () => {
       reportType,
       dateRange,
       selectedDatacenters,
-      selectedSeverities
+      selectedDataHalls
     });
     // Simulate report generation
     alert("Report generation started! You will be notified when it's ready for download.");
@@ -152,22 +160,28 @@ const Reports = () => {
               </div>
 
               <div className="space-y-3">
-                <Label>Severity Levels</Label>
+                <Label>Data Halls</Label>
                 <div className="space-y-2">
-                  {severities.map((severity) => (
-                    <div key={severity} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`sev-${severity}`}
-                        checked={selectedSeverities.includes(severity)}
-                        onCheckedChange={(checked) => 
-                          handleSeverityChange(severity, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`sev-${severity}`} className="text-sm">
-                        {severity}
-                      </Label>
+                  {availableDataHalls.length > 0 ? (
+                    availableDataHalls.map((dataHall) => (
+                      <div key={dataHall} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`dh-${dataHall}`}
+                          checked={selectedDataHalls.includes(dataHall)}
+                          onCheckedChange={(checked) => 
+                            handleDataHallChange(dataHall, checked as boolean)
+                          }
+                        />
+                        <Label htmlFor={`dh-${dataHall}`} className="text-sm">
+                          {dataHall}
+                        </Label>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-gray-500">
+                      Please select datacenters to see available data halls
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
