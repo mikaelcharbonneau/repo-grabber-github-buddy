@@ -157,6 +157,21 @@ const AuditSummary = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => {
+                              // Resolved functionality - mark issue as resolved
+                              const updatedIssues = auditDetails.issues.map((issueItem, i) => 
+                                i === index ? { ...issueItem, resolved: true, resolvedAt: new Date().toISOString() } : issueItem
+                              );
+                              const updatedDetails = { ...auditDetails, issues: updatedIssues };
+                              setAuditDetails(updatedDetails);
+                              sessionStorage.setItem('auditDetails', JSON.stringify(updatedDetails));
+                            }}
+                          >
+                            Resolved
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
                               // Remove functionality - remove this specific issue
                               const updatedIssues = auditDetails.issues.filter((_, i) => i !== index);
                               const updatedDetails = { ...auditDetails, issues: updatedIssues };
