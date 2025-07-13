@@ -200,7 +200,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <Card className="w-full">
           <CardHeader className="p-6 pb-0">
