@@ -143,37 +143,41 @@ const AuditList = () => {
           </div>
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <DatePickerWithRange date={dateRange} setDate={setDateRange} className="w-full h-12" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            <div className="h-12">
+              <DatePickerWithRange date={dateRange} setDate={setDateRange} className="w-full h-full" />
             </div>
             
-            <Select value={filters.datacenter} onValueChange={handleDatacenterChange}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="All Datacenters" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Datacenters</SelectItem>
-                {locationData.map(datacenter => <SelectItem key={datacenter.id} value={datacenter.id}>
-                    {datacenter.name}
-                  </SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="h-12">
+              <Select value={filters.datacenter} onValueChange={handleDatacenterChange}>
+                <SelectTrigger className="h-full">
+                  <SelectValue placeholder="All Datacenters" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Datacenters</SelectItem>
+                  {locationData.map(datacenter => <SelectItem key={datacenter.id} value={datacenter.id}>
+                      {datacenter.name}
+                    </SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
             
-            <Select value={filters.dataHall} onValueChange={value => setFilters({
-              ...filters,
-              dataHall: value
-            })} disabled={filters.datacenter === "all"}>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="All Data Halls" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Data Halls</SelectItem>
-                {availableDataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>
-                    {hall.name}
-                  </SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="h-12">
+              <Select value={filters.dataHall} onValueChange={value => setFilters({
+                ...filters,
+                dataHall: value
+              })} disabled={filters.datacenter === "all"}>
+                <SelectTrigger className="h-full">
+                  <SelectValue placeholder="All Data Halls" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Data Halls</SelectItem>
+                  {availableDataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>
+                      {hall.name}
+                    </SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
