@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Filter, Shield } from "lucide-react";
 
 const IncidentList = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -112,6 +114,10 @@ const IncidentList = () => {
     return matchesSearch && matchesSeverity && matchesStatus;
   });
 
+  const handleIncidentClick = (incidentId: string) => {
+    navigate(`/incidents/${incidentId}`);
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -171,7 +177,7 @@ const IncidentList = () => {
       {/* Incident List */}
       <div className="grid gap-4">
         {filteredIncidents.map((incident) => (
-          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer">
+          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => handleIncidentClick(incident.id)}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-3 flex-1">
@@ -197,8 +203,8 @@ const IncidentList = () => {
                     Last updated: {incident.updated}
                   </div>
                 </div>
-                <div className="flex flex-col space-y-2 ml-4">
-                  <Button variant="outline" size="sm">
+                <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
+                  <Button variant="outline" size="sm" onClick={() => handleIncidentClick(incident.id)}>
                     View Details
                   </Button>
                   <Button variant="outline" size="sm">
