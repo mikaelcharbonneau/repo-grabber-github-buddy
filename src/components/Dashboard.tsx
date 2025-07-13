@@ -289,21 +289,23 @@ const Dashboard = () => {
                   <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-extrabold tracking-tight">{stat.value}</div>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
-                    {stat.changeType === 'increase' && (
-                      <ArrowUp className="h-3 w-3 text-green-500 mr-1" />
-                    )}
-                    {stat.changeType === 'decrease' && (
-                      <ArrowDown className="h-3 w-3 text-red-500 mr-1" />
-                    )}
-                    <span className={
-                      stat.changeType === 'increase' ? 'text-green-600' :
-                      stat.changeType === 'decrease' ? 'text-red-600' : 'text-gray-500'
-                    }>
-                      {stat.change}
-                    </span>
-                    <span className="ml-1">from last month</span>
+                  <div className="flex items-center justify-between">
+                    <div className="text-4xl font-extrabold tracking-tight">{stat.value}</div>
+                    <div className="flex items-center text-xs text-gray-500">
+                      {stat.changeType === 'increase' && (
+                        <ArrowUp className="h-3 w-3 text-green-500 mr-1" />
+                      )}
+                      {stat.changeType === 'decrease' && (
+                        <ArrowDown className="h-3 w-3 text-red-500 mr-1" />
+                      )}
+                      <span className={
+                        stat.changeType === 'increase' ? 'text-green-600' :
+                        stat.changeType === 'decrease' ? 'text-red-600' : 'text-gray-500'
+                      }>
+                        {stat.change}
+                      </span>
+                      <span className="ml-1">from last month</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
