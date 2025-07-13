@@ -74,20 +74,20 @@ const AuditList = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'none': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'bg-destructive/20 text-destructive border-destructive/30';
+      case 'medium': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+      case 'low': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      case 'none': return 'bg-muted/50 text-muted-foreground border-border';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'under review': return 'bg-blue-100 text-blue-800';
-      case 'in progress': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      case 'under review': return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
+      case 'in progress': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
@@ -111,7 +111,7 @@ const AuditList = () => {
         <CardHeader className="p-6 pb-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
-              <CardTitle className="text-2xl font-bold text-gray-900 mb-4">Audit Management</CardTitle>
+              <CardTitle className="text-2xl font-bold text-foreground mb-4">Audit Management</CardTitle>
             </div>
             <div></div>
             <div className="flex justify-end">
@@ -186,9 +186,9 @@ const AuditList = () => {
                       {audit.status}
                     </Badge>
                   </div>
-                  <p className="text-gray-900 font-medium">{audit.location}</p>
-                  <p className="text-gray-600">{audit.description}</p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  <p className="text-foreground font-medium">{audit.location}</p>
+                  <p className="text-muted-foreground">{audit.description}</p>
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <span>Technician: {audit.technician}</span>
                     <span>•</span>
                     <span>{audit.date} at {audit.time}</span>
@@ -215,9 +215,9 @@ const AuditList = () => {
       {filteredAudits.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="text-gray-500">
+            <div className="text-muted-foreground">
               <Clipboard className="mx-auto h-12 w-12 mb-4" />
-              <h3 className="text-lg font-medium mb-2">No audits found</h3>
+              <h3 className="text-lg font-medium mb-2 text-foreground">No audits found</h3>
               <p>Try adjusting your search criteria or create a new audit.</p>
             </div>
           </CardContent>

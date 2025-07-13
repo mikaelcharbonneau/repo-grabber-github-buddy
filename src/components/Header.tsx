@@ -33,29 +33,29 @@ import { Sun, Moon } from "lucide-react";
 
 const NotificationItem = ({ notification, onClick }) => (
   <div 
-    className="flex items-start space-x-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+    className="flex items-start space-x-3 p-3 hover:bg-muted/50 cursor-pointer border-b border-border last:border-b-0"
     onClick={onClick}
   >
-    <div className={`w-2 h-2 rounded-full mt-2 ${notification.read ? 'bg-gray-300' : 'bg-hpe-green'}`}></div>
+    <div className={`w-2 h-2 rounded-full mt-2 ${notification.read ? 'bg-muted-foreground' : 'bg-primary'}`}></div>
     <div className="flex-1 min-w-0">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className={`text-sm ${notification.read ? 'text-gray-600' : 'text-gray-900 font-medium'}`}>
+          <div className={`text-sm ${notification.read ? 'text-muted-foreground' : 'text-foreground font-medium'}`}>
             {notification.title}
           </div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-muted-foreground mt-1">
             {notification.message}
           </div>
-          <div className="text-xs text-gray-400 mt-1">
+          <div className="text-xs text-muted-foreground/70 mt-1">
             {notification.timestamp}
           </div>
         </div>
         {notification.severity && (
           <Badge 
             className={`ml-2 text-xs ${
-              notification.severity === 'Critical' ? 'bg-red-100 text-red-800' :
-              notification.severity === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-blue-100 text-blue-800'
+              notification.severity === 'Critical' ? 'bg-destructive/20 text-destructive border-destructive/30' :
+              notification.severity === 'Medium' ? 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30' :
+              'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30'
             }`}
           >
             {notification.severity}
@@ -179,7 +179,7 @@ const Header = () => {
     });
   };
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4">
+    <header className="bg-background border-b border-border px-6 py-4">
       <div className="flex items-center justify-between space-x-8">
         <div className="flex items-center space-x-4">
           <div 
@@ -191,21 +191,21 @@ const Header = () => {
               alt="HPE Logo" 
               className="h-8"
             />
-            <div className="h-8 w-px bg-gray-300" />
-            <h1 className="text-xl font-semibold text-gray-900">Datacenter Audit Tool</h1>
+            <div className="h-8 w-px bg-border" />
+            <h1 className="text-xl font-semibold text-foreground">Datacenter Audit Tool</h1>
           </div>
         </div>
 
         {/* Navigation Menu - Centered */}
         <div className="flex-1 flex justify-center">
           <div className="flex items-center space-x-1">
-            <Button 
-              variant="ghost" 
-              className={`flex items-center space-x-2 px-3 py-1.5 ${
-                isActiveRoute(["/"]) ? "text-hpe-green" : ""
-              }`}
-              onClick={() => navigate("/")}
-            >
+              <Button 
+                variant="ghost" 
+                className={`flex items-center space-x-2 px-3 py-1.5 ${
+                  isActiveRoute(["/"]) ? "text-primary" : ""
+                }`}
+                onClick={() => navigate("/")}
+              >
               <Grid2x2 className="h-4 w-4" />
               <span>Dashboard</span>
             </Button>
@@ -225,7 +225,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 className={`flex items-center space-x-2 px-3 py-1.5 ${
-                  isActiveRoute(["/audits", "/audit"]) ? "text-hpe-green" : ""
+                  isActiveRoute(["/audits", "/audit"]) ? "text-primary" : ""
                 }`}
                 onClick={() => navigate("/audits")}
               >
@@ -249,7 +249,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 className={`flex items-center space-x-2 px-3 py-1.5 ${
-                  isActiveRoute(["/incidents", "/incident"]) ? "text-hpe-green" : ""
+                  isActiveRoute(["/incidents", "/incident"]) ? "text-primary" : ""
                 }`}
                 onClick={() => navigate("/incidents")}
               >
@@ -273,7 +273,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 className={`flex items-center space-x-2 px-3 py-1.5 ${
-                  isActiveRoute(["/reports", "/report"]) ? "text-hpe-green" : ""
+                  isActiveRoute(["/reports", "/report"]) ? "text-primary" : ""
                 }`}
                 onClick={() => navigate("/reports")}
               >
@@ -287,13 +287,13 @@ const Header = () => {
         <div className="flex items-center space-x-4">
           {/* Theme toggle switch */}
           <div className="flex items-center space-x-2">
-            <Sun className={`h-5 w-5 ${theme === 'light' ? 'text-yellow-500' : 'text-gray-400'}`} />
+            <Sun className={`h-5 w-5 ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
             <Switch
               checked={theme === 'dark'}
               onCheckedChange={checked => setTheme(checked ? 'dark' : 'light')}
               aria-label="Toggle dark mode"
             />
-            <Moon className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-500' : 'text-gray-400'}`} />
+            <Moon className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -307,9 +307,9 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80 p-0">
-              <div className="p-4 border-b border-gray-200">
+              <div className="p-4 border-b border-border">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Notifications</h3>
+                  <h3 className="font-semibold text-foreground">Notifications</h3>
                   {unreadCount > 0 && (
                     <Button 
                       variant="ghost" 
@@ -322,15 +322,15 @@ const Header = () => {
                   )}
                 </div>
                 {unreadCount > 0 && (
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="text-sm text-muted-foreground mt-1">
                     {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
                   </div>
                 )}
               </div>
               <div className="max-h-96 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="p-6 text-center text-gray-500">
-                    <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  <div className="p-6 text-center text-muted-foreground">
+                    <Bell className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
                     <p>No notifications</p>
                   </div>
                 ) : (
@@ -344,7 +344,7 @@ const Header = () => {
                 )}
               </div>
               {notifications.length > 0 && (
-                <div className="p-3 border-t border-gray-200">
+                <div className="p-3 border-t border-border">
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -366,7 +366,7 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>John Doe</DropdownMenuLabel>
-              <DropdownMenuLabel className="text-sm font-normal text-gray-500">
+              <DropdownMenuLabel className="text-sm font-normal text-muted-foreground">
                 Field Technician
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

@@ -183,20 +183,20 @@ const Dashboard = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'none': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'bg-destructive/20 text-destructive border-destructive/30';
+      case 'medium': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+      case 'low': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      case 'none': return 'bg-muted/50 text-muted-foreground border-border';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'open': return 'bg-red-100 text-red-800';
-      case 'in progress': return 'bg-blue-100 text-blue-800';
-      case 'resolved': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'open': return 'bg-destructive/20 text-destructive border-destructive/30';
+      case 'in progress': return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
+      case 'resolved': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
@@ -207,7 +207,7 @@ const Dashboard = () => {
           <CardHeader className="p-6 pb-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div>
-                <CardTitle className="text-2xl font-bold text-gray-900 mb-4">Dashboard</CardTitle>
+                <CardTitle className="text-2xl font-bold text-foreground mb-4">Dashboard</CardTitle>
               </div>
               <div></div>
               <div className="flex justify-end">
@@ -280,14 +280,14 @@ const Dashboard = () => {
             }}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 {stat.title}
               </CardTitle>
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="flex items-center text-xs text-gray-500 mt-1">
+              <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+              <div className="flex items-center text-xs text-muted-foreground mt-1">
                 {stat.changeType === 'increase' && (
                   <ArrowUp className="h-3 w-3 text-green-500 mr-1" />
                 )}
@@ -321,19 +321,19 @@ const Dashboard = () => {
               {recentAudits.map((audit) => (
                 <div 
                   key={audit.id} 
-                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-center gap-4 p-3 bg-muted rounded-lg hover:bg-muted/80 cursor-pointer transition-colors"
                   onClick={() => navigate(`/audit/details/${audit.id}`)}
                 >
                   <div className="space-y-1 flex-1">
-                    <div className="font-medium text-sm">{audit.id}</div>
-                    <div className="text-sm text-gray-600">{audit.location}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="font-medium text-sm text-foreground">{audit.id}</div>
+                    <div className="text-sm text-muted-foreground">{audit.location}</div>
+                    <div className="text-xs text-muted-foreground">
                       {audit.technician} • {audit.date}
                     </div>
                   </div>
                   <div className="text-center flex-1">
-                    <div className="text-xs text-gray-500 mb-1">Issues Found</div>
-                    <div className="text-lg font-semibold">{audit.issues}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Issues Found</div>
+                    <div className="text-lg font-semibold text-foreground">{audit.issues}</div>
                   </div>
                   <div className="text-right space-y-1">
                     <Badge className={getSeverityColor(audit.severity)}>
@@ -359,17 +359,17 @@ const Dashboard = () => {
               {recentIncidents.map((incident) => (
                 <div 
                   key={incident.id} 
-                  className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-start gap-4 p-3 bg-muted rounded-lg hover:bg-muted/80 cursor-pointer transition-colors"
                   onClick={() => navigate(`/incident/details/${incident.id}`)}
                 >
                   <div className="space-y-1 flex-1">
-                    <div className="font-medium text-sm">{incident.id}</div>
-                    <div className="text-sm text-gray-900">{incident.description}</div>
-                    <div className="text-xs text-gray-500">{incident.location}</div>
+                    <div className="font-medium text-sm text-foreground">{incident.id}</div>
+                    <div className="text-sm text-foreground">{incident.description}</div>
+                    <div className="text-xs text-muted-foreground">{incident.location}</div>
                   </div>
                   <div className="text-center flex-1">
-                    <div className="text-xs text-gray-500 mb-1">Assigned to</div>
-                    <div className="text-sm font-medium">{incident.assignee}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Assigned to</div>
+                    <div className="text-sm font-medium text-foreground">{incident.assignee}</div>
                   </div>
                   <div className="text-right space-y-1">
                     <Badge className={getSeverityColor(incident.severity)}>
@@ -399,23 +399,23 @@ const Dashboard = () => {
             {recentReports.map((report) => (
               <div 
                 key={report.id} 
-                className="relative flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                className="relative flex items-start justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 cursor-pointer transition-colors"
                 onClick={() => navigate(`/report/details/${report.id}`)}
               >
                 <button 
-                  className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors"
+                  className="absolute top-2 right-2 p-1 rounded-full bg-background/80 hover:bg-background shadow-sm transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/report/details/${report.id}`);
                   }}
                 >
-                  <ExternalLink className="h-3 w-3 text-gray-600" />
+                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
                 </button>
                 <div className="space-y-1 flex-1 pr-8">
-                  <div className="font-medium text-sm">{report.reportType} | {report.location}</div>
-                  <div className="text-sm text-gray-600">{report.description}</div>
+                  <div className="font-medium text-sm text-foreground">{report.reportType} | {report.location}</div>
+                  <div className="text-sm text-muted-foreground">{report.description}</div>
                   <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       Generated: {report.generated}
                     </div>
                     <div className="flex gap-1">
@@ -423,7 +423,7 @@ const Dashboard = () => {
                       <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
                     </div>
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-muted-foreground">
                     Size: {report.size} • {report.format}
                   </div>
                 </div>

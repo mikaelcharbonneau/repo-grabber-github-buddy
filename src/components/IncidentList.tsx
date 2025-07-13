@@ -69,38 +69,38 @@ const IncidentList = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'bg-destructive/20 text-destructive border-destructive/30';
+      case 'medium': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+      case 'low': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'open': return 'bg-red-100 text-red-800';
-      case 'in progress': return 'bg-blue-100 text-blue-800';
-      case 'resolved': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'open': return 'bg-destructive/20 text-destructive border-destructive/30';
+      case 'in progress': return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
+      case 'resolved': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'power': return 'bg-orange-100 text-orange-800';
-      case 'environmental': return 'bg-blue-100 text-blue-800';
-      case 'network': return 'bg-purple-100 text-purple-800';
-      case 'hardware': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'power': return 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-500/30';
+      case 'environmental': return 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30';
+      case 'network': return 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border-purple-500/30';
+      case 'hardware': return 'bg-muted/50 text-muted-foreground border-border';
+      default: return 'bg-muted/50 text-muted-foreground border-border';
     }
   };
 
   const getScopeColor = (scope: string) => {
     switch (scope.toLowerCase()) {
-      case 'data hall': return 'bg-red-50 text-red-700 border-red-200'; 
-      case 'rack': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'device': return 'bg-blue-50 text-blue-700 border-blue-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+      case 'data hall': return 'bg-destructive/10 text-destructive/90 border-destructive/20'; 
+      case 'rack': return 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20';
+      case 'device': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20';
+      default: return 'bg-muted/30 text-muted-foreground border-border';
     }
   };
 
@@ -117,7 +117,7 @@ const IncidentList = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Incident Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">Incident Management</h1>
         <Button className="bg-hpe-green hover:bg-hpe-green/90">
           <Plus className="mr-2 h-4 w-4" />
           Report New Incident
@@ -132,7 +132,7 @@ const IncidentList = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search incidents..."
                 value={searchTerm}
@@ -192,14 +192,14 @@ const IncidentList = () => {
                       {incident.scope}
                     </Badge>
                   </div>
-                  <p className="text-gray-900 font-medium">{incident.description}</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div><strong>Location:</strong> {incident.location}</div>
-                    <div><strong>Device:</strong> {incident.device}</div>
-                    <div><strong>Assigned to:</strong> {incident.assignee}</div>
-                    <div><strong>Created:</strong> {incident.created}</div>
+                  <p className="text-foreground font-medium">{incident.description}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                    <div><strong className="text-foreground">Location:</strong> {incident.location}</div>
+                    <div><strong className="text-foreground">Device:</strong> {incident.device}</div>
+                    <div><strong className="text-foreground">Assigned to:</strong> {incident.assignee}</div>
+                    <div><strong className="text-foreground">Created:</strong> {incident.created}</div>
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-muted-foreground">
                     Last updated: {incident.updated}
                   </div>
                 </div>
@@ -225,9 +225,9 @@ const IncidentList = () => {
       {filteredIncidents.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="text-gray-500">
+            <div className="text-muted-foreground">
               <Shield className="mx-auto h-12 w-12 mb-4" />
-              <h3 className="text-lg font-medium mb-2">No incidents found</h3>
+              <h3 className="text-lg font-medium mb-2 text-foreground">No incidents found</h3>
               <p>Try adjusting your search criteria or report a new incident.</p>
             </div>
           </CardContent>
