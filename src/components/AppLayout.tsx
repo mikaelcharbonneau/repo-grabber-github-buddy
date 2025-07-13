@@ -9,6 +9,7 @@ import StartAudit from "../pages/StartAudit";
 import AuditIssueEntry from "../pages/AuditIssueEntry";
 import AuditSummary from "../pages/AuditSummary";
 import AuditComplete from "../pages/AuditComplete";
+import AuditWalkthrough from "../pages/AuditWalkthrough";
 import NotFound from "../pages/NotFound";
 import AuditDetails from "../pages/AuditDetails";
 import IncidentDetails from "../pages/IncidentDetails";
@@ -27,6 +28,11 @@ const AppLayout: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/audits" element={<AuditList />} />
             <Route path="/audits/start" element={<StartAudit />} />
+            <Route path="/audit/walkthrough" element={<AuditWalkthrough />} />
+            <Route path="/audit/start" element={<StartAudit />} />
+            <Route path="/audit/issues" element={<AuditIssueEntry />} />
+            <Route path="/audit/summary" element={<AuditSummary />} />
+            <Route path="/audit/complete" element={<AuditComplete />} />
             <Route path="/audits/:id/issue" element={<AuditIssueEntry />} />
             <Route path="/audits/:id/summary" element={<AuditSummary />} />
             <Route path="/audits/:id/complete" element={<AuditComplete />} />
