@@ -180,20 +180,20 @@ const AuditList = () => {
                 
                 <div className="flex items-start space-x-6 ml-4">
                   {audit.issues > 0 && (
-                    <div className="text-center flex-1">
-                      <div className="text-xs text-gray-500 mb-1">Issues by Device</div>
-                      <div className="flex justify-center gap-2">
+                    <div className="flex-1 min-w-[300px]">
+                      <div className="text-xs text-gray-500 mb-2 text-center">Issues by Device</div>
+                      <div className="grid grid-cols-4 gap-4">
                         {Object.entries(audit.deviceIssues).map(([device, count]) => (
                           <div key={device} className="text-center">
-                            <div className="text-xs text-gray-400">{device}</div>
-                            <div className="text-lg font-semibold">{count}</div>
+                            <div className="text-xs text-gray-400 mb-1">{device}</div>
+                            <div className="text-2xl font-semibold">{count}</div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
                   
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 flex-shrink-0">
                     <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
                       View Details
                     </Button>
