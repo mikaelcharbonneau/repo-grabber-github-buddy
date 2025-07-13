@@ -197,7 +197,7 @@ const AuditList = () => {
                 </div>
                 
                 <div className="flex items-start space-x-6 ml-4">
-                  <div className="flex-1 min-w-[300px] py-[6px] mx-0">
+                  <div className="min-w-[300px] py-[6px] flex flex-col items-center justify-center">
                       <div className="text-xs text-gray-500 mb-2 text-center mx-0 my-0">Issues by Device</div>
                       <div className="grid grid-cols-4 gap-4 mx-0">
                         {Object.entries(audit.deviceIssues).map(([device, count]) => <div key={device} className="text-center">
