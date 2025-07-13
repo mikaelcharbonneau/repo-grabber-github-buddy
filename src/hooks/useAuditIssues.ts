@@ -13,6 +13,7 @@ interface Issue {
   alertType: string;
   severity: string;
   timestamp: string;
+  unit?: string; // For PSU/PDU unit identification
 }
 
 const alertTypes = [
@@ -49,6 +50,7 @@ export const useAuditIssues = () => {
   };
 
   const updateIssue = (rackId: number, deviceType: string, alertValues: string[]) => {
+    console.log('updateIssue called:', { rackId, deviceType, alertValues });
     const rackKey = `${rackId}-${deviceType}`;
     
     if (alertValues.length === 0 || (alertValues.length === 1 && alertValues[0] === "none")) {
@@ -62,17 +64,39 @@ export const useAuditIssues = () => {
       const newIssues = alertValues
         .filter(value => value !== "none")
         .map((alertValue, index) => {
-          const alertInfo = alertTypes.find(a => a.value === alertValue);
+          console.log('Processing alertValue:', alertValue);
+          // Handle multi-level format for PSU/PDU (e.g., "PSU-1-overcurrent")
+          let unit: string | undefined;
+          let actualAlertValue: string;
+          
+          if (deviceType === "Power Supply Unit" || deviceType === "Power Distribution Unit") {
+            const parts = alertValue.split('-');
+            if (parts.length >= 3) {
+              unit = parts.slice(0, -1).join('-'); // e.g., "PSU-1" or "PDU-A"
+              actualAlertValue = parts[parts.length - 1]; // e.g., "overcurrent"
+            } else {
+              actualAlertValue = alertValue;
+            }
+          } else {
+            actualAlertValue = alertValue;
+          }
+          
+          console.log('Parsed:', { unit, actualAlertValue });
+          const alertInfo = alertTypes.find(a => a.value === actualAlertValue);
+          console.log('Alert info found:', alertInfo);
+          
           return {
             key: `${rackKey}-${index}`,
             rackId,
             deviceType,
             alertType: alertInfo?.label || "",
             severity: alertInfo?.severity || "",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            unit
           };
         });
       
+      console.log('New issues created:', newIssues);
       setIssues([...filteredIssues, ...newIssues]);
     }
   };
@@ -84,7 +108,14 @@ export const useAuditIssues = () => {
     
     return deviceIssues.map(issue => {
       const alertType = alertTypes.find(a => a.label === issue.alertType);
-      return alertType?.value || 'none';
+      const alertValue = alertType?.value || 'none';
+      
+      // For PSU/PDU devices, return combined format with unit
+      if ((deviceType === "Power Supply Unit" || deviceType === "Power Distribution Unit") && issue.unit) {
+        return `${issue.unit}-${alertValue}`;
+      }
+      
+      return alertValue;
     }).filter(value => value !== 'none');
   };
 

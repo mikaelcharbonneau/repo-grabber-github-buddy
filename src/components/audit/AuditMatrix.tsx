@@ -130,13 +130,14 @@ const AuditMatrix = ({
                   </TableCell>
                   {deviceTypes.map(device => {
                 const currentValues = getIssueValues(rack.id, device);
+                console.log(`Debug - ${rack.name} ${device}:`, currentValues);
                 
                 // Handle display text for multi-level dropdowns (PSUs/PDUs)
                 let displayText = "No Issues";
                 if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
                   const unitIncidents = currentValues.filter(v => v !== 'none');
                   if (unitIncidents.length > 0) {
-                    const uniqueUnits = [...new Set(unitIncidents.map(v => v.split('-')[0]))];
+                    const uniqueUnits = [...new Set(unitIncidents.map(v => v.split('-').slice(0, -1).join('-')))];
                     displayText = uniqueUnits.length === 1 
                       ? `${uniqueUnits[0]} (${unitIncidents.length} issues)`
                       : `${uniqueUnits.length} units (${unitIncidents.length} issues)`;
@@ -177,10 +178,12 @@ const AuditMatrix = ({
                                   key={`${unit}-${alert.value}`}
                                   checked={currentValues.includes(`${unit}-${alert.value}`)}
                                   onCheckedChange={checked => {
+                                    console.log(`Checkbox change: ${unit}-${alert.value}, checked: ${checked}`);
                                     const unitAlertValue = `${unit}-${alert.value}`;
                                     const newValues = checked 
                                       ? [...currentValues.filter(v => v !== 'none'), unitAlertValue] 
                                       : currentValues.filter(v => v !== unitAlertValue);
+                                    console.log('New values array:', newValues);
                                     onUpdateIssue(rack.id, device, newValues.length > 0 ? newValues : ['none']);
                                   }}
                                 >
