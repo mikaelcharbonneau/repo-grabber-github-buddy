@@ -89,8 +89,7 @@ const Reports = () => {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
+              <h1 className="text-2xl font-bold text-gray-900">
                 Reports
               </h1>
               <Button 
