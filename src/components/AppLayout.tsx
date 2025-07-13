@@ -16,7 +16,7 @@ import IncidentDetails from "../pages/IncidentDetails";
 import ReportDetails from "../pages/ReportDetails";
 import Settings from "../pages/Settings";
 const AppLayout: React.FC = () => {
-  return <div className="min-h-screen font-hpe flex-auto flex-col bg-inherit">
+  return <div className="h-full font-hpe flex-auto flex-col bg-inherit">
       {/* Top header spanning full width */}
       <Header />
       {/* Main content area */}
