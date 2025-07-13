@@ -236,7 +236,7 @@ const Dashboard = () => {
             {stats.map(stat => <Card key={stat.title} accentColor={stat.title === 'Completed Audits' ? 'border-hpe-brand' : stat.title === 'Active Incidents' ? 'border-hpe-red' : stat.title === 'Reports Generated' ? 'border-hpe-blue' : ''} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => {
             if (stat.title === "Completed Audits") navigate("/audits");else if (stat.title === "Active Incidents" || stat.title === "Resolved Incidents") navigate("/incidents");else if (stat.title === "Reports Generated") navigate("/reports");
           }}>
-                <CardHeader className="justify-center gap-3">
+                <CardHeader className="flex-row items-center gap-3">
                   <CardTitle className="text-sm font-medium text-gray-600">
                     {stat.title}
                   </CardTitle>
