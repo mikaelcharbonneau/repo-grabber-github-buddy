@@ -202,8 +202,8 @@ const AuditList = () => {
                   <div className="grid grid-cols-7 gap-0 mx-0 items-center">
                     {Object.entries(audit.deviceIssues).map(([device, count], index) => <>
                         <div key={device} className="text-center">
-                          <div className="text-xs text-gray-400 mb-1">{device}</div>
-                          <div className="text-2xl font-semibold">{count}</div>
+                          <div className="text-sm text-gray-400 mb-1 font-medium">{device}</div>
+                          <div className="text-3xl font-bold">{count}</div>
                         </div>
                         {index < 3 && <div key={`separator-${index}`} className="h-12 w-px bg-gray-200 mx-[24px]"></div>}
                       </>)}
