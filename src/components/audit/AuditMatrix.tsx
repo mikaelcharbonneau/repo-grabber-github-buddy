@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
-import { AlertTriangle, ChevronDown, MapPin, ChevronRight } from "lucide-react";
+import { AlertTriangle, ChevronDown, MapPin, ChevronRight, GripVertical } from "lucide-react";
 import { getCabinetsByDataHall, getDatacenterById } from "@/data/locations";
 interface Rack {
   id: number;
@@ -75,6 +75,19 @@ const AuditMatrix = ({
   getIssueValues
 }: AuditMatrixProps) => {
   const [prePopulatedRacks, setPrePopulatedRacks] = useState<Rack[]>([]);
+  const [dragState, setDragState] = useState<{
+    isDragging: boolean;
+    sourceRackId: number | null;
+    sourceDevice: string | null;
+    sourceValues: string[];
+    targetCells: Set<string>;
+  }>({
+    isDragging: false,
+    sourceRackId: null,
+    sourceDevice: null,
+    sourceValues: [],
+    targetCells: new Set()
+  });
 
   // Pre-populate table with all available cabinets
   useEffect(() => {
@@ -91,6 +104,48 @@ const AuditMatrix = ({
       setPrePopulatedRacks(rackData);
     }
   }, []);
+
+  const handleDragStart = (rackId: number, device: string) => {
+    const values = getIssueValues(rackId, device);
+    if (values.length === 0 || (values.length === 1 && values[0] === 'none')) return;
+    
+    setDragState({
+      isDragging: true,
+      sourceRackId: rackId,
+      sourceDevice: device,
+      sourceValues: values,
+      targetCells: new Set()
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent, rackId: number, device: string) => {
+    e.preventDefault();
+    if (!dragState.isDragging || dragState.sourceDevice !== device) return;
+    
+    const cellKey = `${rackId}-${device}`;
+    setDragState(prev => ({
+      ...prev,
+      targetCells: new Set(prev.targetCells).add(cellKey)
+    }));
+  };
+
+  const handleDragEnd = () => {
+    if (!dragState.isDragging) return;
+    
+    // Apply the source values to all target cells
+    dragState.targetCells.forEach(cellKey => {
+      const [rackId, device] = cellKey.split('-', 2);
+      onUpdateIssue(parseInt(rackId), device, dragState.sourceValues);
+    });
+    
+    setDragState({
+      isDragging: false,
+      sourceRackId: null,
+      sourceDevice: null,
+      sourceValues: [],
+      targetCells: new Set()
+    });
+  };
   const getSeverityColors = (severities: string[]) => {
     if (severities.includes('Critical')) return 'bg-red-100 border-red-300';
     if (severities.includes('Medium')) return 'bg-yellow-100 border-yellow-300';
@@ -151,8 +206,15 @@ const AuditMatrix = ({
                 // Use multi-level dropdown for PSUs and PDUs
                 if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
                   const units = device === "Power Supply Unit" ? psuUnits : pduUnits;
+                  const hasIssues = currentValues.length > 0 && !(currentValues.length === 1 && currentValues[0] === 'none');
+                  const cellKey = `${rack.id}-${device}`;
+                  const isTargetCell = dragState.targetCells.has(cellKey);
                   
-                  return <TableCell key={device}>
+                  return <TableCell 
+                    key={device} 
+                    className={`relative ${isTargetCell ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
+                    onDragOver={(e) => handleDragOver(e, rack.id, device)}
+                  >
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="w-full justify-between text-left">
@@ -194,10 +256,31 @@ const AuditMatrix = ({
                         ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    
+                    {/* Drag handle - only show if cell has issues */}
+                    {hasIssues && (
+                      <div
+                        className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity"
+                        style={{ 
+                          clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
+                        }}
+                        draggable
+                        onDragStart={() => handleDragStart(rack.id, device)}
+                        onDragEnd={handleDragEnd}
+                      />
+                    )}
                   </TableCell>;
                 }
 
-                return <TableCell key={device}>
+                const hasIssues = currentValues.length > 0 && !(currentValues.length === 1 && currentValues[0] === 'none');
+                const cellKey = `${rack.id}-${device}`;
+                const isTargetCell = dragState.targetCells.has(cellKey);
+
+                return <TableCell 
+                  key={device} 
+                  className={`relative ${isTargetCell ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
+                  onDragOver={(e) => handleDragOver(e, rack.id, device)}
+                >
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="w-full justify-between text-left">
@@ -231,6 +314,19 @@ const AuditMatrix = ({
                               </DropdownMenuCheckboxItem>)}
                           </DropdownMenuContent>
                         </DropdownMenu>
+                        
+                        {/* Drag handle - only show if cell has issues */}
+                        {hasIssues && (
+                          <div
+                            className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity"
+                            style={{ 
+                              clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
+                            }}
+                            draggable
+                            onDragStart={() => handleDragStart(rack.id, device)}
+                            onDragEnd={handleDragEnd}
+                          />
+                        )}
                       </TableCell>;
               })}
                 </TableRow>)}
