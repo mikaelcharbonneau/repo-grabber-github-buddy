@@ -274,7 +274,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentAudits.map(audit => <div key={audit.id} onClick={() => navigate(`/audit/details/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors bg-zinc-50">
+                  {recentAudits.map(audit => <div key={audit.id} onClick={() => navigate(`/audit/details/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-400 cursor-pointer transition-colors">
                       <div className="space-y-1 flex-1">
                         <div className="font-medium text-sm">{audit.id}</div>
                         <div className="text-sm text-gray-600">{audit.location}</div>
