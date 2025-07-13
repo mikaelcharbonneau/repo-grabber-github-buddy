@@ -89,52 +89,52 @@
   }
 
   .dark {
-    /* HPE-inspired dark mode with proper contrast */
-    --background: 220 18% 8%; /* #111216 - darker background */
-    --foreground: 220 25% 95%; /* #f4f5f7 - high contrast text */
+    /* HPE Official Dark Mode - matching hpe.com */
+    --background: 210 11% 8%; /* #111318 - HPE dark background */
+    --foreground: 0 0% 100%; /* #ffffff - pure white text */
     
-    --card: 220 15% 12%; /* #1a1c21 - cards with subtle lift */
-    --card-foreground: 220 25% 95%;
+    --card: 210 11% 11%; /* #171b21 - subtle card background */
+    --card-foreground: 0 0% 100%;
     
-    --popover: 220 15% 14%; /* #1e2126 */
-    --popover-foreground: 220 25% 95%;
+    --popover: 210 11% 13%; /* #1d2228 - popover background */
+    --popover-foreground: 0 0% 100%;
     
-    --primary: 159 82% 55%; /* #12cfa1 - vibrant HPE green */
-    --primary-foreground: 220 25% 95%;
+    --primary: 159 82% 43%; /* #01a982 - HPE brand green */
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 220 15% 16%; /* #242730 - subtle backgrounds */
-    --secondary-foreground: 220 25% 95%;
+    --secondary: 210 11% 15%; /* #23282f - secondary backgrounds */
+    --secondary-foreground: 0 0% 100%;
     
-    --muted: 220 15% 18%; /* #282b36 - muted backgrounds */
-    --muted-foreground: 220 12% 65%; /* #9ba0ac - muted text */
+    --muted: 210 11% 17%; /* #292e36 - muted backgrounds */
+    --muted-foreground: 0 0% 70%; /* #b3b3b3 - muted text */
     
-    --accent: 174 100% 58%; /* #00e8cf - teal accent */
-    --accent-foreground: 220 25% 95%;
+    --accent: 174 100% 58%; /* #00e8cf - HPE teal accent */
+    --accent-foreground: 0 0% 100%;
     
-    --destructive: 5 70% 58%; /* #e85d5d */
-    --destructive-foreground: 220 25% 95%;
+    --destructive: 0 63% 58%; /* #e95a5a - error red */
+    --destructive-foreground: 0 0% 100%;
     
-    --border: 220 15% 20%; /* #2c313c - subtle borders */
-    --input: 220 15% 16%; /* #242730 - input backgrounds */
-    --ring: 159 82% 55%;
+    --border: 210 11% 20%; /* #2f353e - subtle borders */
+    --input: 210 11% 15%; /* #23282f - input backgrounds */
+    --ring: 159 82% 43%; /* HPE green focus ring */
     
     /* HPE Brand Colors - dark mode optimized */
-    --hpe-green-brand: 159 82% 55%;
-    --hpe-green-light: 159 82% 65%;
-    --hpe-green-emphasis: 174 100% 58%;
+    --hpe-green-brand: 159 82% 43%; /* #01a982 - main brand green */
+    --hpe-green-light: 159 82% 55%; /* #12cfa1 - lighter variant */
+    --hpe-green-emphasis: 174 100% 58%; /* #00e8cf - emphasis teal */
     
     --hpe-purple: 258 71% 68%;
-    --hpe-teal: 174 100% 60%;
+    --hpe-teal: 174 100% 58%;
     --hpe-blue: 197 100% 50%;
-    --hpe-red: 5 70% 58%;
-    --hpe-orange: 32 100% 65%;
-    --hpe-yellow: 49 99% 65%;
+    --hpe-red: 0 63% 58%;
+    --hpe-orange: 32 100% 60%;
+    --hpe-yellow: 49 99% 60%;
     
-    /* Enhanced shadows for depth in dark mode */
-    --hpe-shadow-brand: 0 8px 32px 0 hsl(220 18% 4% / 0.4);
-    --hpe-shadow-glow: 0 0 40px hsl(var(--hpe-green-emphasis) / 0.25);
-    --hpe-shadow-md: 0 6px 20px -4px hsl(220 18% 4% / 0.3);
-    --hpe-shadow-lg: 0 12px 32px -8px hsl(220 18% 4% / 0.4);
+    /* Enhanced shadows for dark mode depth */
+    --hpe-shadow-brand: 0 10px 40px 0 hsl(159 82% 43% / 0.15);
+    --hpe-shadow-glow: 0 0 30px hsl(174 100% 58% / 0.2);
+    --hpe-shadow-md: 0 8px 25px -5px hsl(210 11% 4% / 0.4);
+    --hpe-shadow-lg: 0 15px 35px -10px hsl(210 11% 4% / 0.5);
   }
 }
 

@@ -189,7 +189,7 @@ const Header = () => {
             <img 
               src="/lovable-uploads/8c51276e-0087-41f1-8dbb-414341ebdb5a.png" 
               alt="HPE Logo" 
-              className="h-8"
+              className="h-8 dark:invert dark:brightness-0 dark:contrast-100"
             />
             <div className="h-8 w-px bg-border" />
             <h1 className="text-xl font-semibold text-foreground">Datacenter Audit Tool</h1>
