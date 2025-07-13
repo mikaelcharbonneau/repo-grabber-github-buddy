@@ -118,11 +118,6 @@ const AuditSummary = () => {
                   <div className="text-lg font-medium">
                     {auditDetails.issues.length} issue{auditDetails.issues.length !== 1 ? 's' : ''} logged
                   </div>
-                  {criticalIssues > 0 && (
-                    <Badge className="bg-red-100 text-red-800">
-                      {criticalIssues} Critical
-                    </Badge>
-                  )}
                 </div>
                 
                 <div className="space-y-3">
