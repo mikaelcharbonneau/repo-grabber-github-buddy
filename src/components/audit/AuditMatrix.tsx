@@ -336,16 +336,24 @@ const AuditMatrix = ({
                       </DropdownMenuContent>
                     </DropdownMenu>
                     
-                    {/* Drag handle - only show if cell has issues */}
+                    {/* Drag handle - positioned outside the dropdown */}
                     {hasIssues && (
                       <div
-                        className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity"
+                        className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity z-10"
                         style={{ 
                           clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
+                          pointerEvents: 'auto'
                         }}
                         draggable
-                        onDragStart={() => handleDragStart(rack.id, device)}
-                        onDragEnd={handleDragEnd}
+                        onDragStart={(e) => {
+                          e.stopPropagation();
+                          handleDragStart(rack.id, device);
+                        }}
+                        onDragEnd={(e) => {
+                          e.stopPropagation();
+                          handleDragEnd();
+                        }}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     )}
                   </TableCell>;
@@ -394,16 +402,24 @@ const AuditMatrix = ({
                           </DropdownMenuContent>
                         </DropdownMenu>
                         
-                        {/* Drag handle - only show if cell has issues */}
+                        {/* Drag handle - positioned outside the dropdown */}
                         {hasIssues && (
                           <div
-                            className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity"
+                            className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 cursor-se-resize opacity-60 hover:opacity-100 transition-opacity z-10"
                             style={{ 
                               clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
+                              pointerEvents: 'auto'
                             }}
                             draggable
-                            onDragStart={() => handleDragStart(rack.id, device)}
-                            onDragEnd={handleDragEnd}
+                            onDragStart={(e) => {
+                              e.stopPropagation();
+                              handleDragStart(rack.id, device);
+                            }}
+                            onDragEnd={(e) => {
+                              e.stopPropagation();
+                              handleDragEnd();
+                            }}
+                            onClick={(e) => e.stopPropagation()}
                           />
                         )}
                       </TableCell>;
