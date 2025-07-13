@@ -150,7 +150,7 @@ const AuditSummary = () => {
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-4 mb-1">
                             <div className="font-medium">{issue.device} - {issue.alertType}</div>
                             <Badge 
                               variant="outline"
