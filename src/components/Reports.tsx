@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar } from "lucide-react";
+import { Download, FileText, Calendar, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { locationData } from "@/data/locations";
 
@@ -91,10 +91,20 @@ const Reports = () => {
         {/* Report Generation */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
-              Generate New Report
-            </CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle className="flex items-center">
+                <FileText className="mr-2 h-5 w-5" />
+                Generate New Report
+              </CardTitle>
+              <Button 
+                onClick={generateReport}
+                className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
+                disabled={!reportType}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Generate Report
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -167,14 +177,6 @@ const Reports = () => {
             </div>
 
             <div className="flex space-x-3">
-              <Button 
-                onClick={generateReport}
-                className="bg-hpe-green hover:bg-hpe-green/90"
-                disabled={!reportType}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Generate Report
-              </Button>
               <Button variant="outline">
                 <Calendar className="mr-2 h-4 w-4" />
                 Schedule Report
