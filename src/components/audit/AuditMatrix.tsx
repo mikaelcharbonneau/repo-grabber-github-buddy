@@ -162,7 +162,7 @@ const AuditMatrix = ({
                           <ChevronDown className="h-4 w-4 ml-2 shrink-0" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-64">
+                      <DropdownMenuContent className="w-48">
                         <DropdownMenuLabel>Select {device === "Power Supply Unit" ? "PSU" : "PDU"} & Issues</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         
@@ -171,7 +171,7 @@ const AuditMatrix = ({
                             <DropdownMenuSubTrigger>
                               <span>{unit}</span>
                             </DropdownMenuSubTrigger>
-                            <DropdownMenuSubContent className="w-56">
+                            <DropdownMenuSubContent className="w-44">
                               {alertTypes.filter(alert => alert.value !== 'none').map(alert => (
                                 <DropdownMenuCheckboxItem
                                   key={`${unit}-${alert.value}`}
