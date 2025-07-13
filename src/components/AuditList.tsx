@@ -29,7 +29,7 @@ const AuditList = () => {
   };
   const audits = [{
     id: "AUD-2024-001",
-    location: "DC-EAST / Hall-A",
+    location: "Quebec, Canada / Island 1",
     technician: "Mikael Charbonneau",
     date: "2024-01-15",
     time: "14:30",
@@ -45,7 +45,7 @@ const AuditList = () => {
     }
   }, {
     id: "AUD-2024-002",
-    location: "DC-WEST / Hall-B",
+    location: "Rjukan, Norway / Island 1",
     technician: "Javier Montoya",
     date: "2024-01-14",
     time: "09:15",
@@ -61,7 +61,7 @@ const AuditList = () => {
     }
   }, {
     id: "AUD-2024-003",
-    location: "DC-CENTRAL / Hall-C",
+    location: "Dallas, United States / Island 2",
     technician: "Clifford Chimezie",
     date: "2024-01-13",
     time: "16:45",
@@ -77,7 +77,7 @@ const AuditList = () => {
     }
   }, {
     id: "AUD-2024-004",
-    location: "DC-EAST / Hall-B",
+    location: "Houston, United States / H20 Lab",
     technician: "Leena Saini",
     date: "2024-01-12",
     time: "11:20",
@@ -119,7 +119,7 @@ const AuditList = () => {
   const filteredAudits = audits.filter(audit => {
     // For demo purposes, we'll filter based on location text matching
     // In a real app, audits would have datacenter/datahall IDs
-    const matchesDatacenter = filters.datacenter === "all" || locationData.find(dc => dc.id === filters.datacenter)?.name.split(' - ')[0] === audit.location.split(' / ')[0];
+    const matchesDatacenter = filters.datacenter === "all" || locationData.find(dc => dc.id === filters.datacenter)?.name === audit.location.split(' / ')[0];
     const matchesDataHall = filters.dataHall === "all" || availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
     return matchesDatacenter && matchesDataHall;
   });
