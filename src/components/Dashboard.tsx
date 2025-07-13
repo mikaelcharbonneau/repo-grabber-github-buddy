@@ -414,17 +414,15 @@ const Dashboard = () => {
                 <div className="space-y-1 flex-1 pr-8">
                   <div className="font-medium text-sm">{report.reportType} | {report.location}</div>
                   <div className="text-sm text-gray-600">{report.description}</div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-500">
-                      Generated: {report.generated}
-                    </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Download</Button>
-                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
-                    </div>
+                  <div className="text-xs text-gray-500">
+                    Generated: {report.generated}
                   </div>
                   <div className="text-xs text-gray-500">
                     Size: {report.size} • {report.format}
+                  </div>
+                  <div className="flex gap-1 pt-2">
+                    <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Download</Button>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
                   </div>
                 </div>
               </div>
