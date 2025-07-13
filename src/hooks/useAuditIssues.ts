@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Rack {
   id: number;
@@ -30,6 +30,27 @@ const alertTypes = [
 export const useAuditIssues = () => {
   const [racks, setRacks] = useState<Rack[]>([{ id: 1, name: "" }]);
   const [issues, setIssues] = useState<Issue[]>([]);
+
+  // Load existing issues from sessionStorage on mount
+  useEffect(() => {
+    const stored = sessionStorage.getItem('auditDetails');
+    if (stored) {
+      const auditDetails = JSON.parse(stored);
+      if (auditDetails.issues && auditDetails.issues.length > 0) {
+        // Convert audit summary issues back to matrix format
+        const matrixIssues: Issue[] = auditDetails.issues.map((issue: any, index: number) => ({
+          key: `${issue.rackId || 1}-${issue.device || issue.deviceType}-${index}`,
+          rackId: issue.rackId || 1,
+          deviceType: issue.device || issue.deviceType,
+          alertType: issue.alertType,
+          severity: issue.severity,
+          timestamp: issue.timestamp || new Date().toISOString(),
+          unit: issue.unit
+        }));
+        setIssues(matrixIssues);
+      }
+    }
+  }, []);
 
   const addRack = () => {
     const newRack = {
