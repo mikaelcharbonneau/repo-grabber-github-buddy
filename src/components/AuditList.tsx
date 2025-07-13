@@ -176,10 +176,13 @@ const AuditList = () => {
                     <span>•</span>
                     <span>{audit.issues} issues found</span>
                   </div>
+                </div>
+                
+                <div className="flex items-start space-x-6 ml-4">
                   {audit.issues > 0 && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
+                    <div className="text-right">
                       <p className="text-sm text-gray-700 font-medium mb-2">Issues by Device Type:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 justify-end">
                         {Object.entries(audit.deviceIssues).map(([device, count]) => (
                           <Badge
                             key={device}
@@ -192,14 +195,15 @@ const AuditList = () => {
                       </div>
                     </div>
                   )}
-                </div>
-                <div className="flex space-x-2 ml-4">
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
-                    View Details
-                  </Button>
-                  {audit.status === "Completed" && <Button variant="outline" size="sm">
-                      Generate Report
-                    </Button>}
+                  
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
+                      View Details
+                    </Button>
+                    {audit.status === "Completed" && <Button variant="outline" size="sm">
+                        Generate Report
+                      </Button>}
+                  </div>
                 </div>
               </div>
             </CardContent>
