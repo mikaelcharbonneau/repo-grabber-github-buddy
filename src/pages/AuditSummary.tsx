@@ -245,10 +245,11 @@ const AuditSummary = () => {
                     <SelectValue placeholder="Select tile location" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Tile A">Tile A</SelectItem>
-                    <SelectItem value="Tile B">Tile B</SelectItem>
-                    <SelectItem value="Tile C">Tile C</SelectItem>
-                    <SelectItem value="Tile D">Tile D</SelectItem>
+                    <SelectItem value="Cabinet-001">Cabinet-001</SelectItem>
+                    <SelectItem value="Cabinet-002">Cabinet-002</SelectItem>
+                    <SelectItem value="Cabinet-003">Cabinet-003</SelectItem>
+                    <SelectItem value="Cabinet-004">Cabinet-004</SelectItem>
+                    <SelectItem value="Cabinet-005">Cabinet-005</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -263,12 +264,10 @@ const AuditSummary = () => {
                     <SelectValue placeholder="Select device type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Server">Server</SelectItem>
-                    <SelectItem value="Switch">Switch</SelectItem>
-                    <SelectItem value="RDHX">RDHX</SelectItem>
-                    <SelectItem value="CDU">CDU</SelectItem>
-                    <SelectItem value="UPS">UPS</SelectItem>
-                    <SelectItem value="PDU">PDU</SelectItem>
+                    <SelectItem value="Power Supply Unit">Power Supply Unit</SelectItem>
+                    <SelectItem value="Power Distribution Unit">Power Distribution Unit</SelectItem>
+                    <SelectItem value="Rear Door Heat Exchanger">Rear Door Heat Exchanger</SelectItem>
+                    <SelectItem value="Cooling Distribution Unit">Cooling Distribution Unit</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -279,16 +278,27 @@ const AuditSummary = () => {
                   <Select 
                     value={editingIssue.impactedUnit || ''} 
                     onValueChange={(value) => setEditingIssue({...editingIssue, impactedUnit: value})}
-                    disabled={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU'}
+                    disabled={editingIssue.device === 'Rear Door Heat Exchanger' || editingIssue.device === 'Cooling Distribution Unit'}
                   >
-                    <SelectTrigger className={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU' ? 'opacity-50' : ''}>
+                    <SelectTrigger className={editingIssue.device === 'Rear Door Heat Exchanger' || editingIssue.device === 'Cooling Distribution Unit' ? 'opacity-50' : ''}>
                       <SelectValue placeholder="Select unit" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Unit 1">Unit 1</SelectItem>
-                      <SelectItem value="Unit 2">Unit 2</SelectItem>
-                      <SelectItem value="Unit 3">Unit 3</SelectItem>
-                      <SelectItem value="Unit 4">Unit 4</SelectItem>
+                      {editingIssue.device === 'Power Supply Unit' ? (
+                        <>
+                          <SelectItem value="PSU-1">PSU-1</SelectItem>
+                          <SelectItem value="PSU-2">PSU-2</SelectItem>
+                          <SelectItem value="PSU-3">PSU-3</SelectItem>
+                          <SelectItem value="PSU-4">PSU-4</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="PDU-A">PDU-A</SelectItem>
+                          <SelectItem value="PDU-B">PDU-B</SelectItem>
+                          <SelectItem value="PDU-C">PDU-C</SelectItem>
+                          <SelectItem value="PDU-D">PDU-D</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -297,9 +307,9 @@ const AuditSummary = () => {
                   <Select 
                     value={editingIssue.uHeight || ''} 
                     onValueChange={(value) => setEditingIssue({...editingIssue, uHeight: value})}
-                    disabled={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU'}
+                    disabled={editingIssue.device === 'Rear Door Heat Exchanger' || editingIssue.device === 'Cooling Distribution Unit'}
                   >
-                    <SelectTrigger className={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU' ? 'opacity-50' : ''}>
+                    <SelectTrigger className={editingIssue.device === 'Rear Door Heat Exchanger' || editingIssue.device === 'Cooling Distribution Unit' ? 'opacity-50' : ''}>
                       <SelectValue placeholder="Select height" />
                     </SelectTrigger>
                     <SelectContent>
@@ -322,11 +332,13 @@ const AuditSummary = () => {
                     <SelectValue placeholder="Select issue type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Hardware Failure">Hardware Failure</SelectItem>
-                    <SelectItem value="Performance Issue">Performance Issue</SelectItem>
-                    <SelectItem value="Connectivity Issue">Connectivity Issue</SelectItem>
-                    <SelectItem value="Temperature Alert">Temperature Alert</SelectItem>
-                    <SelectItem value="Power Issue">Power Issue</SelectItem>
+                    <SelectItem value="Overcurrent">Overcurrent</SelectItem>
+                    <SelectItem value="Communication Failure">Communication Failure</SelectItem>
+                    <SelectItem value="Temperature Warning">Temperature Warning</SelectItem>
+                    <SelectItem value="Power Loss">Power Loss</SelectItem>
+                    <SelectItem value="Fan Failure">Fan Failure</SelectItem>
+                    <SelectItem value="Memory Error">Memory Error</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
