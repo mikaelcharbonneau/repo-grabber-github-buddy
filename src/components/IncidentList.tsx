@@ -130,7 +130,7 @@ const IncidentList = () => {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Filter & Search</CardTitle>
+          <h1 className="text-2xl font-bold text-gray-900">Incidents</h1>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
