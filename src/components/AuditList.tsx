@@ -196,28 +196,27 @@ const AuditList = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-start space-x-6 ml-4">
-                  <div className="min-w-[300px] py-[6px] flex flex-col items-center justify-center">
-                      <div className="text-xs text-gray-500 mb-2 text-center mx-0 my-0">Issues by Device</div>
-                      <div className="grid grid-cols-4 gap-4 mx-0">
-                        {Object.entries(audit.deviceIssues).map(([device, count]) => <div key={device} className="text-center">
-                            <div className="text-xs text-gray-400 mb-1">{device}</div>
-                            <div className="text-2xl font-semibold">{count}</div>
-                          </div>)}
-                      </div>
-                    </div>
-                  
-                  <div className="flex flex-col space-y-2 flex-shrink-0">
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
-                      View Details
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Generate Report
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Copy Link
-                    </Button>
+                
+                <div className="min-w-[300px] py-[6px] flex flex-col items-center justify-center">
+                  <div className="text-xs text-gray-500 mb-2 text-center mx-0 my-0">Issues by Device</div>
+                  <div className="grid grid-cols-4 gap-4 mx-0">
+                    {Object.entries(audit.deviceIssues).map(([device, count]) => <div key={device} className="text-center">
+                        <div className="text-xs text-gray-400 mb-1">{device}</div>
+                        <div className="text-2xl font-semibold">{count}</div>
+                      </div>)}
                   </div>
+                </div>
+                
+                <div className="flex flex-col space-y-2 flex-shrink-0">
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
+                    View Details
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Generate Report
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    Copy Link
+                  </Button>
                 </div>
               </div>
             </CardContent>
