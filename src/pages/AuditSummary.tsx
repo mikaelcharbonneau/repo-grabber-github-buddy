@@ -153,8 +153,20 @@ const AuditSummary = () => {
                           <div className="flex items-center gap-2 mb-1">
                             <div className="font-medium">{issue.device} - {issue.alertType}</div>
                             <Badge 
-                              variant={issue.resolved ? "secondary" : "destructive"}
-                              className="text-xs"
+                              variant="outline"
+                              className={`text-xs cursor-pointer border-2 transition-colors ${
+                                issue.resolved 
+                                  ? "border-green-500 text-green-600 hover:bg-green-50" 
+                                  : "border-red-500 text-red-600 hover:bg-red-50"
+                              }`}
+                              onClick={() => {
+                                const updatedIssues = auditDetails.issues.map((issueItem, i) => 
+                                  i === index ? { ...issueItem, resolved: !issueItem.resolved, resolvedAt: !issueItem.resolved ? new Date().toISOString() : null } : issueItem
+                                );
+                                const updatedDetails = { ...auditDetails, issues: updatedIssues };
+                                setAuditDetails(updatedDetails);
+                                sessionStorage.setItem('auditDetails', JSON.stringify(updatedDetails));
+                              }}
                             >
                               {issue.resolved ? "Solved" : "Active"}
                             </Badge>
