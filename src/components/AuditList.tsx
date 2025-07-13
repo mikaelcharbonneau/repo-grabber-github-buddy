@@ -127,7 +127,7 @@ const AuditList = () => {
       <div className="w-full space-y-6">
 
       {/* Filters */}
-      <Card className="w-full">
+      <Card className="w-full bg-inherit py-0">
         <CardHeader className="p-6 pb-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
@@ -142,8 +142,8 @@ const AuditList = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-6 pt-0">
-          <div className="flex justify-center items-center max-h-full ">
+        <CardContent className="p-6 pt-0 h-full ">
+          <div className="flex justify-center items-center max-h-full h-full ">
             <div className="grid grid-cols-1 grid-cols-3 gap-8 items-stretch max-h-full w-full max-w-8xl">
             <div className="h-12">
               <DatePickerWithRange date={dateRange} setDate={setDateRange} className="w-full h-full" />
