@@ -78,15 +78,17 @@ const AuditMatrix = ({
   const [dragState, setDragState] = useState<{
     isDragging: boolean;
     sourceRackId: number | null;
+    sourceRackIndex: number | null;
     sourceDevice: string | null;
     sourceValues: string[];
-    targetCells: Set<string>;
+    currentRackIndex: number | null;
   }>({
     isDragging: false,
     sourceRackId: null,
+    sourceRackIndex: null,
     sourceDevice: null,
     sourceValues: [],
-    targetCells: new Set()
+    currentRackIndex: null
   });
 
   // Pre-populate table with all available cabinets
@@ -109,12 +111,15 @@ const AuditMatrix = ({
     const values = getIssueValues(rackId, device);
     if (values.length === 0 || (values.length === 1 && values[0] === 'none')) return;
     
+    const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
+    
     setDragState({
       isDragging: true,
       sourceRackId: rackId,
+      sourceRackIndex: rackIndex,
       sourceDevice: device,
       sourceValues: values,
-      targetCells: new Set()
+      currentRackIndex: rackIndex
     });
   };
 
@@ -122,29 +127,50 @@ const AuditMatrix = ({
     e.preventDefault();
     if (!dragState.isDragging || dragState.sourceDevice !== device) return;
     
-    const cellKey = `${rackId}-${device}`;
+    const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
     setDragState(prev => ({
       ...prev,
-      targetCells: new Set(prev.targetCells).add(cellKey)
+      currentRackIndex: rackIndex
     }));
   };
 
   const handleDragEnd = () => {
-    if (!dragState.isDragging) return;
+    if (!dragState.isDragging || dragState.sourceRackIndex === null || dragState.currentRackIndex === null) return;
     
-    // Apply the source values to all target cells
-    dragState.targetCells.forEach(cellKey => {
-      const [rackId, device] = cellKey.split('-', 2);
-      onUpdateIssue(parseInt(rackId), device, dragState.sourceValues);
-    });
+    // Determine the range of racks to fill
+    const startIndex = Math.min(dragState.sourceRackIndex, dragState.currentRackIndex);
+    const endIndex = Math.max(dragState.sourceRackIndex, dragState.currentRackIndex);
+    
+    // Apply the source values to all racks in the range
+    for (let i = startIndex; i <= endIndex; i++) {
+      const rack = prePopulatedRacks[i];
+      if (rack && dragState.sourceDevice) {
+        onUpdateIssue(rack.id, dragState.sourceDevice, dragState.sourceValues);
+      }
+    }
     
     setDragState({
       isDragging: false,
       sourceRackId: null,
+      sourceRackIndex: null,
       sourceDevice: null,
       sourceValues: [],
-      targetCells: new Set()
+      currentRackIndex: null
     });
+  };
+
+  // Helper function to determine if a cell should be highlighted
+  const isCellInDragRange = (rackId: number, device: string): boolean => {
+    if (!dragState.isDragging || dragState.sourceDevice !== device || 
+        dragState.sourceRackIndex === null || dragState.currentRackIndex === null) {
+      return false;
+    }
+    
+    const rackIndex = prePopulatedRacks.findIndex(rack => rack.id === rackId);
+    const startIndex = Math.min(dragState.sourceRackIndex, dragState.currentRackIndex);
+    const endIndex = Math.max(dragState.sourceRackIndex, dragState.currentRackIndex);
+    
+    return rackIndex >= startIndex && rackIndex <= endIndex;
   };
   const getSeverityColors = (severities: string[]) => {
     if (severities.includes('Critical')) return 'bg-red-100 border-red-300';
@@ -207,12 +233,11 @@ const AuditMatrix = ({
                 if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
                   const units = device === "Power Supply Unit" ? psuUnits : pduUnits;
                   const hasIssues = currentValues.length > 0 && !(currentValues.length === 1 && currentValues[0] === 'none');
-                  const cellKey = `${rack.id}-${device}`;
-                  const isTargetCell = dragState.targetCells.has(cellKey);
+                  const isInDragRange = isCellInDragRange(rack.id, device);
                   
                   return <TableCell 
                     key={device} 
-                    className={`relative ${isTargetCell ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
+                    className={`relative ${isInDragRange ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
                     onDragOver={(e) => handleDragOver(e, rack.id, device)}
                   >
                     <DropdownMenu>
@@ -273,12 +298,11 @@ const AuditMatrix = ({
                 }
 
                 const hasIssues = currentValues.length > 0 && !(currentValues.length === 1 && currentValues[0] === 'none');
-                const cellKey = `${rack.id}-${device}`;
-                const isTargetCell = dragState.targetCells.has(cellKey);
+                const isInDragRange = isCellInDragRange(rack.id, device);
 
                 return <TableCell 
                   key={device} 
-                  className={`relative ${isTargetCell ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
+                  className={`relative ${isInDragRange ? 'bg-blue-100 border-2 border-blue-300' : ''}`}
                   onDragOver={(e) => handleDragOver(e, rack.id, device)}
                 >
                         <DropdownMenu>
