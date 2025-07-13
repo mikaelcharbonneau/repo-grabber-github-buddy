@@ -209,12 +209,15 @@ const AuditList = () => {
                       </div>
                     </div>
                   
-                  <div className="flex space-x-2 flex-shrink-0">
+                  <div className="flex flex-col space-y-2 flex-shrink-0">
                     <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
                       View Details
                     </Button>
                     <Button variant="outline" size="sm">
                       Generate Report
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Copy Link
                     </Button>
                   </div>
                 </div>
