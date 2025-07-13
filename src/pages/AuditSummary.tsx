@@ -150,12 +150,15 @@ const AuditSummary = () => {
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <div className="font-medium">
-                            {issue.device}{issue.unit ? `-${issue.unit}` : ''} : {issue.alertType}
-                          </div>
+                          <div className="font-medium">{issue.device} - {issue.alertType}</div>
                           {issue.rack && (
                             <div className="text-sm text-gray-600">
-                              Location: {issue.rack}
+                              Location: {issue.rack}{issue.tile ? ` / ${issue.tile}` : ''}
+                            </div>
+                          )}
+                          {issue.device && (
+                            <div className="text-sm text-gray-600">
+                              Device: {issue.device} ({issue.deviceId})
                             </div>
                           )}
                         </div>
