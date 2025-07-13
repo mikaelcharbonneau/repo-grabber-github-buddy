@@ -20,6 +20,7 @@ import AuditDetails from "./pages/AuditDetails";
 import IncidentDetails from "./pages/IncidentDetails";
 import ReportDetails from "./pages/ReportDetails";
 import Settings from "./pages/Settings";
+import { useTheme } from "@/hooks/useTheme";
 
 // Configure React Query with best practices
 const queryClient = new QueryClient({
@@ -45,6 +46,8 @@ const App: React.FC = () => {
     console.error('Application Error:', error, errorInfo);
     // In production, send to error monitoring service
   }, []);
+
+  useTheme(); // Ensure theme is set on mount
 
   return (
     <ErrorBoundary onError={handleError} resetOnRouteChange>

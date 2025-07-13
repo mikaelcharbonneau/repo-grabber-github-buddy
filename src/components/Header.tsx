@@ -27,6 +27,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/hooks/useTheme";
+import { Sun, Moon } from "lucide-react";
 
 const NotificationItem = ({ notification, onClick }) => (
   <div 
@@ -164,6 +167,8 @@ const Header = () => {
     setNotifications(notifications.map(n => ({ ...n, read: true })));
   };
 
+  const [theme, setTheme] = useTheme();
+
   // Helper function to determine if a route is active
   const isActiveRoute = (routes: string[]) => {
     return routes.some(route => {
@@ -280,6 +285,16 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-4">
+          {/* Theme toggle switch */}
+          <div className="flex items-center space-x-2">
+            <Sun className={`h-5 w-5 ${theme === 'light' ? 'text-yellow-500' : 'text-gray-400'}`} />
+            <Switch
+              checked={theme === 'dark'}
+              onCheckedChange={checked => setTheme(checked ? 'dark' : 'light')}
+              aria-label="Toggle dark mode"
+            />
+            <Moon className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-500' : 'text-gray-400'}`} />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="relative">
