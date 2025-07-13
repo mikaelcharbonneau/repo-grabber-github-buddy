@@ -179,7 +179,7 @@
   }
   
   .hpe-card {
-    @apply bg-card rounded-lg border border-border shadow-hpe-brand transition-hpe hover:shadow-lg;
+    @apply bg-card rounded-lg border border-border shadow-lg transition-hpe hover:shadow-hpe-brand;
   }
   
   .hpe-glass {

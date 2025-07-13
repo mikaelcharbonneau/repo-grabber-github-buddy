@@ -177,12 +177,6 @@ const AuditList = () => {
                 <div className="space-y-2 flex-1">
                   <div className="flex items-center space-x-3">
                     <h3 className="font-semibold text-lg">{audit.id}</h3>
-                    <Badge variant={getSeverityVariant(audit.severity)}>
-                      {audit.severity}
-                    </Badge>
-                    <Badge variant={getStatusVariant(audit.status)}>
-                      {audit.status}
-                    </Badge>
                   </div>
                   <p className="text-gray-900 font-medium">{audit.location}</p>
                   <p className="text-gray-600">{audit.description}</p>

@@ -231,7 +231,7 @@ const Dashboard = () => {
               </div>
               
               <Select value={filters.datacenter} onValueChange={handleDatacenterChange}>
-                <SelectTrigger className="h-12">
+                <SelectTrigger className="h-12 hover:bg-accent hover:text-accent-foreground">
                   <SelectValue placeholder="All Datacenters" />
                 </SelectTrigger>
                 <SelectContent>
@@ -249,7 +249,7 @@ const Dashboard = () => {
                 onValueChange={(value) => setFilters({...filters, dataHall: value})}
                 disabled={filters.datacenter === "all"}
               >
-                <SelectTrigger className="h-12">
+                <SelectTrigger className="h-12 hover:bg-accent hover:text-accent-foreground">
                   <SelectValue placeholder="All Data Halls" />
                 </SelectTrigger>
                 <SelectContent>
@@ -272,7 +272,7 @@ const Dashboard = () => {
           <Card 
             key={stat.title} 
             accentColor={stat.title === 'Completed Audits' ? 'border-hpe-brand' : stat.title === 'Active Incidents' ? 'border-hpe-red' : stat.title === 'Reports Generated' ? 'border-hpe-blue' : ''}
-            className="hover:shadow-md transition-shadow cursor-pointer"
+            className="hover:shadow-hpe-brand transition-shadow cursor-pointer"
             onClick={() => {
               if (stat.title === "Completed Audits") navigate("/audits");
               else if (stat.title === "Active Incidents" || stat.title === "Resolved Incidents") navigate("/incidents");
@@ -321,7 +321,7 @@ const Dashboard = () => {
               {recentAudits.map((audit) => (
                 <div 
                   key={audit.id} 
-                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors"
                   onClick={() => navigate(`/audit/details/${audit.id}`)}
                 >
                   <div className="space-y-1 flex-1">
@@ -336,9 +336,8 @@ const Dashboard = () => {
                     <div className="text-lg font-semibold">{audit.issues}</div>
                   </div>
                   <div className="text-right space-y-1">
-                    <Badge variant={getSeverityVariant(audit.severity)}>
-                      {audit.severity}
-                    </Badge>
+                    
+                      
                   </div>
                 </div>
               ))}
@@ -359,7 +358,7 @@ const Dashboard = () => {
               {recentIncidents.map((incident) => (
                 <div 
                   key={incident.id} 
-                  className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors"
                   onClick={() => navigate(`/incident/details/${incident.id}`)}
                 >
                   <div className="space-y-1 flex-1">
@@ -372,12 +371,10 @@ const Dashboard = () => {
                     <div className="text-sm font-medium">{incident.assignee}</div>
                   </div>
                   <div className="text-right space-y-1">
-                    <Badge variant={getSeverityVariant(incident.severity)}>
-                      {incident.severity}
-                    </Badge>
-                    <Badge variant={getStatusVariant(incident.status)}>
-                      {incident.status}
-                    </Badge>
+                    
+                      
+                    
+                      
                   </div>
                 </div>
               ))}
@@ -399,7 +396,7 @@ const Dashboard = () => {
             {recentReports.map((report) => (
               <div 
                 key={report.id} 
-                className="relative flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                className="relative flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors"
                 onClick={() => navigate(`/report/details/${report.id}`)}
               >
                 <button 
@@ -419,8 +416,8 @@ const Dashboard = () => {
                       Generated: {report.generated}
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Download</Button>
-                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2">Share</Button>
+                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2 hover:bg-transparent hover:text-hpe-brand">Download</Button>
+                      <Button variant="ghost" size="sm" className="h-6 text-xs px-2 hover:bg-transparent hover:text-hpe-brand">Share</Button>
                     </div>
                   </div>
                   <div className="text-xs text-gray-500">

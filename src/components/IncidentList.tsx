@@ -177,18 +177,14 @@ const IncidentList = () => {
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center space-x-3 flex-wrap gap-2">
                     <h3 className="font-semibold text-lg">{incident.id}</h3>
-                    <Badge variant={getSeverityVariant(incident.severity)}>
-                      {incident.severity}
-                    </Badge>
-                    <Badge variant={getStatusVariant(incident.status)}>
-                      {incident.status}
-                    </Badge>
-                    <Badge variant={getTypeVariant(incident.type)}>
-                      {incident.type}
-                    </Badge>
-                    <Badge variant="outline" className={getScopeColor(incident.scope)}>
-                      {incident.scope}
-                    </Badge>
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
                   </div>
                   <p className="text-gray-900 font-medium">{incident.description}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">

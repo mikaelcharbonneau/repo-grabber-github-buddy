@@ -20,8 +20,7 @@ import {
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset
+  SidebarMenuButton
 } from "@/components/ui/sidebar";
 import { Home, ListChecks, AlertTriangle, FileText, BarChart2, Settings as SettingsIcon } from "lucide-react";
 
@@ -30,9 +29,13 @@ const AppLayout: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white font-hpe flex">
-      <Sidebar className="bg-hpe-brand/5 border-r border-hpe-brand/10">
-        <SidebarContent>
+    <div className="min-h-screen bg-white font-hpe flex flex-col">
+      {/* Top header spanning full width */}
+      <Header />
+      {/* Content row: sidebar + main */}
+      <div className="flex flex-1 overflow-hidden pt-20">
+        <Sidebar className="bg-hpe-brand/5 border-r border-hpe-brand/10">
+          <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -97,8 +100,6 @@ const AppLayout: React.FC = () => {
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
-        <Header />
         <main 
           className="flex-1 overflow-auto"
           id="main-content"
@@ -121,7 +122,7 @@ const AppLayout: React.FC = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
-      </SidebarInset>
+      </div>
     </div>
   );
 };
