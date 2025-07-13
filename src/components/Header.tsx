@@ -124,7 +124,7 @@ const Header = () => {
       return location.pathname.startsWith(route);
     });
   };
-  return <header className="fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 py-4 px-[40px]">
+  return <header className="fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 py-4 px-[50px]">
       <div className="flex items-center justify-between space-x-8">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-4 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/")}>
