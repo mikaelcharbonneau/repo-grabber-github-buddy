@@ -142,7 +142,7 @@ const AuditSummary = () => {
                             </div>
                           )}
                         </div>
-                        <span className="text-sm font-medium">{issue.severity}</span>
+                        
                       </div>
                       {issue.comments && (
                         <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
