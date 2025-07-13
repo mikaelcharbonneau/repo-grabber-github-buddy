@@ -130,10 +130,10 @@ const AuditList = () => {
       <Card className="w-full bg-inherit py-0">
         <CardHeader className="p-6 pb-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div>
-              <CardTitle className="text-2xl font-bold text-gray-900 mb-4">Audit Management</CardTitle>
+            <div className="">
+              <CardTitle className="font-bold text-gray-900 mb-4 text-left">Audit Management</CardTitle>
             </div>
-            <div></div>
+            <div className="bg-inherit"></div>
             <div className="flex justify-end">
               <Button onClick={() => navigate('/audit/start')} className="bg-hpe-green hover:bg-hpe-green/90 text-slate-950">
                 <Plus className="mr-2 h-4 w-4" />
