@@ -142,38 +142,37 @@ const AuditSummary = () => {
                             </div>
                           )}
                         </div>
-                        
+                        <div className="flex space-x-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              // Edit functionality - navigate back to edit specific issue
+                              navigate("/audit/issues");
+                            }}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              // Remove functionality - remove this specific issue
+                              const updatedIssues = auditDetails.issues.filter((_, i) => i !== index);
+                              const updatedDetails = { ...auditDetails, issues: updatedIssues };
+                              setAuditDetails(updatedDetails);
+                              sessionStorage.setItem('auditDetails', JSON.stringify(updatedDetails));
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
                       </div>
                       {issue.comments && (
-                        <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded mb-3">
+                        <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
                           {issue.comments}
                         </div>
                       )}
-                      <div className="flex justify-end space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            // Edit functionality - navigate back to edit specific issue
-                            navigate("/audit/issues");
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            // Remove functionality - remove this specific issue
-                            const updatedIssues = auditDetails.issues.filter((_, i) => i !== index);
-                            const updatedDetails = { ...auditDetails, issues: updatedIssues };
-                            setAuditDetails(updatedDetails);
-                            sessionStorage.setItem('auditDetails', JSON.stringify(updatedDetails));
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </div>
                     </div>
                   ))}
                 </div>
