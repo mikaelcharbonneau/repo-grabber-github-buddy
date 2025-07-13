@@ -147,22 +147,20 @@ const AuditDetails = () => {
     );
   }
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'none': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'critical';
+      case 'medium': return 'medium';
+      case 'low': return 'low';
+      default: return 'hpe';
     }
   };
-
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'under review': return 'bg-blue-100 text-blue-800';
-      case 'in progress': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'hpe';
+      case 'under review': return 'medium';
+      case 'in progress': return 'low';
+      default: return 'outline';
     }
   };
 
@@ -300,7 +298,7 @@ const AuditDetails = () => {
                           <div className="text-sm text-gray-600">{finding.location}</div>
                           <div className="text-sm text-gray-700 mt-1">{finding.description}</div>
                         </div>
-                        <Badge className={getSeverityColor(finding.severity)}>
+                        <Badge variant={getSeverityVariant(finding.severity)}>
                           {finding.severity}
                         </Badge>
                       </div>
@@ -333,13 +331,13 @@ const AuditDetails = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span>Status</span>
-                <Badge className={getStatusColor(audit.status)}>
+                <Badge variant={getStatusVariant(audit.status)}>
                   {audit.status}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span>Severity</span>
-                <Badge className={getSeverityColor(audit.severity)}>
+                <Badge variant={getSeverityVariant(audit.severity)}>
                   {audit.severity}
                 </Badge>
               </div>
