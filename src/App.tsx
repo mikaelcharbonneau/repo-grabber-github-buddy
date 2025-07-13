@@ -53,7 +53,6 @@ const App: React.FC = () => {
                 aria-atomic="true"
               />
             </BrowserRouter>
-          </SidebarProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
