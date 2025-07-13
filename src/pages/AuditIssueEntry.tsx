@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AuditHeader from "@/components/audit/AuditHeader";
 import AuditMatrix from "@/components/audit/AuditMatrix";
-import IssueSummary from "@/components/audit/IssueSummary";
 import { useAuditIssues } from "@/hooks/useAuditIssues";
 
 const AuditIssueEntry = () => {
@@ -73,8 +72,6 @@ const AuditIssueEntry = () => {
         getIssueValues={getIssueValues}
       />
 
-      <IssueSummary issues={issues} racks={racks} />
-
       <div className="flex justify-between mt-6">
         <Button variant="outline" onClick={() => navigate("/audit/start")}>
           Back
@@ -82,7 +79,7 @@ const AuditIssueEntry = () => {
         <Button 
           onClick={handleContinue}
           disabled={issues.length === 0}
-          className="bg-hpe-green hover:bg-hpe-green/90"
+          className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
         >
           Continue to Summary
         </Button>
