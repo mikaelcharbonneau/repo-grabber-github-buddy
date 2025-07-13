@@ -129,7 +129,7 @@ const AuditList = () => {
       {/* Filters */}
       <Card className="w-full bg-inherit py-0">
         <CardHeader className="p-6 pb-0">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 items-center ">
             <div className="">
               <CardTitle className="font-bold text-gray-900 mb-4 text-left">Audit Management</CardTitle>
             </div>
