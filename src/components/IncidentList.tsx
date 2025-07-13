@@ -120,17 +120,17 @@ const IncidentList = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <Button className="bg-hpe-green hover:bg-hpe-green/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Report New Incident
-        </Button>
-      </div>
 
       {/* Filters */}
       <Card>
         <CardHeader>
-          <h1 className="text-2xl font-bold text-gray-900">Incidents</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">Incidents</h1>
+            <Button className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Incident
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
