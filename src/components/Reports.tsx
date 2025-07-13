@@ -83,19 +83,16 @@ const Reports = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
-      </div>
 
       <div className="space-y-6">
         {/* Report Generation */}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center">
                 <FileText className="mr-2 h-5 w-5" />
-                Generate New Report
-              </CardTitle>
+                Reports
+              </h1>
               <Button 
                 onClick={generateReport}
                 className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
