@@ -176,12 +176,6 @@ const Reports = () => {
               </div>
             </div>
 
-            <div className="flex space-x-3">
-              <Button variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule Report
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
