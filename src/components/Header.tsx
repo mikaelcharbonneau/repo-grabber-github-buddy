@@ -136,8 +136,8 @@ const Header = () => {
 
         {/* Navigation Menu - Centered */}
         <div className="flex-1 flex justify-center">
-          <div className="flex flex-wrap justify-evenly">
-            <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/"]) ? "text-hpe-green" : ""}`} onClick={() => navigate("/")}>
+          <div className="flex flex-wrap justify-evenly divide-x divide-gray-200">
+              <Button variant="ghost" className={`flex items-center space-x-3 px-6 py-3 text-base ${isActiveRoute(["/"]) ? "text-hpe-green" : ""}`} onClick={() => navigate("/")}>
               <Grid2x2 className="h-6 w-6" />
               <span>Dashboard</span>
             </Button>
