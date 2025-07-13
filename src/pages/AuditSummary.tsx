@@ -236,51 +236,103 @@ const AuditSummary = () => {
           {editingIssue && (
             <div className="space-y-4">
               <div>
-                <Label htmlFor="alertType">Issue Type</Label>
-                <Input
-                  id="alertType"
-                  value={editingIssue.alertType || ''}
-                  onChange={(e) => setEditingIssue({...editingIssue, alertType: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="severity">Severity</Label>
+                <Label htmlFor="tile">Tile Location</Label>
                 <Select 
-                  value={editingIssue.severity || ''} 
-                  onValueChange={(value) => setEditingIssue({...editingIssue, severity: value})}
+                  value={editingIssue.tile || ''} 
+                  onValueChange={(value) => setEditingIssue({...editingIssue, tile: value})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select severity" />
+                    <SelectValue placeholder="Select tile location" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Critical">Critical</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Tile A">Tile A</SelectItem>
+                    <SelectItem value="Tile B">Tile B</SelectItem>
+                    <SelectItem value="Tile C">Tile C</SelectItem>
+                    <SelectItem value="Tile D">Tile D</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
                 <Label htmlFor="device">Device Type</Label>
-                <Input
-                  id="device"
-                  value={editingIssue.device || ''}
-                  onChange={(e) => setEditingIssue({...editingIssue, device: e.target.value})}
-                />
+                <Select 
+                  value={editingIssue.device || ''} 
+                  onValueChange={(value) => setEditingIssue({...editingIssue, device: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select device type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Server">Server</SelectItem>
+                    <SelectItem value="Switch">Switch</SelectItem>
+                    <SelectItem value="RDHX">RDHX</SelectItem>
+                    <SelectItem value="CDU">CDU</SelectItem>
+                    <SelectItem value="UPS">UPS</SelectItem>
+                    <SelectItem value="PDU">PDU</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="impactedUnit">Impacted Unit</Label>
+                  <Select 
+                    value={editingIssue.impactedUnit || ''} 
+                    onValueChange={(value) => setEditingIssue({...editingIssue, impactedUnit: value})}
+                    disabled={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU'}
+                  >
+                    <SelectTrigger className={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU' ? 'opacity-50' : ''}>
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Unit 1">Unit 1</SelectItem>
+                      <SelectItem value="Unit 2">Unit 2</SelectItem>
+                      <SelectItem value="Unit 3">Unit 3</SelectItem>
+                      <SelectItem value="Unit 4">Unit 4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="uHeight">U-Height</Label>
+                  <Select 
+                    value={editingIssue.uHeight || ''} 
+                    onValueChange={(value) => setEditingIssue({...editingIssue, uHeight: value})}
+                    disabled={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU'}
+                  >
+                    <SelectTrigger className={editingIssue.device === 'RDHX' || editingIssue.device === 'CDU' ? 'opacity-50' : ''}>
+                      <SelectValue placeholder="Select height" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1U">1U</SelectItem>
+                      <SelectItem value="2U">2U</SelectItem>
+                      <SelectItem value="3U">3U</SelectItem>
+                      <SelectItem value="4U">4U</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="alertType">Issue Type</Label>
+                <Select 
+                  value={editingIssue.alertType || ''} 
+                  onValueChange={(value) => setEditingIssue({...editingIssue, alertType: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select issue type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Hardware Failure">Hardware Failure</SelectItem>
+                    <SelectItem value="Performance Issue">Performance Issue</SelectItem>
+                    <SelectItem value="Connectivity Issue">Connectivity Issue</SelectItem>
+                    <SelectItem value="Temperature Alert">Temperature Alert</SelectItem>
+                    <SelectItem value="Power Issue">Power Issue</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <Label htmlFor="rack">Rack Location</Label>
-                <Input
-                  id="rack"
-                  value={editingIssue.rack || ''}
-                  onChange={(e) => setEditingIssue({...editingIssue, rack: e.target.value})}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="comments">Comments</Label>
+                <Label htmlFor="comments">Additional Comments</Label>
                 <Textarea
                   id="comments"
                   value={editingIssue.comments || ''}
