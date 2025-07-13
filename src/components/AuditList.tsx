@@ -8,7 +8,6 @@ import { Plus, Clipboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { locationData, getDataHallsByDatacenter } from "@/data/locations";
-
 const AuditList = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -22,87 +21,85 @@ const AuditList = () => {
 
   // Reset data hall when datacenter changes
   const handleDatacenterChange = (value: string) => {
-    setFilters({...filters, datacenter: value, dataHall: "all"});
+    setFilters({
+      ...filters,
+      datacenter: value,
+      dataHall: "all"
+    });
   };
-
-  const audits = [
-    {
-      id: "AUD-2024-001",
-      location: "DC-EAST / Hall-A",
-      technician: "John Doe",
-      date: "2024-01-15",
-      time: "14:30",
-      issues: 2,
-      severity: "Medium",
-      status: "Completed",
-      description: "Routine quarterly inspection"
-    },
-    {
-      id: "AUD-2024-002",
-      location: "DC-WEST / Hall-B", 
-      technician: "Jane Smith",
-      date: "2024-01-14",
-      time: "09:15",
-      issues: 0,
-      severity: "None",
-      status: "Completed",
-      description: "Monthly infrastructure check"
-    },
-    {
-      id: "AUD-2024-003",
-      location: "DC-CENTRAL / Hall-C",
-      technician: "Mike Johnson", 
-      date: "2024-01-13",
-      time: "16:45",
-      issues: 5,
-      severity: "Critical",
-      status: "Under Review",
-      description: "Emergency inspection - power anomalies"
-    },
-    {
-      id: "AUD-2024-004",
-      location: "DC-EAST / Hall-B",
-      technician: "Sarah Wilson",
-      date: "2024-01-12",
-      time: "11:20",
-      issues: 1,
-      severity: "Low",
-      status: "Completed",
-      description: "Follow-up inspection"
-    }
-  ];
-
+  const audits = [{
+    id: "AUD-2024-001",
+    location: "DC-EAST / Hall-A",
+    technician: "John Doe",
+    date: "2024-01-15",
+    time: "14:30",
+    issues: 2,
+    severity: "Medium",
+    status: "Completed",
+    description: "Routine quarterly inspection"
+  }, {
+    id: "AUD-2024-002",
+    location: "DC-WEST / Hall-B",
+    technician: "Jane Smith",
+    date: "2024-01-14",
+    time: "09:15",
+    issues: 0,
+    severity: "None",
+    status: "Completed",
+    description: "Monthly infrastructure check"
+  }, {
+    id: "AUD-2024-003",
+    location: "DC-CENTRAL / Hall-C",
+    technician: "Mike Johnson",
+    date: "2024-01-13",
+    time: "16:45",
+    issues: 5,
+    severity: "Critical",
+    status: "Under Review",
+    description: "Emergency inspection - power anomalies"
+  }, {
+    id: "AUD-2024-004",
+    location: "DC-EAST / Hall-B",
+    technician: "Sarah Wilson",
+    date: "2024-01-12",
+    time: "11:20",
+    issues: 1,
+    severity: "Low",
+    status: "Completed",
+    description: "Follow-up inspection"
+  }];
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'critical';
-      case 'medium': return 'medium';
-      case 'low': return 'low';
-      default: return 'hpe';
+      case 'critical':
+        return 'critical';
+      case 'medium':
+        return 'medium';
+      case 'low':
+        return 'low';
+      default:
+        return 'hpe';
     }
   };
   const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'hpe';
-      case 'under review': return 'medium';
-      case 'in progress': return 'low';
-      default: return 'outline';
+      case 'completed':
+        return 'hpe';
+      case 'under review':
+        return 'medium';
+      case 'in progress':
+        return 'low';
+      default:
+        return 'outline';
     }
   };
-
   const filteredAudits = audits.filter(audit => {
     // For demo purposes, we'll filter based on location text matching
     // In a real app, audits would have datacenter/datahall IDs
-    const matchesDatacenter = filters.datacenter === "all" || 
-      locationData.find(dc => dc.id === filters.datacenter)?.name.split(' - ')[0] === audit.location.split(' / ')[0];
-    
-    const matchesDataHall = filters.dataHall === "all" || 
-      availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
-    
+    const matchesDatacenter = filters.datacenter === "all" || locationData.find(dc => dc.id === filters.datacenter)?.name.split(' - ')[0] === audit.location.split(' / ')[0];
+    const matchesDataHall = filters.dataHall === "all" || availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
     return matchesDatacenter && matchesDataHall;
   });
-
-  return (
-    <div className="p-6 space-y-6">
+  return <div className="p-6 space-y-6">
       <div className="w-full space-y-6">
 
       {/* Filters */}
@@ -114,10 +111,7 @@ const AuditList = () => {
             </div>
             <div></div>
             <div className="flex justify-end">
-              <Button 
-                className="bg-hpe-green hover:bg-hpe-green/90"
-                onClick={() => navigate('/audit/start')}
-              >
+              <Button className="bg-hpe-green hover:bg-hpe-green/90" onClick={() => navigate('/audit/start')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Start New Audit
               </Button>
@@ -127,11 +121,7 @@ const AuditList = () => {
         <CardContent className="p-6 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <DatePickerWithRange 
-                date={dateRange} 
-                setDate={setDateRange}
-                className="w-full h-12"
-              />
+              <DatePickerWithRange date={dateRange} setDate={setDateRange} className="w-full h-12" />
             </div>
             
             <Select value={filters.datacenter} onValueChange={handleDatacenterChange}>
@@ -140,29 +130,24 @@ const AuditList = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Datacenters</SelectItem>
-                {locationData.map((datacenter) => (
-                  <SelectItem key={datacenter.id} value={datacenter.id}>
+                {locationData.map(datacenter => <SelectItem key={datacenter.id} value={datacenter.id}>
                     {datacenter.name}
-                  </SelectItem>
-                ))}
+                  </SelectItem>)}
               </SelectContent>
             </Select>
             
-            <Select 
-              value={filters.dataHall} 
-              onValueChange={(value) => setFilters({...filters, dataHall: value})}
-              disabled={filters.datacenter === "all"}
-            >
+            <Select value={filters.dataHall} onValueChange={value => setFilters({
+              ...filters,
+              dataHall: value
+            })} disabled={filters.datacenter === "all"}>
               <SelectTrigger className="h-12">
                 <SelectValue placeholder="All Data Halls" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Data Halls</SelectItem>
-                {availableDataHalls.map((hall) => (
-                  <SelectItem key={hall.id} value={hall.id}>
+                {availableDataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>
                     {hall.name}
-                  </SelectItem>
-                ))}
+                  </SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -171,8 +156,7 @@ const AuditList = () => {
 
       {/* Audit List */}
       <div className="grid gap-4">
-        {filteredAudits.map((audit) => (
-          <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer">
+        {filteredAudits.map(audit => <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-2 flex-1">
@@ -193,20 +177,16 @@ const AuditList = () => {
                   <Button variant="outline" size="sm">
                     View Details
                   </Button>
-                  {audit.status === "Completed" && (
-                    <Button variant="outline" size="sm">
+                  {audit.status === "Completed" && <Button variant="outline" size="sm">
                       Generate Report
-                    </Button>
-                  )}
+                    </Button>}
                 </div>
               </div>
             </CardContent>
-          </Card>
-        ))}
+          </Card>)}
       </div>
 
-      {filteredAudits.length === 0 && (
-        <Card>
+      {filteredAudits.length === 0 && <Card>
           <CardContent className="p-12 text-center">
             <div className="text-gray-500">
               <Clipboard className="mx-auto h-12 w-12 mb-4" />
@@ -214,11 +194,8 @@ const AuditList = () => {
               <p>Try adjusting your search criteria or create a new audit.</p>
             </div>
           </CardContent>
-        </Card>
-      )}
+        </Card>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AuditList;
