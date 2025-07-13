@@ -4,11 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Clock, User, CheckCircle, AlertTriangle } from "lucide-react";
 
 const AuditSummary = () => {
   const navigate = useNavigate();
   const [auditDetails, setAuditDetails] = useState(null);
+  const [editingIssue, setEditingIssue] = useState(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('auditDetails');
@@ -43,6 +50,24 @@ const AuditSummary = () => {
       case 'medium': return 'bg-yellow-100 text-yellow-800';
       case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleEditIssue = (issue, index) => {
+    setEditingIssue({ ...issue, index });
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingIssue && auditDetails) {
+      const updatedIssues = auditDetails.issues.map((issue, i) => 
+        i === editingIssue.index ? editingIssue : issue
+      );
+      const updatedDetails = { ...auditDetails, issues: updatedIssues };
+      setAuditDetails(updatedDetails);
+      sessionStorage.setItem('auditDetails', JSON.stringify(updatedDetails));
+      setEditDialogOpen(false);
+      setEditingIssue(null);
     }
   };
 
@@ -141,10 +166,7 @@ const AuditSummary = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {
-                              // Edit functionality - navigate back to edit specific issue
-                              navigate("/audit/issues");
-                            }}
+                            onClick={() => handleEditIssue(issue, index)}
                           >
                             Edit
                           </Button>
@@ -204,6 +226,81 @@ const AuditSummary = () => {
           </Button>
         </div>
       </div>
+
+      {/* Edit Issue Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Issue</DialogTitle>
+          </DialogHeader>
+          {editingIssue && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="alertType">Issue Type</Label>
+                <Input
+                  id="alertType"
+                  value={editingIssue.alertType || ''}
+                  onChange={(e) => setEditingIssue({...editingIssue, alertType: e.target.value})}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="severity">Severity</Label>
+                <Select 
+                  value={editingIssue.severity || ''} 
+                  onValueChange={(value) => setEditingIssue({...editingIssue, severity: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select severity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Critical">Critical</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="device">Device Type</Label>
+                <Input
+                  id="device"
+                  value={editingIssue.device || ''}
+                  onChange={(e) => setEditingIssue({...editingIssue, device: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="rack">Rack Location</Label>
+                <Input
+                  id="rack"
+                  value={editingIssue.rack || ''}
+                  onChange={(e) => setEditingIssue({...editingIssue, rack: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="comments">Comments</Label>
+                <Textarea
+                  id="comments"
+                  value={editingIssue.comments || ''}
+                  onChange={(e) => setEditingIssue({...editingIssue, comments: e.target.value})}
+                  placeholder="Add any additional notes..."
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveEdit}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
