@@ -37,7 +37,12 @@ const AuditList = () => {
     severity: "Medium",
     status: "Completed",
     description: "Routine quarterly inspection",
-    deviceIssues: { RDHX: 1, PDU: 0, PSU: 1, CDU: 0 }
+    deviceIssues: {
+      RDHX: 1,
+      PDU: 0,
+      PSU: 1,
+      CDU: 0
+    }
   }, {
     id: "AUD-2024-002",
     location: "DC-WEST / Hall-B",
@@ -48,7 +53,12 @@ const AuditList = () => {
     severity: "None",
     status: "Completed",
     description: "Monthly infrastructure check",
-    deviceIssues: { RDHX: 0, PDU: 0, PSU: 0, CDU: 0 }
+    deviceIssues: {
+      RDHX: 0,
+      PDU: 0,
+      PSU: 0,
+      CDU: 0
+    }
   }, {
     id: "AUD-2024-003",
     location: "DC-CENTRAL / Hall-C",
@@ -59,7 +69,12 @@ const AuditList = () => {
     severity: "Critical",
     status: "Under Review",
     description: "Emergency inspection - power anomalies",
-    deviceIssues: { RDHX: 2, PDU: 2, PSU: 1, CDU: 0 }
+    deviceIssues: {
+      RDHX: 2,
+      PDU: 2,
+      PSU: 1,
+      CDU: 0
+    }
   }, {
     id: "AUD-2024-004",
     location: "DC-EAST / Hall-B",
@@ -70,7 +85,12 @@ const AuditList = () => {
     severity: "Low",
     status: "Completed",
     description: "Follow-up inspection",
-    deviceIssues: { RDHX: 0, PDU: 0, PSU: 0, CDU: 1 }
+    deviceIssues: {
+      RDHX: 0,
+      PDU: 0,
+      PSU: 0,
+      CDU: 1
+    }
   }];
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -179,19 +199,15 @@ const AuditList = () => {
                 </div>
                 
                 <div className="flex items-start space-x-6 ml-4">
-                  {audit.issues > 0 && (
-                    <div className="flex-1 min-w-[300px]">
+                  {audit.issues > 0 && <div className="flex-1 min-w-[300px] py-[6px] mx-[80px]">
                       <div className="text-xs text-gray-500 mb-2 text-center">Issues by Device</div>
-                      <div className="grid grid-cols-4 gap-4">
-                        {Object.entries(audit.deviceIssues).map(([device, count]) => (
-                          <div key={device} className="text-center">
+                      <div className="grid grid-cols-4 gap-4 mx-0">
+                        {Object.entries(audit.deviceIssues).map(([device, count]) => <div key={device} className="text-center">
                             <div className="text-xs text-gray-400 mb-1">{device}</div>
                             <div className="text-2xl font-semibold">{count}</div>
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
-                    </div>
-                  )}
+                    </div>}
                   
                   <div className="flex space-x-2 flex-shrink-0">
                     <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
