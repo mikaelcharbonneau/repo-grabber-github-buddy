@@ -21,7 +21,7 @@ const AppLayout: React.FC = () => {
       <Header />
       {/* Main content area */}
       <div className="flex-1 pt-24 bg-zinc-50 py-[9px]">
-        <div className="mx-0 px-40 sm:px-6 lg:px-0">
+        <div className="mx-0 px-40 sm:px-6 lg:px-0 h-full ">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/audits" element={<AuditList />} />
