@@ -34,7 +34,7 @@ const StartAudit = () => {
     }
   };
   const canStart = selectedDatacenter && selectedDataHall;
-  return <div className="h-full flex items-center justify-center px-6 bg-neutral-300">
+  return <div className="h-full flex items-center justify-center px-6">
       <div className="w-full max-w-2xl">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Start New Audit</h1>

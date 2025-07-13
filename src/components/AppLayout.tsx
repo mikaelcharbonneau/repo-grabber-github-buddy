@@ -20,8 +20,8 @@ const AppLayout: React.FC = () => {
       {/* Top header spanning full width */}
       <Header />
       {/* Main content area */}
-      <div className="flex-1 bg-red-600">
-        <div className="h-full w-full bg-gray-700">
+      <div className="flex-1">
+        <div className="h-full w-full">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/audits" element={<AuditList />} />

@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
-import { SidebarProvider } from "@/components/ui/sidebar";
+
 import AppLayout from "./components/AppLayout";
 
 // Configure React Query with best practices
@@ -35,16 +35,14 @@ const App: React.FC = () => {
   return <ErrorBoundary onError={handleError} resetOnRouteChange>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <SidebarProvider className="bg-amber-200 py-0">
-            <BrowserRouter>
-              <AppLayout />
-              {/* Toast notifications */}
-              <Toaster />
-              <Sonner />
-              {/* Screen reader announcements */}
-              <div id="sr-announcements" className="sr-only" aria-live="polite" aria-atomic="true" />
-            </BrowserRouter>
-          </SidebarProvider>
+          <BrowserRouter>
+            <AppLayout />
+            {/* Toast notifications */}
+            <Toaster />
+            <Sonner />
+            {/* Screen reader announcements */}
+            <div id="sr-announcements" className="sr-only" aria-live="polite" aria-atomic="true" />
+          </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>;
