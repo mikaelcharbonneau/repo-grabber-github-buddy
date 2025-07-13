@@ -163,11 +163,11 @@ const Reports = () => {
                       const secondHalf = datacenter.dataHalls.slice(halfLength);
                       
                       return (
-                        <div key={datacenter.id} className="xl:col-span-2 grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <div className="text-sm font-medium text-gray-700">
-                              {datacenter.name} (1)
-                            </div>
+                        <div key={datacenter.id} className="xl:col-span-2 space-y-2">
+                          <div className="text-sm font-medium text-gray-700">
+                            {datacenter.name}
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                               {firstHalf.map((dataHall) => {
                                 const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
@@ -190,11 +190,6 @@ const Reports = () => {
                                   </div>
                                 );
                               })}
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="text-sm font-medium text-gray-700">
-                              {datacenter.name} (2)
                             </div>
                             <div className="space-y-2">
                               {secondHalf.map((dataHall) => {
