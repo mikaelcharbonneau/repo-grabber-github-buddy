@@ -30,7 +30,7 @@ const AuditList = () => {
   const audits = [{
     id: "AUD-2024-001",
     location: "DC-EAST / Hall-A",
-    technician: "John Doe",
+    technician: "Mikael Charbonneau",
     date: "2024-01-15",
     time: "14:30",
     issues: 2,
@@ -41,7 +41,7 @@ const AuditList = () => {
   }, {
     id: "AUD-2024-002",
     location: "DC-WEST / Hall-B",
-    technician: "Jane Smith",
+    technician: "Javier Montoya",
     date: "2024-01-14",
     time: "09:15",
     issues: 0,
@@ -52,7 +52,7 @@ const AuditList = () => {
   }, {
     id: "AUD-2024-003",
     location: "DC-CENTRAL / Hall-C",
-    technician: "Mike Johnson",
+    technician: "Clifford Chimezie",
     date: "2024-01-13",
     time: "16:45",
     issues: 5,
@@ -63,7 +63,7 @@ const AuditList = () => {
   }, {
     id: "AUD-2024-004",
     location: "DC-EAST / Hall-B",
-    technician: "Sarah Wilson",
+    technician: "Leena Saini",
     date: "2024-01-12",
     time: "11:20",
     issues: 1,
