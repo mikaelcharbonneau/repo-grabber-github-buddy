@@ -25,9 +25,6 @@ const NotificationItem = ({
             {notification.timestamp}
           </div>
         </div>
-        {notification.severity && <Badge className={`ml-2 text-xs ${notification.severity === 'Critical' ? 'bg-red-100 text-red-800' : notification.severity === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}`}>
-            {notification.severity}
-          </Badge>}
       </div>
     </div>
   </div>;

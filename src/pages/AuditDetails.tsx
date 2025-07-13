@@ -298,9 +298,6 @@ const AuditDetails = () => {
                           <div className="text-sm text-gray-600">{finding.location}</div>
                           <div className="text-sm text-gray-700 mt-1">{finding.description}</div>
                         </div>
-                        <Badge variant={getSeverityVariant(finding.severity)}>
-                          {finding.severity}
-                        </Badge>
                       </div>
                       {finding.resolved ? (
                         <div className="flex items-center space-x-2 text-green-600">
@@ -337,9 +334,7 @@ const AuditDetails = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span>Severity</span>
-                <Badge variant={getSeverityVariant(audit.severity)}>
-                  {audit.severity}
-                </Badge>
+                <span className="font-medium">{audit.severity}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Issues</span>
