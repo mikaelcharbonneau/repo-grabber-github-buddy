@@ -313,10 +313,9 @@ const AuditSummary = () => {
                       <SelectValue placeholder="Select height" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1U">1U</SelectItem>
-                      <SelectItem value="2U">2U</SelectItem>
-                      <SelectItem value="3U">3U</SelectItem>
-                      <SelectItem value="4U">4U</SelectItem>
+                      {Array.from({ length: 48 }, (_, i) => (
+                        <SelectItem key={i + 1} value={`U${i + 1}`}>U{i + 1}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
