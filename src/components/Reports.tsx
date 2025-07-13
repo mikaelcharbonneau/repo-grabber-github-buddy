@@ -21,14 +21,6 @@ const Reports = () => {
   const [reportType, setReportType] = useState("");
 
   const datacenters = locationData.map(dc => dc.name);
-  
-  // Get available data halls based on selected datacenters
-  const availableDataHalls = selectedDatacenters.length > 0 
-    ? locationData
-        .filter(dc => selectedDatacenters.includes(dc.name))
-        .flatMap(dc => dc.dataHalls)
-        .map(dh => dh.name)
-    : [];
 
   const reportTypes = [
     { value: "audits", label: "Audits Report" },
@@ -138,51 +130,59 @@ const Reports = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label>Datacenters</Label>
-                <div className="space-y-2">
-                  {datacenters.map((datacenter) => (
-                    <div key={datacenter} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`dc-${datacenter}`}
-                        checked={selectedDatacenters.includes(datacenter)}
-                        onCheckedChange={(checked) => 
-                          handleDatacenterChange(datacenter, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`dc-${datacenter}`} className="text-sm">
-                        {datacenter}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
+            <div className="space-y-3">
+              <Label>Datacenters</Label>
+              <div className="space-y-2">
+                {datacenters.map((datacenter) => (
+                  <div key={datacenter} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`dc-${datacenter}`}
+                      checked={selectedDatacenters.includes(datacenter)}
+                      onCheckedChange={(checked) => 
+                        handleDatacenterChange(datacenter, checked as boolean)
+                      }
+                    />
+                    <Label htmlFor={`dc-${datacenter}`} className="text-sm">
+                      {datacenter}
+                    </Label>
+                  </div>
+                ))}
               </div>
+            </div>
 
-              <div className="space-y-3">
-                <Label>Data Halls</Label>
-                <div className="space-y-2">
-                  {availableDataHalls.length > 0 ? (
-                    availableDataHalls.map((dataHall) => (
-                      <div key={dataHall} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`dh-${dataHall}`}
-                          checked={selectedDataHalls.includes(dataHall)}
-                          onCheckedChange={(checked) => 
-                            handleDataHallChange(dataHall, checked as boolean)
-                          }
-                        />
-                        <Label htmlFor={`dh-${dataHall}`} className="text-sm">
-                          {dataHall}
-                        </Label>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-gray-500">
-                      Please select datacenters to see available data halls
+            <div className="space-y-3 col-span-full">
+              <Label>Data Halls</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                {locationData.map((datacenter) => (
+                  <div key={datacenter.id} className="space-y-2">
+                    <div className="text-sm font-medium text-gray-700">
+                      {datacenter.name}
                     </div>
-                  )}
-                </div>
+                    <div className="space-y-2">
+                      {datacenter.dataHalls.map((dataHall) => {
+                        const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
+                        return (
+                          <div key={dataHall.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`dh-${datacenter.id}-${dataHall.id}`}
+                              checked={selectedDataHalls.includes(dataHall.name)}
+                              disabled={!isDatacenterSelected}
+                              onCheckedChange={(checked) => 
+                                handleDataHallChange(dataHall.name, checked as boolean)
+                              }
+                            />
+                            <Label 
+                              htmlFor={`dh-${datacenter.id}-${dataHall.id}`} 
+                              className={`text-sm ${!isDatacenterSelected ? 'text-gray-400' : 'text-gray-700'}`}
+                            >
+                              {dataHall.name}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
