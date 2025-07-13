@@ -274,7 +274,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentAudits.map(audit => <div key={audit.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors" onClick={() => navigate(`/audit/details/${audit.id}`)}>
+                  {recentAudits.map(audit => <div key={audit.id} onClick={() => navigate(`/audit/details/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors bg-zinc-50">
                       <div className="space-y-1 flex-1">
                         <div className="font-medium text-sm">{audit.id}</div>
                         <div className="text-sm text-gray-600">{audit.location}</div>
@@ -305,7 +305,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentIncidents.map(incident => <div key={incident.id} className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors" onClick={() => navigate(`/incident/details/${incident.id}`)}>
+                  {recentIncidents.map(incident => <div key={incident.id} onClick={() => navigate(`/incident/details/${incident.id}`)} className="flex items-start gap-4 p-3 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors bg-zinc-50">
                       <div className="space-y-1 flex-1">
                         <div className="font-medium text-sm">{incident.id}</div>
                         <div className="text-sm text-gray-900">{incident.description}</div>
@@ -337,7 +337,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {recentReports.map(report => <div key={report.id} className="relative flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors" onClick={() => navigate(`/report/details/${report.id}`)}>
+                {recentReports.map(report => <div key={report.id} onClick={() => navigate(`/report/details/${report.id}`)} className="relative flex items-start justify-between p-3 rounded-lg border border-gray-200 hover:border-gray-400 cursor-pointer transition-colors bg-zinc-50">
                     <button className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors" onClick={e => {
                   e.stopPropagation();
                   navigate(`/report/details/${report.id}`);
