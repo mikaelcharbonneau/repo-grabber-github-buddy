@@ -174,7 +174,7 @@ const AuditList = () => {
                   </div>
                 </div>
                 <div className="flex space-x-2 ml-4">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
                     View Details
                   </Button>
                   {audit.status === "Completed" && <Button variant="outline" size="sm">
