@@ -23,7 +23,7 @@ const AppLayout: React.FC = () => {
       <Header />
       {/* Main content area */}
       <div className="flex-1 overflow-auto pt-24 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/audits" element={<AuditList />} />
