@@ -225,7 +225,7 @@ const AuditSummary = () => {
           </Button>
           <Button 
             onClick={handleSubmit}
-            className="bg-hpe-green hover:bg-hpe-green/90"
+            className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
           >
             Submit Audit
           </Button>
