@@ -99,7 +99,7 @@ const AuditList = () => {
     const matchesDataHall = filters.dataHall === "all" || availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
     return matchesDatacenter && matchesDataHall;
   });
-  return <div className="p-6 space-y-6">
+  return <div className="py-6 px-[50px] space-y-6">
       <div className="w-full space-y-6">
 
       {/* Filters */}
