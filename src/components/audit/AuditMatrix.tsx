@@ -5,8 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertTriangle, ChevronDown, MapPin } from "lucide-react";
+import { AlertTriangle, ChevronDown, MapPin, Settings } from "lucide-react";
 import { getCabinetsByDataHall, getDatacenterById } from "@/data/locations";
+import { IncidentDetailsDialog } from "./IncidentDetailsDialog";
 interface Rack {
   id: number;
   name: string;
@@ -18,6 +19,9 @@ interface Issue {
   alertType: string;
   severity: string;
   timestamp: string;
+  uHeight?: number;
+  psuId?: string;
+  pduId?: string;
 }
 interface AuditMatrixProps {
   racks: Rack[];
@@ -126,6 +130,29 @@ const AuditMatrix = ({
                 const selectedAlerts = alertTypes.filter(a => currentValues.includes(a.value) && a.value !== 'none');
                 const displayText = selectedAlerts.length === 0 ? "No Issues" : selectedAlerts.length === 1 ? selectedAlerts[0].label : `${selectedAlerts.length} Issues`;
                 
+                // Use detailed dialog for PSUs and PDUs, simple dropdown for others
+                if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
+                  return <TableCell key={device}>
+                    <IncidentDetailsDialog
+                      rackName={rack.name}
+                      deviceType={device}
+                      incidents={[]} // TODO: Get current detailed incidents
+                      onUpdate={(incidents) => {
+                        // TODO: Update detailed incidents
+                        const alertValues = incidents.map(i => i.alertType);
+                        onUpdateIssue(rack.id, device, alertValues.length > 0 ? alertValues : ['none']);
+                      }}
+                    >
+                      <Button variant="outline" className="w-full justify-between text-left">
+                        <span className="truncate">
+                          {displayText}
+                        </span>
+                        <Settings className="h-4 w-4 ml-2 shrink-0" />
+                      </Button>
+                    </IncidentDetailsDialog>
+                  </TableCell>;
+                }
+
                 return <TableCell key={device}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
