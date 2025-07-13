@@ -144,7 +144,7 @@ const AuditList = () => {
         </CardHeader>
         <CardContent className="p-6 pt-0">
           <div className="flex justify-center items-center max-h-full ">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch w-full max-w-6xl">
+            <div className="grid grid-cols-1 grid-cols-3 gap-8 items-stretch max-h-full w-full max-w-8xl">
             <div className="h-12">
               <DatePickerWithRange date={dateRange} setDate={setDateRange} className="w-full h-full" />
             </div>
