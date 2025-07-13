@@ -122,31 +122,29 @@ const IncidentDetails = () => {
     );
   }
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'critical';
+      case 'medium': return 'medium';
+      case 'low': return 'low';
+      default: return 'hpe';
     }
   };
-
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'open': return 'bg-red-100 text-red-800';
-      case 'in progress': return 'bg-blue-100 text-blue-800';
-      case 'resolved': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'open': return 'critical';
+      case 'in progress': return 'medium';
+      case 'resolved': return 'low';
+      default: return 'outline';
     }
   };
-
-  const getTypeColor = (type: string) => {
+  const getTypeVariant = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'power': return 'bg-orange-100 text-orange-800';
-      case 'environmental': return 'bg-blue-100 text-blue-800';
-      case 'network': return 'bg-purple-100 text-purple-800';
-      case 'hardware': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'power': return 'hpe';
+      case 'environmental': return 'medium';
+      case 'network': return 'low';
+      case 'hardware': return 'outline';
+      default: return 'outline';
     }
   };
 
@@ -242,7 +240,7 @@ const IncidentDetails = () => {
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Type</div>
-                  <Badge className={getTypeColor(incident.type)}>
+                  <Badge variant={getTypeVariant(incident.type)}>
                     {incident.type}
                   </Badge>
                 </div>
@@ -300,7 +298,7 @@ const IncidentDetails = () => {
                         <div className="font-medium text-sm">{related.id}</div>
                         <div className="text-sm text-gray-600">{related.description}</div>
                       </div>
-                      <Badge className={getStatusColor(related.status)}>
+                      <Badge variant={getStatusVariant(related.status)}>
                         {related.status}
                       </Badge>
                     </div>
@@ -321,19 +319,19 @@ const IncidentDetails = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span>Status</span>
-                <Badge className={getStatusColor(incident.status)}>
+                <Badge variant={getStatusVariant(incident.status)}>
                   {incident.status}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span>Severity</span>
-                <Badge className={getSeverityColor(incident.severity)}>
+                <Badge variant={getSeverityVariant(incident.severity)}>
                   {incident.severity}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span>Type</span>
-                <Badge className={getTypeColor(incident.type)}>
+                <Badge variant={getTypeVariant(incident.type)}>
                   {incident.type}
                 </Badge>
               </div>

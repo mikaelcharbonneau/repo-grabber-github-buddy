@@ -181,22 +181,21 @@ const Dashboard = () => {
     }
   ];
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'none': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'critical';
+      case 'medium': return 'medium';
+      case 'low': return 'low';
+      default: return 'hpe';
     }
   };
-
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'open': return 'bg-red-100 text-red-800';
-      case 'in progress': return 'bg-blue-100 text-blue-800';
-      case 'resolved': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'hpe';
+      case 'in progress': return 'medium';
+      case 'open': return 'critical';
+      case 'resolved': return 'low';
+      default: return 'outline';
     }
   };
 
@@ -272,7 +271,8 @@ const Dashboard = () => {
         {stats.map((stat) => (
           <Card 
             key={stat.title} 
-            className="hover:shadow-md transition-shadow cursor-pointer" 
+            accentColor={stat.title === 'Completed Audits' ? 'border-hpe-brand' : stat.title === 'Active Incidents' ? 'border-hpe-red' : stat.title === 'Reports Generated' ? 'border-hpe-blue' : ''}
+            className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => {
               if (stat.title === "Completed Audits") navigate("/audits");
               else if (stat.title === "Active Incidents" || stat.title === "Resolved Incidents") navigate("/incidents");
@@ -286,7 +286,7 @@ const Dashboard = () => {
               <stat.icon className={`h-4 w-4 ${stat.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-4xl font-extrabold tracking-tight">{stat.value}</div>
               <div className="flex items-center text-xs text-gray-500 mt-1">
                 {stat.changeType === 'increase' && (
                   <ArrowUp className="h-3 w-3 text-green-500 mr-1" />
@@ -336,7 +336,7 @@ const Dashboard = () => {
                     <div className="text-lg font-semibold">{audit.issues}</div>
                   </div>
                   <div className="text-right space-y-1">
-                    <Badge className={getSeverityColor(audit.severity)}>
+                    <Badge variant={getSeverityVariant(audit.severity)}>
                       {audit.severity}
                     </Badge>
                   </div>
@@ -372,10 +372,10 @@ const Dashboard = () => {
                     <div className="text-sm font-medium">{incident.assignee}</div>
                   </div>
                   <div className="text-right space-y-1">
-                    <Badge className={getSeverityColor(incident.severity)}>
+                    <Badge variant={getSeverityVariant(incident.severity)}>
                       {incident.severity}
                     </Badge>
-                    <Badge variant="outline" className={getStatusColor(incident.status)}>
+                    <Badge variant={getStatusVariant(incident.status)}>
                       {incident.status}
                     </Badge>
                   </div>

@@ -72,22 +72,20 @@ const AuditList = () => {
     }
   ];
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'none': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical': return 'critical';
+      case 'medium': return 'medium';
+      case 'low': return 'low';
+      default: return 'hpe';
     }
   };
-
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'under review': return 'bg-blue-100 text-blue-800';
-      case 'in progress': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'hpe';
+      case 'under review': return 'medium';
+      case 'in progress': return 'low';
+      default: return 'outline';
     }
   };
 
@@ -173,16 +171,16 @@ const AuditList = () => {
       {/* Audit List */}
       <div className="grid gap-4">
         {filteredAudits.map((audit) => (
-          <Card key={audit.id} className="hover:shadow-md transition-shadow">
+          <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-2 flex-1">
                   <div className="flex items-center space-x-3">
                     <h3 className="font-semibold text-lg">{audit.id}</h3>
-                    <Badge className={getSeverityColor(audit.severity)}>
+                    <Badge variant={getSeverityVariant(audit.severity)}>
                       {audit.severity}
                     </Badge>
-                    <Badge variant="outline" className={getStatusColor(audit.status)}>
+                    <Badge variant={getStatusVariant(audit.status)}>
                       {audit.status}
                     </Badge>
                   </div>
