@@ -57,8 +57,21 @@ const Reports = () => {
   const handleDatacenterChange = (datacenter: string, checked: boolean) => {
     if (checked) {
       setSelectedDatacenters([...selectedDatacenters, datacenter]);
+      // Auto-select all data halls in this datacenter
+      const dc = locationData.find(dc => dc.name === datacenter);
+      if (dc) {
+        const dataHallNames = dc.dataHalls.map(dh => dh.name);
+        const newDataHalls = [...selectedDataHalls, ...dataHallNames.filter(name => !selectedDataHalls.includes(name))];
+        setSelectedDataHalls(newDataHalls);
+      }
     } else {
       setSelectedDatacenters(selectedDatacenters.filter(dc => dc !== datacenter));
+      // Auto-deselect all data halls in this datacenter
+      const dc = locationData.find(dc => dc.name === datacenter);
+      if (dc) {
+        const dataHallNames = dc.dataHalls.map(dh => dh.name);
+        setSelectedDataHalls(selectedDataHalls.filter(dh => !dataHallNames.includes(dh)));
+      }
     }
   };
 
@@ -148,20 +161,18 @@ const Reports = () => {
                   
                   <div className="flex flex-wrap gap-4 ml-7">
                     {datacenter.dataHalls.map((dataHall) => {
-                      const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
                       return (
                         <div key={dataHall.id} className="flex items-center space-x-2">
                           <Checkbox
                             id={`dh-${datacenter.id}-${dataHall.id}`}
                             checked={selectedDataHalls.includes(dataHall.name)}
-                            disabled={!isDatacenterSelected}
                             onCheckedChange={(checked) => 
                               handleDataHallChange(dataHall.name, checked as boolean)
                             }
                           />
                           <Label 
                             htmlFor={`dh-${datacenter.id}-${dataHall.id}`} 
-                            className={`text-sm ${!isDatacenterSelected ? 'text-gray-400' : 'text-gray-700'}`}
+                            className="text-sm text-gray-700"
                           >
                             {dataHall.name}
                           </Label>
