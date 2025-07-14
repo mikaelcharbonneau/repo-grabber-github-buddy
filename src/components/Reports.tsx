@@ -198,7 +198,7 @@ const Reports = () => {
                 <div 
                   key={report.id} 
                   className="flex items-start justify-between p-3 bg-gray-50 rounded-lg cursor-pointer transition-shadow"
-                  onClick={() => navigate(`/report/details/${report.id}`)}
+                  onClick={() => navigate(`/reports/${report.id}`)}
                 >
                   <div className="space-y-1 flex-1">
                     <div className="font-medium text-sm">{report.name}</div>
