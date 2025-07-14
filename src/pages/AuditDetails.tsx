@@ -177,7 +177,8 @@ const AuditDetails = () => {
           Back to Audits
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{audit.id}</h1> <p className="text-gray-600">{audit.description}</p>
+          <h1 className="text-2xl font-bold text-gray-900">{audit.id}</h1>
+          <p className="text-gray-600">{audit.description}</p>
         </div>
       </div>
 
@@ -379,7 +380,7 @@ const AuditDetails = () => {
                 Export Data
               </Button>
               <Button variant="outline" className="w-full">
-                Create Follow-up
+                Share
               </Button>
             </CardContent>
           </Card>
