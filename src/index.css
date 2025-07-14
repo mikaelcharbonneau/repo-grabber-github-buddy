@@ -14,8 +14,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* HPE 2025 Brand - Primary HPE Green */
-    --primary: 159 82% 43%;
+    /* HPE 2025 Brand - Primary HPE Green #01A982 */
+    --primary: 159 82% 33%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 159 82% 96%;
@@ -32,12 +32,12 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 159 82% 43%;
+    --ring: 159 82% 33%;
 
     --radius: 0.5rem;
 
-    /* HPE 2025 Updated Brand Colors */
-    --hpe-green-brand: 159 82% 43%; /* #01a982 - Primary brand green */
+    /* HPE 2025 Updated Brand Colors - Updated to #01A982 */
+    --hpe-green-brand: 159 82% 33%; /* #01A982 - Primary brand green */
     --hpe-green-light: 159 82% 62%; /* #17eba0 - Light variant */
     --hpe-green-emphasis: 174 100% 58%; /* #00e8cf - Teal emphasis */
     
@@ -79,157 +79,44 @@
     --hpe-shadow-md: 0 4px 6px -1px hsl(var(--hpe-gray-900) / 0.1), 0 2px 4px -1px hsl(var(--hpe-gray-900) / 0.06);
     --hpe-shadow-lg: 0 10px 15px -3px hsl(var(--hpe-gray-900) / 0.1), 0 4px 6px -2px hsl(var(--hpe-gray-900) / 0.05);
     --hpe-shadow-brand: 0 10px 30px -10px hsl(var(--hpe-green-brand) / 0.3);
-    --hpe-shadow-glow: 0 0 40px hsl(var(--hpe-green-emphasis) / 0.4);
-    
-    /* HPE Animation Timing */
-    --hpe-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --hpe-transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    --hpe-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-    --hpe-transition-bounce: 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 159 82% 33%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 159 82% 33%;
+  }
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
-    font-family: 'Metric', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-@layer utilities {
-  /* HPE 2025 Brand Utilities */
-  .hpe-gradient {
-    background: var(--hpe-gradient-primary);
-  }
-  
-  .hpe-gradient-hero {
-    background: var(--hpe-gradient-hero);
-  }
-  
-  .hpe-gradient-accent {
-    background: var(--hpe-gradient-accent);
-  }
-  
-  /* HPE Brand Colors */
-  .text-hpe-brand {
-    color: hsl(var(--hpe-green-brand));
-  }
-  
-  .bg-hpe-brand {
-    background-color: hsl(var(--hpe-green-brand));
-  }
-  
-  .bg-hpe-brand-light {
-    background-color: hsl(var(--hpe-green-light));
-  }
-  
-  .border-hpe-brand {
-    border-color: hsl(var(--hpe-green-brand));
-  }
-  
-  /* HPE Shadows */
-  .shadow-hpe-brand {
-    box-shadow: var(--hpe-shadow-brand);
-  }
-  
-  .shadow-hpe-glow {
-    box-shadow: var(--hpe-shadow-glow);
-  }
-  
-  /* HPE Animations */
-  .animate-hpe-pulse {
-    animation: hpe-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  
-  .animate-hpe-bounce {
-    animation: hpe-bounce 1s var(--hpe-transition-bounce) infinite;
-  }
-  
-  .animate-hpe-glow {
-    animation: hpe-glow 3s ease-in-out infinite alternate;
-  }
-  
-  .transition-hpe-fast {
-    transition: all var(--hpe-transition-fast);
-  }
-  
-  .transition-hpe {
-    transition: all var(--hpe-transition-base);
-  }
-  
-  .transition-hpe-slow {
-    transition: all var(--hpe-transition-slow);
-  }
-  
-  /* HPE Interactive Elements */
-  .hpe-button-primary {
-    @apply bg-hpe-brand text-white hover:shadow-hpe-brand transition-hpe;
-  }
-  
-  .hpe-button-secondary {
-    @apply border-hpe-brand text-hpe-brand hover:bg-hpe-brand hover:text-white transition-hpe;
-  }
-  
-  .hpe-card {
-    @apply bg-card rounded-lg border border-border shadow-lg transition-hpe hover:shadow-hpe-brand;
-  }
-  
-  .hpe-glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
-  }
-  
-  /* HPE Typography */
-  .hpe-heading {
-    font-family: 'Metric', 'Inter', sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.025em;
-  }
-  
-  .hpe-text {
-    font-family: 'Metric', 'Inter', sans-serif;
-    font-weight: 400;
-  }
-}
-
-@keyframes hpe-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.02);
-  }
-}
-
-@keyframes hpe-bounce {
-  0%, 20%, 53%, 80%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  40%, 43% {
-    transform: translate3d(0, -8px, 0);
-  }
-  70% {
-    transform: translate3d(0, -4px, 0);
-  }
-  90% {
-    transform: translate3d(0, -2px, 0);
-  }
-}
-
-@keyframes hpe-glow {
-  from {
-    filter: drop-shadow(0 0 20px hsl(var(--hpe-green-brand) / 0.6));
-  }
-  to {
-    filter: drop-shadow(0 0 40px hsl(var(--hpe-green-emphasis) / 0.8));
   }
 }
