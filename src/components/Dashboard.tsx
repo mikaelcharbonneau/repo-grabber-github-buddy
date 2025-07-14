@@ -23,36 +23,38 @@ const Dashboard = () => {
   const [recentReports, setRecentReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
         // Fetch recent audits
-        const { data: audits, error: auditsError } = await supabase
-          .from('audits')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
+        const {
+          data: audits,
+          error: auditsError
+        } = await supabase.from('audits').select('*').order('created_at', {
+          ascending: false
+        }).limit(5);
         if (auditsError) throw auditsError;
         setRecentAudits(audits || []);
 
         // Fetch recent incidents
-        const { data: incidents, error: incidentsError } = await supabase
-          .from('incidents')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
+        const {
+          data: incidents,
+          error: incidentsError
+        } = await supabase.from('incidents').select('*').order('created_at', {
+          ascending: false
+        }).limit(5);
         if (incidentsError) throw incidentsError;
         setRecentIncidents(incidents || []);
 
         // Fetch recent reports
-        const { data: reports, error: reportsError } = await supabase
-          .from('reports')
-          .select('*')
-          .order('generated_at', { ascending: false })
-          .limit(5);
+        const {
+          data: reports,
+          error: reportsError
+        } = await supabase.from('reports').select('*').order('generated_at', {
+          ascending: false
+        }).limit(5);
         if (reportsError) throw reportsError;
         setRecentReports(reports || []);
       } catch (err: any) {
@@ -140,7 +142,7 @@ const Dashboard = () => {
               </div>
               <div className="bg-inherit"></div>
               <div className="flex justify-end">
-                <Button onClick={() => navigate('/audit/start')} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+                <Button onClick={() => navigate('/audit/start')} className="text-white bg-emerald-600 hover:bg-emerald-500">
                   <Plus className="mr-2 h-4 w-4" />
                   Start New Audit
                 </Button>
