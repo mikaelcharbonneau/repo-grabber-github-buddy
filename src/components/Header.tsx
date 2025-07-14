@@ -1,4 +1,4 @@
-import { Bell, Search, Settings, User, LogOut } from "lucide-react";
+import { Bell, Search, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -7,8 +7,6 @@ import { Grid2x2, Clipboard, Shield, Database, Plus, Filter, FileText, Calendar 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/useAuth";
-import { NotificationCenter } from "./NotificationCenter";
 const NotificationItem = ({
   notification,
   onClick
@@ -57,7 +55,6 @@ const NavigationItem = ({
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, profile, userRoles, signOut, hasRole } = useAuth();
 
   // Sample notifications data
   const [notifications, setNotifications] = useState([{
@@ -113,21 +110,6 @@ const Header = () => {
       ...n,
       read: true
     })));
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
-  const getUserDisplayName = () => {
-    return profile?.display_name || user?.email?.split('@')[0] || 'User';
-  };
-
-  const getPrimaryRole = () => {
-    if (hasRole('admin')) return 'Administrator';
-    if (hasRole('manager')) return 'Manager';
-    if (hasRole('technician')) return 'Technician';
-    return 'Viewer';
   };
 
   // Helper function to determine if a route is active
@@ -202,39 +184,61 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* Notification Center */}
-          <NotificationCenter />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
+                {unreadCount > 0 && <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {unreadCount}
+                  </span>}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80 p-0">
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900">Notifications</h3>
+                  {unreadCount > 0 && <Button variant="ghost" size="sm" className="text-xs" onClick={markAllAsRead}>
+                      Mark all as read
+                    </Button>}
+                </div>
+                {unreadCount > 0 && <div className="text-sm text-gray-500 mt-1">
+                    {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+                  </div>}
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                {notifications.length === 0 ? <div className="p-6 text-center text-gray-500">
+                    <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                    <p>No notifications</p>
+                  </div> : notifications.map(notification => <NotificationItem key={notification.id} notification={notification} onClick={() => markAsRead(notification.id)} />)}
+              </div>
+              {notifications.length > 0 && <div className="p-3 border-t border-gray-200">
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => {/* Navigate to notifications page */}}>
+                    View All Notifications
+                  </Button>
+                </div>}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+              <Button variant="ghost" size="sm">
                 <User className="h-5 w-5" />
-                <span className="hidden md:inline text-sm">{getUserDisplayName()}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>{getUserDisplayName()}</DropdownMenuLabel>
+              <DropdownMenuLabel>John Doe</DropdownMenuLabel>
               <DropdownMenuLabel className="text-sm font-normal text-gray-500">
-                {getPrimaryRole()}
-                {profile?.department && ` • ${profile.department}`}
-              </DropdownMenuLabel>
-              <DropdownMenuLabel className="text-xs font-normal text-gray-400">
-                {user?.email}
+                Field Technician
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {(hasRole('admin') || hasRole('manager')) && (
-                <DropdownMenuItem>
-                  <div className="flex items-center w-full cursor-pointer" onClick={() => navigate("/settings")}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </div>
-                </DropdownMenuItem>
-              )}
               <DropdownMenuItem>
-                <div className="flex items-center w-full cursor-pointer" onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
+                <div className="flex items-center w-full cursor-pointer" onClick={() => navigate("/settings")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
                 </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
