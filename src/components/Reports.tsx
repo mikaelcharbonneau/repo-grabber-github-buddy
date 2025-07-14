@@ -164,15 +164,15 @@ const Reports = () => {
                       
                       return (
                         <div key={datacenter.id} className="xl:col-span-2 space-y-2">
-                          <div className="text-sm font-medium text-gray-700">
+                          <div className="text-sm font-medium text-gray-700 h-5 flex items-center">
                             {datacenter.name}
                           </div>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-2">
                               {firstHalf.map((dataHall) => {
                                 const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
                                 return (
-                                  <div key={dataHall.id} className="flex items-center space-x-2">
+                                  <div key={dataHall.id} className="flex items-center space-x-2 h-6">
                                     <Checkbox
                                       id={`dh-${datacenter.id}-${dataHall.id}`}
                                       checked={selectedDataHalls.includes(dataHall.name)}
@@ -195,7 +195,7 @@ const Reports = () => {
                               {secondHalf.map((dataHall) => {
                                 const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
                                 return (
-                                  <div key={dataHall.id} className="flex items-center space-x-2">
+                                  <div key={dataHall.id} className="flex items-center space-x-2 h-6">
                                     <Checkbox
                                       id={`dh-${datacenter.id}-${dataHall.id}`}
                                       checked={selectedDataHalls.includes(dataHall.name)}
@@ -222,14 +222,14 @@ const Reports = () => {
                     // Regular single column for other datacenters
                     return (
                       <div key={datacenter.id} className="space-y-2">
-                        <div className="text-sm font-medium text-gray-700">
+                        <div className="text-sm font-medium text-gray-700 h-5 flex items-center">
                           {datacenter.name}
                         </div>
                         <div className="space-y-2">
                           {datacenter.dataHalls.map((dataHall) => {
                             const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
                             return (
-                              <div key={dataHall.id} className="flex items-center space-x-2">
+                              <div key={dataHall.id} className="flex items-center space-x-2 h-6">
                                 <Checkbox
                                   id={`dh-${datacenter.id}-${dataHall.id}`}
                                   checked={selectedDataHalls.includes(dataHall.name)}
