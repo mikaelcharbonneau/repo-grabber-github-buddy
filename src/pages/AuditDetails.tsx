@@ -2,19 +2,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Clock, 
-  User, 
-  AlertTriangle,
-  CheckCircle,
-  Calendar,
-  FileText
-} from "lucide-react";
-
+import { ArrowLeft, MapPin, Clock, User, AlertTriangle, CheckCircle, Calendar, FileText } from "lucide-react";
 const AuditDetails = () => {
-  const { id } = useParams();
+  const {
+    id
+  } = useParams();
   const navigate = useNavigate();
 
   // Mock audit data - in a real app, this would come from an API
@@ -31,33 +23,44 @@ const AuditDetails = () => {
       description: "Routine quarterly inspection",
       duration: "2 hours 15 minutes",
       completedAt: "2024-01-15 16:45",
-      findings: [
-        {
-          id: 1,
-          type: "Temperature Warning",
-          location: "Rack-15 / PDU-A15-001",
-          severity: "Medium",
-          description: "Temperature sensor reading 28°C - above normal threshold",
-          resolved: true,
-          resolvedAt: "2024-01-15 17:30"
-        },
-        {
-          id: 2,
-          type: "Communication Failure",
-          location: "Rack-23 / Switch-A23-002",
-          severity: "Low",
-          description: "Intermittent network connectivity issues detected",
-          resolved: false,
-          assignedTo: "Network Team"
-        }
-      ],
-      checklist: [
-        { item: "Power Distribution Units", status: "Completed", issues: 1 },
-        { item: "Environmental Controls", status: "Completed", issues: 0 },
-        { item: "Network Equipment", status: "Completed", issues: 1 },
-        { item: "Security Systems", status: "Completed", issues: 0 },
-        { item: "Fire Suppression", status: "Completed", issues: 0 }
-      ]
+      findings: [{
+        id: 1,
+        type: "Temperature Warning",
+        location: "Rack-15 / PDU-A15-001",
+        severity: "Medium",
+        description: "Temperature sensor reading 28°C - above normal threshold",
+        resolved: true,
+        resolvedAt: "2024-01-15 17:30"
+      }, {
+        id: 2,
+        type: "Communication Failure",
+        location: "Rack-23 / Switch-A23-002",
+        severity: "Low",
+        description: "Intermittent network connectivity issues detected",
+        resolved: false,
+        assignedTo: "Network Team"
+      }],
+      checklist: [{
+        item: "Power Distribution Units",
+        status: "Completed",
+        issues: 1
+      }, {
+        item: "Environmental Controls",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Network Equipment",
+        status: "Completed",
+        issues: 1
+      }, {
+        item: "Security Systems",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Fire Suppression",
+        status: "Completed",
+        issues: 0
+      }]
     },
     "AUD-2024-002": {
       id: "AUD-2024-002",
@@ -72,13 +75,27 @@ const AuditDetails = () => {
       duration: "1 hour 45 minutes",
       completedAt: "2024-01-14 11:00",
       findings: [],
-      checklist: [
-        { item: "Power Distribution Units", status: "Completed", issues: 0 },
-        { item: "Environmental Controls", status: "Completed", issues: 0 },
-        { item: "Network Equipment", status: "Completed", issues: 0 },
-        { item: "Security Systems", status: "Completed", issues: 0 },
-        { item: "Fire Suppression", status: "Completed", issues: 0 }
-      ]
+      checklist: [{
+        item: "Power Distribution Units",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Environmental Controls",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Network Equipment",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Security Systems",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Fire Suppression",
+        status: "Completed",
+        issues: 0
+      }]
     },
     "AUD-2024-003": {
       id: "AUD-2024-003",
@@ -92,87 +109,91 @@ const AuditDetails = () => {
       description: "Emergency inspection - power anomalies",
       duration: "3 hours 20 minutes",
       completedAt: "2024-01-13 20:05",
-      findings: [
-        {
-          id: 1,
-          type: "Overcurrent Alarm",
-          location: "Rack-10 / PDU-C10-001",
-          severity: "Critical",
-          description: "PDU exceeding 90% capacity - immediate action required",
-          resolved: false,
-          assignedTo: "Power Team"
-        },
-        {
-          id: 2,
-          type: "Fan Failure",
-          location: "Rack-15 / Server-C15-003",
-          severity: "Medium",
-          description: "Primary cooling fan failure detected",
-          resolved: true,
-          resolvedAt: "2024-01-14 08:30"
-        }
-      ],
-      checklist: [
-        { item: "Power Distribution Units", status: "Completed", issues: 3 },
-        { item: "Environmental Controls", status: "Completed", issues: 1 },
-        { item: "Network Equipment", status: "Completed", issues: 0 },
-        { item: "Security Systems", status: "Completed", issues: 1 },
-        { item: "Fire Suppression", status: "Completed", issues: 0 }
-      ]
+      findings: [{
+        id: 1,
+        type: "Overcurrent Alarm",
+        location: "Rack-10 / PDU-C10-001",
+        severity: "Critical",
+        description: "PDU exceeding 90% capacity - immediate action required",
+        resolved: false,
+        assignedTo: "Power Team"
+      }, {
+        id: 2,
+        type: "Fan Failure",
+        location: "Rack-15 / Server-C15-003",
+        severity: "Medium",
+        description: "Primary cooling fan failure detected",
+        resolved: true,
+        resolvedAt: "2024-01-14 08:30"
+      }],
+      checklist: [{
+        item: "Power Distribution Units",
+        status: "Completed",
+        issues: 3
+      }, {
+        item: "Environmental Controls",
+        status: "Completed",
+        issues: 1
+      }, {
+        item: "Network Equipment",
+        status: "Completed",
+        issues: 0
+      }, {
+        item: "Security Systems",
+        status: "Completed",
+        issues: 1
+      }, {
+        item: "Fire Suppression",
+        status: "Completed",
+        issues: 0
+      }]
     }
   };
-
   const audit = auditData[id] || null;
-
   if (!audit) {
-    return (
-      <div className="p-6 max-w-4xl mx-auto">
+    return <div className="p-6 max-w-4xl mx-auto">
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-gray-500">
               <AlertTriangle className="mx-auto h-12 w-12 mb-4" />
               <h3 className="text-lg font-medium mb-2">Audit Not Found</h3>
               <p>The requested audit could not be found.</p>
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => navigate("/audits")}
-              >
+              <Button variant="outline" className="mt-4" onClick={() => navigate("/audits")}>
                 Back to Audits
               </Button>
             </div>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'critical';
-      case 'medium': return 'medium';
-      case 'low': return 'low';
-      default: return 'hpe';
+      case 'critical':
+        return 'critical';
+      case 'medium':
+        return 'medium';
+      case 'low':
+        return 'low';
+      default:
+        return 'hpe';
     }
   };
   const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'hpe';
-      case 'under review': return 'medium';
-      case 'in progress': return 'low';
-      default: return 'outline';
+      case 'completed':
+        return 'hpe';
+      case 'under review':
+        return 'medium';
+      case 'in progress':
+        return 'low';
+      default:
+        return 'outline';
     }
   };
-
-  return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+  return <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center space-x-4">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => navigate("/audits")}
-        >
+        <Button variant="outline" size="sm" onClick={() => navigate("/audits")}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Audits
         </Button>
@@ -260,15 +281,13 @@ const AuditDetails = () => {
                     <div className="text-sm text-gray-500">{audit.completedAt}</div>
                   </div>
                 </div>
-                {audit.status === "Completed" && (
-                  <div className="flex items-center space-x-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                {audit.status === "Completed" && <div className="flex items-center space-x-4">
+                    <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
                     <div className="flex-1">
                       <div className="font-medium">Audit Finalized</div>
                       <div className="text-sm text-gray-500">{audit.completedAt}</div>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
             </CardContent>
           </Card>
@@ -282,16 +301,12 @@ const AuditDetails = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {audit.findings.length === 0 ? (
-                <div className="text-center py-8">
-                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+              {audit.findings.length === 0 ? <div className="text-center py-8">
+                  <CheckCircle className="h-12 w-12 text-emerald-600 mx-auto mb-4" />
                   <div className="text-lg font-medium text-gray-900">No Issues Found</div>
                   <div className="text-gray-500">All systems operating normally</div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {audit.findings.map((finding) => (
-                    <div key={finding.id} className="border rounded-lg p-4">
+                </div> : <div className="space-y-4">
+                  {audit.findings.map(finding => <div key={finding.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <div className="font-medium">{finding.type}</div>
@@ -299,21 +314,15 @@ const AuditDetails = () => {
                           <div className="text-sm text-gray-700 mt-1">{finding.description}</div>
                         </div>
                       </div>
-                      {finding.resolved ? (
-                        <div className="flex items-center space-x-2 text-green-600">
+                      {finding.resolved ? <div className="flex items-center space-x-2 text-green-600">
                           <CheckCircle className="h-4 w-4" />
                           <span className="text-sm">Resolved on {finding.resolvedAt}</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-2 text-orange-600">
+                        </div> : <div className="flex items-center space-x-2 text-orange-600">
                           <AlertTriangle className="h-4 w-4" />
                           <span className="text-sm">Assigned to {finding.assignedTo}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                        </div>}
+                    </div>)}
+                </div>}
             </CardContent>
           </Card>
         </div>
@@ -333,12 +342,35 @@ const AuditDetails = () => {
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
+                <span>Severity</span>
+                <span className="font-medium">{audit.severity}</span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span>Issues</span>
                 <span className="font-medium">{audit.issues}</span>
               </div>
             </CardContent>
           </Card>
 
+          {/* Checklist */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Inspection Checklist</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {audit.checklist.map((item, index) => <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">{item.item}</span>
+                    </div>
+                    {item.issues > 0 && <Badge variant="outline" className="text-xs">
+                        {item.issues} issues
+                      </Badge>}
+                  </div>)}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Actions */}
           <Card>
@@ -359,8 +391,6 @@ const AuditDetails = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AuditDetails;
