@@ -41,27 +41,11 @@ const Auth: React.FC = () => {
       {/* Header with HPE Logo */}
       <header className="px-8 py-6">
         <div className="flex items-center">
-          <svg
-            width="90"
-            height="32"
-            viewBox="0 0 90 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+          <img
+            src="/lovable-uploads/8fa9c8bc-6cf8-4cdb-a2ca-8b12c4b39afb.png"
+            alt="HPE"
             className="h-8"
-          >
-            <path
-              d="M0 5.33333V26.6667H6.22222V18.6667H17.7778V26.6667H24V5.33333H17.7778V13.3333H6.22222V5.33333H0Z"
-              fill="#01a982"
-            />
-            <path
-              d="M28.4444 5.33333V26.6667H34.6667V18.6667H42.2222C47.0889 18.6667 50.6667 15.0889 50.6667 10.2222V10.2222C50.6667 5.35556 47.0889 1.77778 42.2222 1.77778H28.4444V5.33333ZM34.6667 13.3333V7.11111H41.3333C42.8 7.11111 44 8.31111 44 9.77778V9.77778C44 11.2444 42.8 12.4444 41.3333 12.4444H34.6667V13.3333Z"
-              fill="#425563"
-            />
-            <path
-              d="M56 5.33333V26.6667H74.6667V21.3333H62.2222V18.6667H73.7778V13.3333H62.2222V10.6667H74.6667V5.33333H56Z"
-              fill="#425563"
-            />
-          </svg>
+          />
         </div>
       </header>
 
