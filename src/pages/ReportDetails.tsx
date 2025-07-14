@@ -182,7 +182,7 @@ const ReportDetails = () => {
             {report.status}
           </Badge>
           {report.status === "Ready" && (
-            <Button className="bg-hpe-green hover:bg-hpe-green/90">
+            <Button className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
               <Download className="h-4 w-4 mr-2" />
               Download {report.format}
             </Button>
@@ -276,7 +276,7 @@ const ReportDetails = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Object.entries(report.summary).map(([key, value]) => (
                   <div key={key} className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-hpe-green">{String(value)}</div>
+                    <div className="text-2xl font-bold text-hpe-brand">{String(value)}</div>
                     <div className="text-sm text-gray-600 capitalize">
                       {key.replace(/([A-Z])/g, ' $1').trim()}
                     </div>
@@ -296,8 +296,8 @@ const ReportDetails = () => {
                 {report.sections.map((section, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-hpe-green-light rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-hpe-green">{index + 1}</span>
+                      <div className="w-8 h-8 bg-hpe-brand/10 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-medium text-hpe-brand">{index + 1}</span>
                       </div>
                       <span className="font-medium">{section.name}</span>
                     </div>
