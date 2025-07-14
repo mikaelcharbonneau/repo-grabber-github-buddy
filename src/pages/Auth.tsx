@@ -103,26 +103,6 @@ const Auth: React.FC = () => {
                 Next
               </Button>
 
-              {/* OR divider */}
-              <div className="my-8">
-                <div className="text-center text-gray-500 text-sm font-normal">
-                  OR
-                </div>
-              </div>
-
-              {/* Certificate Sign In Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCertificateSignIn}
-                disabled={certificateLoading}
-                className="w-full border-2 border-gray-400 text-gray-700 py-3 px-6 rounded-full text-base font-medium hover:bg-gray-50 transition-colors"
-              >
-                {certificateLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Sign in with Partner Certificate
-              </Button>
             </form>
           </div>
         </div>
