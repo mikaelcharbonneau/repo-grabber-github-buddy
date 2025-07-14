@@ -43,7 +43,7 @@ const Auth: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 bg-zinc-50">
-        <div className="w-full max-w-md bg-white rounded-sm px-[20px] py-[20px]">
+        <div className="w-full max-w-md bg-white px-[20px] py-[20px] rounded">
           {/* Sign In Form */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-normal text-gray-800 mb-12 text-left">Sign In</h1>
@@ -54,7 +54,7 @@ const Auth: React.FC = () => {
                 <Label htmlFor="username" className="block text-sm font-normal text-gray-700 mb-2">
                   Username
                 </Label>
-                <Input id="username" type="text" value={username} onChange={e => setUsername(e.target.value)} required className="w-full px-4 py-3 border-2 border-black-400 rounded-none focus:border-black-500 focus:ring-0 text-base" />
+                <Input id="username" type="text" value={username} onChange={e => setUsername(e.target.value)} required className="w-full px-4 py-3 border-2 border-black-400 focus:border-black-500 focus:ring-0 text-base rounded" />
               </div>
 
               {/* Remember me checkbox */}
