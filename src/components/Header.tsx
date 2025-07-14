@@ -1,4 +1,4 @@
-import { Bell, Search, Settings, User } from "lucide-react";
+import { Bell, Search, Settings, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import { Grid2x2, Clipboard, Shield, Database, Plus, Filter, FileText, Calendar 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 const NotificationItem = ({
   notification,
   onClick
@@ -55,6 +56,7 @@ const NavigationItem = ({
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, profile, userRoles, signOut, hasRole } = useAuth();
 
   // Sample notifications data
   const [notifications, setNotifications] = useState([{
@@ -110,6 +112,21 @@ const Header = () => {
       ...n,
       read: true
     })));
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  const getUserDisplayName = () => {
+    return profile?.display_name || user?.email?.split('@')[0] || 'User';
+  };
+
+  const getPrimaryRole = () => {
+    if (hasRole('admin')) return 'Administrator';
+    if (hasRole('manager')) return 'Manager';
+    if (hasRole('technician')) return 'Technician';
+    return 'Viewer';
   };
 
   // Helper function to determine if a route is active
@@ -221,24 +238,34 @@ const Header = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2">
                 <User className="h-5 w-5" />
+                <span className="hidden md:inline text-sm">{getUserDisplayName()}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>John Doe</DropdownMenuLabel>
+              <DropdownMenuLabel>{getUserDisplayName()}</DropdownMenuLabel>
               <DropdownMenuLabel className="text-sm font-normal text-gray-500">
-                Field Technician
+                {getPrimaryRole()}
+                {profile?.department && ` • ${profile.department}`}
+              </DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs font-normal text-gray-400">
+                {user?.email}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              {(hasRole('admin') || hasRole('manager')) && (
+                <DropdownMenuItem>
+                  <div className="flex items-center w-full cursor-pointer" onClick={() => navigate("/settings")}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </div>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem>
-                <div className="flex items-center w-full cursor-pointer" onClick={() => navigate("/settings")}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                <div className="flex items-center w-full cursor-pointer" onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
                 </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

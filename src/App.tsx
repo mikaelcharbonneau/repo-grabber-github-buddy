@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
+import { AuthProvider } from "@/hooks/useAuth";
 
 import AppLayout from "./components/AppLayout";
 
@@ -36,12 +37,14 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter>
-            <AppLayout />
-            {/* Toast notifications */}
-            <Toaster />
-            <Sonner />
-            {/* Screen reader announcements */}
-            <div id="sr-announcements" className="sr-only" aria-live="polite" aria-atomic="true" />
+            <AuthProvider>
+              <AppLayout />
+              {/* Toast notifications */}
+              <Toaster />
+              <Sonner />
+              {/* Screen reader announcements */}
+              <div id="sr-announcements" className="sr-only" aria-live="polite" aria-atomic="true" />
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
