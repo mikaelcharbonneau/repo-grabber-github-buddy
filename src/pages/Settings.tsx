@@ -30,9 +30,9 @@ const Settings = () => {
           <Card>
             <CardContent className="p-4">
               <nav className="space-y-2">
-                <div className="flex items-center space-x-2 p-2 bg-hpe-green-light rounded-md">
-                  <User className="h-4 w-4 text-hpe-green" />
-                  <span className="text-sm font-medium text-hpe-green">Profile</span>
+                <div className="flex items-center space-x-2 p-2 bg-hpe-brand/10 rounded-md">
+                  <User className="h-4 w-4 text-hpe-brand" />
+                  <span className="text-sm font-medium text-hpe-brand">Profile</span>
                 </div>
                 <div className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-md cursor-pointer">
                   <Bell className="h-4 w-4 text-gray-500" />
@@ -251,7 +251,7 @@ const Settings = () => {
             <Button variant="outline">
               Cancel
             </Button>
-            <Button className="bg-hpe-green hover:bg-hpe-green/90">
+            <Button className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
               <Save className="mr-2 h-4 w-4" />
               Save Changes
             </Button>

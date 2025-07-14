@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { locationData, getDataHallsByDatacenter } from "@/data/locations";
 import { DateRange } from "react-day-picker";
+import { supabase } from "@/lib/supabaseClient";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
@@ -15,6 +16,53 @@ const Dashboard = () => {
     dataHall: "all"
   });
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  // Supabase state
+  const [recentAudits, setRecentAudits] = useState<any[]>([]);
+  const [recentIncidents, setRecentIncidents] = useState<any[]>([]);
+  const [recentReports, setRecentReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Fetch recent audits
+        const { data: audits, error: auditsError } = await supabase
+          .from('audits')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(5);
+        if (auditsError) throw auditsError;
+        setRecentAudits(audits || []);
+
+        // Fetch recent incidents
+        const { data: incidents, error: incidentsError } = await supabase
+          .from('incidents')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(5);
+        if (incidentsError) throw incidentsError;
+        setRecentIncidents(incidents || []);
+
+        // Fetch recent reports
+        const { data: reports, error: reportsError } = await supabase
+          .from('reports')
+          .select('*')
+          .order('generated_at', { ascending: false })
+          .limit(5);
+        if (reportsError) throw reportsError;
+        setRecentReports(reports || []);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Get available data halls based on selected datacenter
   const availableDataHalls = filters.datacenter === "all" ? [] : getDataHallsByDatacenter(filters.datacenter);
@@ -55,98 +103,6 @@ const Dashboard = () => {
     changeType: "increase" as const,
     icon: FileText,
     color: "text-purple-600"
-  }];
-  const recentAudits = [{
-    id: "AUDIT #22",
-    location: "Quebec, Canada - Island 1",
-    technician: "John Doe",
-    date: "2024-01-15",
-    issues: 2,
-    severity: "Medium"
-  }, {
-    id: "AUDIT #21",
-    location: "Rjukan, Norway - Island 1",
-    technician: "Jane Smith",
-    date: "2024-01-14",
-    issues: 0,
-    severity: "None"
-  }, {
-    id: "AUDIT #20",
-    location: "Dallas, United States - Island 3",
-    technician: "Mike Johnson",
-    date: "2024-01-13",
-    issues: 5,
-    severity: "Critical"
-  }];
-  const recentIncidents = [{
-    id: "INC-2024-045",
-    location: "DC-EAST / Hall-A / Rack-15",
-    description: "PDU overcurrent alarm",
-    severity: "Critical",
-    status: "Open",
-    assignee: "Tech Team Alpha"
-  }, {
-    id: "INC-2024-044",
-    location: "DC-WEST / Hall-B / Rack-08",
-    description: "Temperature sensor offline",
-    severity: "Medium",
-    status: "In Progress",
-    assignee: "Tech Team Beta"
-  }];
-  const recentReports = [{
-    id: "RPT-2024-001",
-    reportType: "Incidents",
-    location: "Quebec, Canada - All Datahalls",
-    description: "Incidents from 2025-01-01 to 2025-01-15",
-    generated: "2024-01-15 16:30",
-    size: "2.3 MB",
-    format: "PDF",
-    status: "Ready"
-  }, {
-    id: "RPT-2024-002",
-    reportType: "Incidents",
-    location: "All Locations",
-    description: "Incidents from 2024-10-01 to 2024-12-31",
-    generated: "2024-01-14 09:15",
-    size: "1.8 MB",
-    format: "CSV",
-    status: "Ready"
-  }, {
-    id: "RPT-2024-003",
-    reportType: "Audits",
-    location: "Rjukan, Norway - Island 1",
-    description: "Audits from 2024-12-01 to 2024-12-31",
-    generated: "2024-01-13 14:45",
-    size: "945 KB",
-    format: "PDF",
-    status: "Processing"
-  }, {
-    id: "RPT-2024-004",
-    reportType: "Audits",
-    location: "All Locations",
-    description: "Audits from 2024-12-01 to 2024-12-31",
-    generated: "2024-01-12 11:20",
-    size: "1.2 MB",
-    format: "CSV",
-    status: "Ready"
-  }, {
-    id: "RPT-2024-005",
-    reportType: "Incidents",
-    location: "All Locations",
-    description: "Incidents from 2024-01-04 to 2024-01-11",
-    generated: "2024-01-11 08:45",
-    size: "678 KB",
-    format: "PDF",
-    status: "Ready"
-  }, {
-    id: "RPT-2024-006",
-    reportType: "Audits",
-    location: "All Locations",
-    description: "Audits from 2024-01-01 to 2024-01-10",
-    generated: "2024-01-10 15:30",
-    size: "3.1 MB",
-    format: "PDF",
-    status: "Ready"
   }];
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
