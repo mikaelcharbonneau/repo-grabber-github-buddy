@@ -325,9 +325,7 @@ const IncidentDetails = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span>Severity</span>
-                <Badge variant={getSeverityVariant(incident.severity)}>
-                  {incident.severity}
-                </Badge>
+                <span className="font-medium">{incident.severity}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Type</span>

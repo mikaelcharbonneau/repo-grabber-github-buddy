@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar } from "lucide-react";
+import { Download, FileText, Calendar, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { locationData } from "@/data/locations";
 
@@ -17,11 +17,11 @@ const Reports = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedDatacenters, setSelectedDatacenters] = useState<string[]>([]);
-  const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
+  const [selectedDataHalls, setSelectedDataHalls] = useState<string[]>([]);
   const [reportType, setReportType] = useState("");
 
   const datacenters = locationData.map(dc => dc.name);
-  const severities = ["Critical", "Medium", "Low"];
+
   const reportTypes = [
     { value: "audits", label: "Audits Report" },
     { value: "incidents", label: "Incidents Report" }
@@ -57,16 +57,29 @@ const Reports = () => {
   const handleDatacenterChange = (datacenter: string, checked: boolean) => {
     if (checked) {
       setSelectedDatacenters([...selectedDatacenters, datacenter]);
+      // Auto-select all data halls in this datacenter
+      const dc = locationData.find(dc => dc.name === datacenter);
+      if (dc) {
+        const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
+        const newDataHalls = [...selectedDataHalls, ...dataHallIds.filter(id => !selectedDataHalls.includes(id))];
+        setSelectedDataHalls(newDataHalls);
+      }
     } else {
       setSelectedDatacenters(selectedDatacenters.filter(dc => dc !== datacenter));
+      // Auto-deselect all data halls in this datacenter
+      const dc = locationData.find(dc => dc.name === datacenter);
+      if (dc) {
+        const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
+        setSelectedDataHalls(selectedDataHalls.filter(dh => !dataHallIds.includes(dh)));
+      }
     }
   };
 
-  const handleSeverityChange = (severity: string, checked: boolean) => {
+  const handleDataHallChange = (dataHallId: string, checked: boolean) => {
     if (checked) {
-      setSelectedSeverities([...selectedSeverities, severity]);
+      setSelectedDataHalls([...selectedDataHalls, dataHallId]);
     } else {
-      setSelectedSeverities(selectedSeverities.filter(s => s !== severity));
+      setSelectedDataHalls(selectedDataHalls.filter(dh => dh !== dataHallId));
     }
   };
 
@@ -75,7 +88,7 @@ const Reports = () => {
       reportType,
       dateRange,
       selectedDatacenters,
-      selectedSeverities
+      selectedDataHalls
     });
     // Simulate report generation
     alert("Report generation started! You will be notified when it's ready for download.");
@@ -83,18 +96,24 @@ const Reports = () => {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
-      </div>
 
       <div className="space-y-6">
         {/* Report Generation */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="mr-2 h-5 w-5" />
-              Generate New Report
-            </CardTitle>
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Reports
+              </h1>
+              <Button 
+                onClick={generateReport}
+                className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
+                disabled={!reportType}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Generate Report
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -124,62 +143,47 @@ const Reports = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label>Datacenters</Label>
-                <div className="space-y-2">
-                  {datacenters.map((datacenter) => (
-                    <div key={datacenter} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`dc-${datacenter}`}
-                        checked={selectedDatacenters.includes(datacenter)}
-                        onCheckedChange={(checked) => 
-                          handleDatacenterChange(datacenter, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`dc-${datacenter}`} className="text-sm">
-                        {datacenter}
-                      </Label>
-                    </div>
-                  ))}
+            <div className="space-y-6">
+              {locationData.map((datacenter) => (
+                <div key={datacenter.id} className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id={`dc-${datacenter.name}`}
+                      checked={selectedDatacenters.includes(datacenter.name)}
+                      onCheckedChange={(checked) => 
+                        handleDatacenterChange(datacenter.name, checked as boolean)
+                      }
+                    />
+                    <Label htmlFor={`dc-${datacenter.name}`} className="text-lg font-semibold text-gray-900">
+                      {datacenter.name}
+                    </Label>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-4 ml-7">
+                    {datacenter.dataHalls.map((dataHall) => {
+                      return (
+                        <div key={dataHall.id} className="flex items-center space-x-2">
+                           <Checkbox
+                             id={`dh-${datacenter.id}-${dataHall.id}`}
+                             checked={selectedDataHalls.includes(`${datacenter.id}-${dataHall.id}`)}
+                             onCheckedChange={(checked) => 
+                               handleDataHallChange(`${datacenter.id}-${dataHall.id}`, checked as boolean)
+                             }
+                          />
+                          <Label 
+                            htmlFor={`dh-${datacenter.id}-${dataHall.id}`} 
+                            className="text-sm text-gray-700"
+                          >
+                            {dataHall.name}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label>Severity Levels</Label>
-                <div className="space-y-2">
-                  {severities.map((severity) => (
-                    <div key={severity} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`sev-${severity}`}
-                        checked={selectedSeverities.includes(severity)}
-                        onCheckedChange={(checked) => 
-                          handleSeverityChange(severity, checked as boolean)
-                        }
-                      />
-                      <Label htmlFor={`sev-${severity}`} className="text-sm">
-                        {severity}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="flex space-x-3">
-              <Button 
-                onClick={generateReport}
-                className="bg-hpe-green hover:bg-hpe-green/90"
-                disabled={!reportType}
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Generate Report
-              </Button>
-              <Button variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule Report
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
@@ -193,8 +197,8 @@ const Reports = () => {
               {recentReports.map((report) => (
                 <div 
                   key={report.id} 
-                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-                  onClick={() => navigate(`/report/details/${report.id}`)}
+                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg cursor-pointer transition-shadow"
+                  onClick={() => navigate(`/reports/${report.id}`)}
                 >
                   <div className="space-y-1 flex-1">
                     <div className="font-medium text-sm">{report.name}</div>

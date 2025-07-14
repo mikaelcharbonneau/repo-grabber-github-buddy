@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Rack {
   id: number;
@@ -13,6 +13,7 @@ interface Issue {
   alertType: string;
   severity: string;
   timestamp: string;
+  unit?: string; // For PSU/PDU unit identification
 }
 
 const alertTypes = [
@@ -29,6 +30,27 @@ const alertTypes = [
 export const useAuditIssues = () => {
   const [racks, setRacks] = useState<Rack[]>([{ id: 1, name: "" }]);
   const [issues, setIssues] = useState<Issue[]>([]);
+
+  // Load existing issues from sessionStorage on mount
+  useEffect(() => {
+    const stored = sessionStorage.getItem('auditDetails');
+    if (stored) {
+      const auditDetails = JSON.parse(stored);
+      if (auditDetails.issues && auditDetails.issues.length > 0) {
+        // Convert audit summary issues back to matrix format
+        const matrixIssues: Issue[] = auditDetails.issues.map((issue: any, index: number) => ({
+          key: `${issue.rackId || 1}-${issue.device || issue.deviceType}-${index}`,
+          rackId: issue.rackId || 1,
+          deviceType: issue.device || issue.deviceType,
+          alertType: issue.alertType,
+          severity: issue.severity,
+          timestamp: issue.timestamp || new Date().toISOString(),
+          unit: issue.unit
+        }));
+        setIssues(matrixIssues);
+      }
+    }
+  }, []);
 
   const addRack = () => {
     const newRack = {
@@ -49,6 +71,7 @@ export const useAuditIssues = () => {
   };
 
   const updateIssue = (rackId: number, deviceType: string, alertValues: string[]) => {
+    console.log('updateIssue called:', { rackId, deviceType, alertValues });
     const rackKey = `${rackId}-${deviceType}`;
     
     if (alertValues.length === 0 || (alertValues.length === 1 && alertValues[0] === "none")) {
@@ -62,17 +85,39 @@ export const useAuditIssues = () => {
       const newIssues = alertValues
         .filter(value => value !== "none")
         .map((alertValue, index) => {
-          const alertInfo = alertTypes.find(a => a.value === alertValue);
+          console.log('Processing alertValue:', alertValue);
+          // Handle multi-level format for PSU/PDU (e.g., "PSU-1-overcurrent")
+          let unit: string | undefined;
+          let actualAlertValue: string;
+          
+          if (deviceType === "Power Supply Unit" || deviceType === "Power Distribution Unit") {
+            const parts = alertValue.split('-');
+            if (parts.length >= 3) {
+              unit = parts.slice(0, -1).join('-'); // e.g., "PSU-1" or "PDU-A"
+              actualAlertValue = parts[parts.length - 1]; // e.g., "overcurrent"
+            } else {
+              actualAlertValue = alertValue;
+            }
+          } else {
+            actualAlertValue = alertValue;
+          }
+          
+          console.log('Parsed:', { unit, actualAlertValue });
+          const alertInfo = alertTypes.find(a => a.value === actualAlertValue);
+          console.log('Alert info found:', alertInfo);
+          
           return {
             key: `${rackKey}-${index}`,
             rackId,
             deviceType,
             alertType: alertInfo?.label || "",
             severity: alertInfo?.severity || "",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            unit
           };
         });
       
+      console.log('New issues created:', newIssues);
       setIssues([...filteredIssues, ...newIssues]);
     }
   };
@@ -84,7 +129,14 @@ export const useAuditIssues = () => {
     
     return deviceIssues.map(issue => {
       const alertType = alertTypes.find(a => a.label === issue.alertType);
-      return alertType?.value || 'none';
+      const alertValue = alertType?.value || 'none';
+      
+      // For PSU/PDU devices, return combined format with unit
+      if ((deviceType === "Power Supply Unit" || deviceType === "Power Distribution Unit") && issue.unit) {
+        return `${issue.unit}-${alertValue}`;
+      }
+      
+      return alertValue;
     }).filter(value => value !== 'none');
   };
 

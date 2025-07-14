@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Filter, Shield } from "lucide-react";
 
 const IncidentList = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -112,20 +114,23 @@ const IncidentList = () => {
     return matchesSearch && matchesSeverity && matchesStatus;
   });
 
+  const handleIncidentClick = (incidentId: string) => {
+    navigate(`/incidents/${incidentId}`);
+  };
+
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Incident Management</h1>
-        <Button className="bg-hpe-green hover:bg-hpe-green/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Report New Incident
-        </Button>
-      </div>
 
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Filter & Search</CardTitle>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900">Incidents</h1>
+            <Button className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Incident
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -171,24 +176,20 @@ const IncidentList = () => {
       {/* Incident List */}
       <div className="grid gap-4">
         {filteredIncidents.map((incident) => (
-          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-md transition-shadow">
+          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => handleIncidentClick(incident.id)}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center space-x-3 flex-wrap gap-2">
                     <h3 className="font-semibold text-lg">{incident.id}</h3>
-                    <Badge variant={getSeverityVariant(incident.severity)}>
-                      {incident.severity}
-                    </Badge>
-                    <Badge variant={getStatusVariant(incident.status)}>
-                      {incident.status}
-                    </Badge>
-                    <Badge variant={getTypeVariant(incident.type)}>
-                      {incident.type}
-                    </Badge>
-                    <Badge variant="outline" className={getScopeColor(incident.scope)}>
-                      {incident.scope}
-                    </Badge>
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
                   </div>
                   <p className="text-gray-900 font-medium">{incident.description}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
@@ -201,8 +202,8 @@ const IncidentList = () => {
                     Last updated: {incident.updated}
                   </div>
                 </div>
-                <div className="flex flex-col space-y-2 ml-4">
-                  <Button variant="outline" size="sm">
+                <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
+                  <Button variant="outline" size="sm" onClick={() => handleIncidentClick(incident.id)}>
                     View Details
                   </Button>
                   <Button variant="outline" size="sm">

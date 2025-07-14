@@ -1,101 +1,111 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { AlertCircle, CheckCircle, MapPin } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 
 const AuditWalkthrough = () => {
   const navigate = useNavigate();
-  const [auditDetails, setAuditDetails] = useState(null);
-  const [issuesFound, setIssuesFound] = useState("");
+  const [currentStep, setCurrentStep] = useState(0);
 
-  useEffect(() => {
-    const stored = sessionStorage.getItem('auditDetails');
-    if (!stored) {
-      navigate("/audit/start");
-      return;
+  const steps = [
+    {
+      title: "Welcome to Audit System",
+      description: "This walkthrough will guide you through the audit process.",
+      content: "Our audit system helps you systematically inspect datacenter infrastructure and log any issues found. This ensures consistent quality and compliance across all facilities."
+    },
+    {
+      title: "Starting an Audit",
+      description: "Select your location and begin the inspection process.",
+      content: "Choose the datacenter and data hall you'll be auditing. The system will guide you through a comprehensive checklist covering power systems, environmental controls, network equipment, and security systems."
+    },
+    {
+      title: "Logging Issues",
+      description: "Document any problems or anomalies you discover.",
+      content: "Use the audit matrix to log issues by rack and device type. Each issue is automatically categorized by severity level to help prioritize resolution efforts."
+    },
+    {
+      title: "Completing Audits",
+      description: "Review and submit your findings.",
+      content: "Before submission, review all logged issues in the audit summary. Once submitted, your audit becomes part of the permanent record and generates actionable reports for management."
     }
-    setAuditDetails(JSON.parse(stored));
-  }, [navigate]);
+  ];
 
-  const handleContinue = () => {
-    if (issuesFound) {
-      const updatedDetails = {
-        ...auditDetails,
-        issuesFound: issuesFound === "yes"
-      };
-      sessionStorage.setItem('auditDetails', JSON.stringify(updatedDetails));
-      
-      if (issuesFound === "yes") {
-        navigate("/audit/issues");
-      } else {
-        navigate("/audit/summary");
-      }
+  const currentStepData = steps[currentStep];
+  const progress = ((currentStep + 1) / steps.length) * 100;
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      navigate("/audit/start");
     }
   };
 
-  if (!auditDetails) {
-    return <div>Loading...</div>;
-  }
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Audit Walkthrough</h1>
-        <div className="flex items-center space-x-2 text-gray-600">
-          <MapPin className="h-4 w-4" />
-          <span>{auditDetails.datacenter} / {auditDetails.dataHall}</span>
-        </div>
-      </div>
-
+    <div className="p-6 max-w-4xl mx-auto">
       <Card>
-        <CardHeader>
-          <CardTitle>Physical Inspection Complete</CardTitle>
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Audit System Overview</CardTitle>
+          <div className="mt-4">
+            <Progress value={progress} className="w-full" />
+            <div className="text-sm text-gray-500 mt-2">
+              Step {currentStep + 1} of {steps.length}
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <Label className="text-base font-medium">
-              Were any issues found during your walkthrough of {auditDetails.dataHall}?
-            </Label>
-            
-            <RadioGroup value={issuesFound} onValueChange={setIssuesFound}>
-              <div className="flex items-center space-x-2 p-4 border rounded-lg hover:bg-gray-50">
-                <RadioGroupItem value="yes" id="yes" />
-                <Label htmlFor="yes" className="flex items-center space-x-2 cursor-pointer flex-1">
-                  <AlertCircle className="h-5 w-5 text-orange-500" />
-                  <div>
-                    <div className="font-medium">Yes, issues found</div>
-                    <div className="text-sm text-gray-500">I need to log incidents and issues</div>
-                  </div>
-                </Label>
+          <div className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-hpe-green-light rounded-full flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-hpe-green" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-2">{currentStepData.title}</h3>
+              <p className="text-gray-600 mb-4">{currentStepData.description}</p>
+              <div className="text-left max-w-2xl mx-auto p-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-700">{currentStepData.content}</p>
               </div>
-              
-              <div className="flex items-center space-x-2 p-4 border rounded-lg hover:bg-gray-50">
-                <RadioGroupItem value="no" id="no" />
-                <Label htmlFor="no" className="flex items-center space-x-2 cursor-pointer flex-1">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <div>
-                    <div className="font-medium">No issues found</div>
-                    <div className="text-sm text-gray-500">Everything looks good</div>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
+            </div>
           </div>
 
-          <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={() => navigate("/audit/start")}>
-              Back
-            </Button>
+          <div className="flex justify-between pt-6">
             <Button 
-              onClick={handleContinue}
-              disabled={!issuesFound}
+              variant="outline" 
+              onClick={handlePrevious}
+              disabled={currentStep === 0}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+            
+            <div className="flex space-x-2">
+              {steps.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-3 h-3 rounded-full ${
+                    index === currentStep 
+                      ? 'bg-hpe-green' 
+                      : index < currentStep 
+                        ? 'bg-hpe-green-light' 
+                        : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <Button 
+              onClick={handleNext}
               className="bg-hpe-green hover:bg-hpe-green/90"
             >
-              Continue
+              {currentStep === steps.length - 1 ? 'Start Audit' : 'Next'}
+              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </CardContent>
