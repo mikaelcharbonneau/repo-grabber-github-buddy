@@ -22,20 +22,20 @@ const IncidentList = () => {
       description: "Overcurrent alarm triggered - Load exceeding 80% capacity",
       severity: "Critical",
       status: "Open",
-      assignee: "Tech Team Alpha",
+      assignee: "Javier Montoya",
       created: "2024-01-15 14:23",
       updated: "2024-01-15 15:30",
       type: "Power",
       scope: "Device"
     },
     {
-      id: "INC-Q01-X2404-U33-PSU2-01", 
-      location: "Quebec, Canada - Island 01",
-      device: "Gn-2404u33",
-      description: "Amber Light",
+      id: "INC-2024-044", 
+      location: "DC-WEST / Hall-B / Rack-08",
+      device: "TEMP-B08-003",
+      description: "Temperature sensor offline - No readings for 2 hours",
       severity: "Medium",
       status: "In Progress", 
-      assignee: "Mikael Charbonneau",
+      assignee: "Leena Saini",
       created: "2024-01-14 09:15",
       updated: "2024-01-15 08:45",
       type: "Environmental",
@@ -48,7 +48,7 @@ const IncidentList = () => {
       description: "HVAC system malfunction affecting entire data hall",
       severity: "Critical",
       status: "In Progress",
-      assignee: "Facilities Team",
+      assignee: "Mohcen Bousba",
       created: "2024-01-13 16:45",
       updated: "2024-01-15 12:00",
       type: "Environmental",
@@ -61,7 +61,7 @@ const IncidentList = () => {
       description: "Battery backup test failure - Replacement required",
       severity: "Medium",
       status: "Resolved",
-      assignee: "Tech Team Gamma",
+      assignee: "Clifford Chimezie",
       created: "2024-01-12 11:20",
       updated: "2024-01-14 16:30",
       type: "Power",
@@ -195,7 +195,7 @@ const IncidentList = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                     <div><strong>Location:</strong> {incident.location}</div>
                     <div><strong>Device:</strong> {incident.device}</div>
-                    <div><strong>Reported By:</strong> {incident.assignee}</div>
+                    <div><strong>Assigned to:</strong> {incident.assignee}</div>
                     <div><strong>Created:</strong> {incident.created}</div>
                   </div>
                   <div className="text-xs text-gray-500">
