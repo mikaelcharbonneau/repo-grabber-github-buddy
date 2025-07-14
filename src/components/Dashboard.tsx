@@ -80,14 +80,14 @@ const Dashboard = () => {
   const stats = [{
     title: "Completed Audits",
     value: "47",
-    change: "+12%",
+    change: "+12",
     changeType: "increase" as const,
     icon: ClipboardCheck,
     color: "text-hpe-brand"
   }, {
     title: "Active Incidents",
     value: "8",
-    change: "-23%",
+    change: "-5",
     changeType: "decrease" as const,
     icon: Shield,
     color: "text-orange-600"
