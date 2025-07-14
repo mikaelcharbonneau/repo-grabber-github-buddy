@@ -60,8 +60,8 @@ const Reports = () => {
       // Auto-select all data halls in this datacenter
       const dc = locationData.find(dc => dc.name === datacenter);
       if (dc) {
-        const dataHallNames = dc.dataHalls.map(dh => dh.name);
-        const newDataHalls = [...selectedDataHalls, ...dataHallNames.filter(name => !selectedDataHalls.includes(name))];
+        const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
+        const newDataHalls = [...selectedDataHalls, ...dataHallIds.filter(id => !selectedDataHalls.includes(id))];
         setSelectedDataHalls(newDataHalls);
       }
     } else {
@@ -69,17 +69,17 @@ const Reports = () => {
       // Auto-deselect all data halls in this datacenter
       const dc = locationData.find(dc => dc.name === datacenter);
       if (dc) {
-        const dataHallNames = dc.dataHalls.map(dh => dh.name);
-        setSelectedDataHalls(selectedDataHalls.filter(dh => !dataHallNames.includes(dh)));
+        const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
+        setSelectedDataHalls(selectedDataHalls.filter(dh => !dataHallIds.includes(dh)));
       }
     }
   };
 
-  const handleDataHallChange = (dataHall: string, checked: boolean) => {
+  const handleDataHallChange = (dataHallId: string, checked: boolean) => {
     if (checked) {
-      setSelectedDataHalls([...selectedDataHalls, dataHall]);
+      setSelectedDataHalls([...selectedDataHalls, dataHallId]);
     } else {
-      setSelectedDataHalls(selectedDataHalls.filter(dh => dh !== dataHall));
+      setSelectedDataHalls(selectedDataHalls.filter(dh => dh !== dataHallId));
     }
   };
 
@@ -163,12 +163,12 @@ const Reports = () => {
                     {datacenter.dataHalls.map((dataHall) => {
                       return (
                         <div key={dataHall.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`dh-${datacenter.id}-${dataHall.id}`}
-                            checked={selectedDataHalls.includes(dataHall.name)}
-                            onCheckedChange={(checked) => 
-                              handleDataHallChange(dataHall.name, checked as boolean)
-                            }
+                           <Checkbox
+                             id={`dh-${datacenter.id}-${dataHall.id}`}
+                             checked={selectedDataHalls.includes(`${datacenter.id}-${dataHall.id}`)}
+                             onCheckedChange={(checked) => 
+                               handleDataHallChange(`${datacenter.id}-${dataHall.id}`, checked as boolean)
+                             }
                           />
                           <Label 
                             htmlFor={`dh-${datacenter.id}-${dataHall.id}`} 
