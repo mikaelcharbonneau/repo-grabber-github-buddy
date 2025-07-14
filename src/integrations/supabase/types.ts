@@ -756,6 +756,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_close_incidents: {
+        Args: {
+          incident_ids: string[]
+          closed_by: string
+          resolution_note?: string
+        }
+        Returns: {
+          closed_count: number
+          failed_ids: string[]
+        }[]
+      }
+      bulk_update_cabinet_status: {
+        Args: { cabinet_ids: string[]; new_status: boolean }
+        Returns: {
+          updated_count: number
+          failed_ids: string[]
+        }[]
+      }
+      export_location_data: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       has_permission: {
         Args: { _user_id: string; _permission: string; _resource?: string }
         Returns: boolean
