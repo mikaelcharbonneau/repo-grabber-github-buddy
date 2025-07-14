@@ -197,7 +197,7 @@ const Reports = () => {
               {recentReports.map((report) => (
                 <div 
                   key={report.id} 
-                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:shadow-hpe-brand cursor-pointer transition-shadow"
+                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg cursor-pointer transition-shadow"
                   onClick={() => navigate(`/report/details/${report.id}`)}
                 >
                   <div className="space-y-1 flex-1">
