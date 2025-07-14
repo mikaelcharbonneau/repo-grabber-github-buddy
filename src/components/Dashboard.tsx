@@ -269,6 +269,10 @@ const Dashboard = () => {
                         <div className="text-sm text-gray-900">{incident.description}</div>
                         <div className="text-xs text-gray-500">{incident.location}</div>
                       </div>
+                      <div className="flex items-center gap-2 flex-1 justify-center">
+                        <div className="text-2xl font-bold">{incident.recurrence || 1}</div>
+                        <div className="text-xs text-gray-500">Incident Recurrence</div>
+                      </div>
                     </div>)}
                 </div>
               </CardContent>
