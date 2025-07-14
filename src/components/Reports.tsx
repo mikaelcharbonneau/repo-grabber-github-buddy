@@ -132,7 +132,9 @@ const Reports = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
               <div className="space-y-3">
-                <Label>Datacenters</Label>
+                <div className="text-sm font-medium text-gray-700 h-5 flex items-center">
+                  Datacenters
+                </div>
                 <div className="space-y-2">
                   {datacenters.map((datacenter) => (
                     <div key={datacenter} className="flex items-center space-x-2">
