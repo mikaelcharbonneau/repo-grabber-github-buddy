@@ -165,7 +165,7 @@ const Reports = () => {
                       const secondHalf = datacenter.dataHalls.slice(halfLength);
                       
                       return (
-                        <div key={datacenter.id} className="xl:col-span-1 min-w-fit space-y-2 pr-8">
+                        <div key={datacenter.id} className="xl:col-span-1 min-w-fit space-y-2">
                           <div className="text-sm font-medium text-gray-700 h-5 flex items-center">
                             {datacenter.name}
                           </div>
