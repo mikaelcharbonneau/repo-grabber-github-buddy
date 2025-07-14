@@ -46,7 +46,7 @@ const Auth: React.FC = () => {
         <div className="w-full max-w-md">
           {/* Sign In Form */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-normal text-gray-800 mb-12">Sign In</h1>
+            <h1 className="text-4xl font-normal text-gray-800 mb-12 text-left">Sign In</h1>
             
             <form onSubmit={handleNext} className="space-y-6">
               {/* Username Field */}
