@@ -169,7 +169,7 @@ const Reports = () => {
                           <div className="text-sm font-medium text-gray-700 h-5 flex items-center">
                             {datacenter.name}
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="grid grid-cols-2 gap-1">
                             <div className="space-y-2">
                               {firstHalf.map((dataHall) => {
                                 const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
