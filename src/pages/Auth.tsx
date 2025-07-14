@@ -42,8 +42,8 @@ const Auth: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center px-4 bg-zinc-50">
+        <div className="w-full max-w-md bg-white rounded-sm px-[20px] py-[20px]">
           {/* Sign In Form */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-normal text-gray-800 mb-12 text-left">Sign In</h1>
