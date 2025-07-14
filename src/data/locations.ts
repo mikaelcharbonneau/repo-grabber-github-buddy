@@ -69,28 +69,6 @@ export const locationData: Datacenter[] = [
     ]
   },
   {
-    id: "rjukan-norway",
-    name: "Rjukan, Norway",
-    dataHalls: [
-      {
-        id: "island-1",
-        name: "Island 1",
-        cabinets: [...sampleCabinets]
-      }
-    ]
-  },
-  {
-    id: "enebakk-norway",
-    name: "Enebakk, Norway",
-    dataHalls: [
-      {
-        id: "island-1",
-        name: "Island 1",
-        cabinets: [...sampleCabinets]
-      }
-    ]
-  },
-  {
     id: "dallas-usa",
     name: "Dallas, United States",
     dataHalls: [
@@ -123,6 +101,28 @@ export const locationData: Datacenter[] = [
       {
         id: "h20-lab",
         name: "H20 Lab",
+        cabinets: [...sampleCabinets]
+      }
+    ]
+  },
+  {
+    id: "enebakk-norway",
+    name: "Enebakk, Norway",
+    dataHalls: [
+      {
+        id: "island-1",
+        name: "Island 1",
+        cabinets: [...sampleCabinets]
+      }
+    ]
+  },
+  {
+    id: "rjukan-norway",
+    name: "Rjukan, Norway",
+    dataHalls: [
+      {
+        id: "island-1",
+        name: "Island 1",
         cabinets: [...sampleCabinets]
       }
     ]
