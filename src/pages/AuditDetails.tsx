@@ -333,10 +333,6 @@ const AuditDetails = () => {
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span>Severity</span>
-                <span className="font-medium">{audit.severity}</span>
-              </div>
-              <div className="flex items-center justify-between">
                 <span>Issues</span>
                 <span className="font-medium">{audit.issues}</span>
               </div>
