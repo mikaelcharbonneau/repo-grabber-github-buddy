@@ -174,7 +174,7 @@ const Reports = () => {
                               {firstHalf.map((dataHall) => {
                                 const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
                                 return (
-                                  <div key={dataHall.id} className="flex items-center space-x-1 h-6 max-w-28">
+                                  <div key={dataHall.id} className="flex items-center space-x-2 h-6">
                                     <Checkbox
                                       id={`dh-${datacenter.id}-${dataHall.id}`}
                                       checked={selectedDataHalls.includes(dataHall.name)}
@@ -197,7 +197,7 @@ const Reports = () => {
                               {secondHalf.map((dataHall) => {
                                 const isDatacenterSelected = selectedDatacenters.includes(datacenter.name);
                                 return (
-                                   <div key={dataHall.id} className="flex items-center space-x-1 h-6 max-w-28">
+                                  <div key={dataHall.id} className="flex items-center space-x-2 h-6">
                                     <Checkbox
                                       id={`dh-${datacenter.id}-${dataHall.id}`}
                                       checked={selectedDataHalls.includes(dataHall.name)}
