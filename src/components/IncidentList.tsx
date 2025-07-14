@@ -29,13 +29,13 @@ const IncidentList = () => {
       scope: "Device"
     },
     {
-      id: "INC-2024-044", 
-      location: "DC-WEST / Hall-B / Rack-08",
-      device: "TEMP-B08-003",
-      description: "Temperature sensor offline - No readings for 2 hours",
+      id: "INC-Q01-X2404-U33-PSU2-01", 
+      location: "Quebec, Canada - Island 01",
+      device: "Gn-2404u33",
+      description: "Amber Light",
       severity: "Medium",
       status: "In Progress", 
-      assignee: "Tech Team Beta",
+      assignee: "Mikael Charbonneau",
       created: "2024-01-14 09:15",
       updated: "2024-01-15 08:45",
       type: "Environmental",
@@ -195,7 +195,7 @@ const IncidentList = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                     <div><strong>Location:</strong> {incident.location}</div>
                     <div><strong>Device:</strong> {incident.device}</div>
-                    <div><strong>Assigned to:</strong> {incident.assignee}</div>
+                    <div><strong>Reported By:</strong> {incident.assignee}</div>
                     <div><strong>Created:</strong> {incident.created}</div>
                   </div>
                   <div className="text-xs text-gray-500">
