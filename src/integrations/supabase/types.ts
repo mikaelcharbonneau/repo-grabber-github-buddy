@@ -771,6 +771,10 @@ export type Database = {
         Args: { report_name: string; report_type: string; parameters?: Json }
         Returns: string
       }
+      send_daily_audit_reminders: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "manager" | "technician" | "viewer"

@@ -3,12 +3,13 @@ import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { locationData, getDataHallsByDatacenter } from "@/data/locations";
 import { DateRange } from "react-day-picker";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuditsRealtime, useIncidentsRealtime, useReportsRealtime } from "@/hooks/useRealtime";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
@@ -24,45 +25,57 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Fetch recent audits
-        const { data: audits, error: auditsError } = await supabase
-          .from('audits')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        if (auditsError) throw auditsError;
-        setRecentAudits(audits || []);
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Fetch recent audits
+      const { data: audits, error: auditsError } = await supabase
+        .from('audits')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (auditsError) throw auditsError;
+      setRecentAudits(audits || []);
 
-        // Fetch recent incidents
-        const { data: incidents, error: incidentsError } = await supabase
-          .from('incidents')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(5);
-        if (incidentsError) throw incidentsError;
-        setRecentIncidents(incidents || []);
+      // Fetch recent incidents
+      const { data: incidents, error: incidentsError } = await supabase
+        .from('incidents')
+        .select('*')
+        .order('detected_at', { ascending: false })
+        .limit(5);
+      if (incidentsError) throw incidentsError;
+      setRecentIncidents(incidents || []);
 
-        // Fetch recent reports
-        const { data: reports, error: reportsError } = await supabase
-          .from('reports')
-          .select('*')
-          .order('generated_at', { ascending: false })
-          .limit(5);
-        if (reportsError) throw reportsError;
-        setRecentReports(reports || []);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+      // Fetch recent reports
+      const { data: reports, error: reportsError } = await supabase
+        .from('reports')
+        .select('*')
+        .order('generated_at', { ascending: false })
+        .limit(5);
+      if (reportsError) throw reportsError;
+      setRecentReports(reports || []);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch data');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // Handle realtime updates
+  const handleRealtimeUpdate = useCallback(() => {
+    console.log('Realtime update received, refreshing dashboard data...');
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  // Set up realtime subscriptions
+  useAuditsRealtime(handleRealtimeUpdate);
+  useIncidentsRealtime(handleRealtimeUpdate);
+  useReportsRealtime(handleRealtimeUpdate);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   // Get available data halls based on selected datacenter
   const availableDataHalls = filters.datacenter === "all" ? [] : getDataHallsByDatacenter(filters.datacenter);
@@ -229,25 +242,36 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentAudits.map(audit => <div key={audit.id} onClick={() => navigate(`/audit/details/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
-                      <div className="space-y-1 flex-1">
-                        <div className="font-medium text-sm">{audit.id}</div>
-                        <div className="text-sm text-gray-600">{audit.location}</div>
-                        <div className="text-xs text-gray-500">
-                          {audit.technician} • {audit.date}
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                    <span>Loading audits...</span>
+                  </div>
+                ) : recentAudits.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <ClipboardCheck className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                    <p>No recent audits found</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentAudits.map(audit => (
+                      <div key={audit.id} onClick={() => navigate(`/audits/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
+                        <div className="space-y-1 flex-1">
+                          <div className="font-medium text-sm">{audit.title || audit.id}</div>
+                          <div className="text-sm text-gray-600">{audit.description || 'No description'}</div>
+                          <div className="text-xs text-gray-500">
+                            Created: {audit.created_at ? new Date(audit.created_at).toLocaleDateString() : 'Unknown'}
+                          </div>
+                        </div>
+                        <div className="text-right space-y-1">
+                          <Badge variant={audit.status === 'completed' ? 'default' : 'outline'}>
+                            {audit.status}
+                          </Badge>
                         </div>
                       </div>
-                      <div className="text-center flex-1">
-                        <div className="text-xs text-gray-500 mb-1">Issues Found</div>
-                        <div className="text-lg font-semibold">{audit.issues}</div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        
-                          
-                      </div>
-                    </div>)}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -260,25 +284,36 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentIncidents.map(incident => <div key={incident.id} onClick={() => navigate(`/incident/details/${incident.id}`)} className="flex items-start gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
-                      <div className="space-y-1 flex-1">
-                        <div className="font-medium text-sm">{incident.id}</div>
-                        <div className="text-sm text-gray-900">{incident.description}</div>
-                        <div className="text-xs text-gray-500">{incident.location}</div>
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                    <span>Loading incidents...</span>
+                  </div>
+                ) : recentIncidents.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Shield className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                    <p>No recent incidents found</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentIncidents.map(incident => (
+                      <div key={incident.id} onClick={() => navigate(`/incidents/${incident.id}`)} className="flex items-start gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
+                        <div className="space-y-1 flex-1">
+                          <div className="font-medium text-sm">{incident.title}</div>
+                          <div className="text-sm text-gray-900">{incident.description}</div>
+                          <div className="text-xs text-gray-500">
+                            Detected: {incident.detected_at ? new Date(incident.detected_at).toLocaleDateString() : 'Unknown'}
+                          </div>
+                        </div>
+                        <div className="text-right space-y-1">
+                          <Badge variant={incident.priority === 'critical' ? 'destructive' : 'outline'}>
+                            {incident.priority}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="text-center flex-1">
-                        <div className="text-xs text-gray-500 mb-1">Assigned to</div>
-                        <div className="text-sm font-medium">{incident.assignee}</div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        
-                          
-                        
-                          
-                      </div>
-                    </div>)}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -292,32 +327,43 @@ const Dashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {recentReports.map(report => <div key={report.id} onClick={() => navigate(`/report/details/${report.id}`)} className="relative flex items-start justify-between p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
-                    <button className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors" onClick={e => {
-                  e.stopPropagation();
-                  navigate(`/report/details/${report.id}`);
-                }}>
-                      <ExternalLink className="h-3 w-3 text-gray-600" />
-                    </button>
-                    <div className="space-y-1 flex-1 pr-8">
-                      <div className="font-medium text-sm">{report.reportType} | {report.location}</div>
-                      <div className="text-sm text-gray-600">{report.description}</div>
-                      <div className="flex items-center justify-between">
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                  <span>Loading reports...</span>
+                </div>
+              ) : recentReports.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <FileText className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                  <p>No recent reports found</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {recentReports.map(report => (
+                    <div key={report.id} onClick={() => navigate(`/reports/${report.id}`)} className="relative flex items-start justify-between p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
+                      <button className="absolute top-2 right-2 p-1 rounded-full bg-white/80 hover:bg-white shadow-sm transition-colors" onClick={e => {
+                        e.stopPropagation();
+                        navigate(`/reports/${report.id}`);
+                      }}>
+                        <ExternalLink className="h-3 w-3 text-gray-600" />
+                      </button>
+                      <div className="space-y-1 flex-1 pr-8">
+                        <div className="font-medium text-sm">{report.name || report.type}</div>
+                        <div className="text-sm text-gray-600">{report.description || 'No description'}</div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-xs text-gray-500">
+                            Generated: {report.generated_at ? new Date(report.generated_at).toLocaleDateString() : 'Processing...'}
+                          </div>
+                          <Badge variant="outline">{report.status}</Badge>
+                        </div>
                         <div className="text-xs text-gray-500">
-                          Generated: {report.generated}
+                          Format: {report.format}
                         </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" className="h-6 text-xs px-2 hover:bg-transparent hover:text-hpe-brand">Download</Button>
-                          <Button variant="ghost" size="sm" className="h-6 text-xs px-2 hover:bg-transparent hover:text-hpe-brand">Share</Button>
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Size: {report.size} • {report.format}
                       </div>
                     </div>
-                  </div>)}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
