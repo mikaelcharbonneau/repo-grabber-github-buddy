@@ -14,6 +14,256 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_assignments: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          assigned_by: string
+          assigned_to: string
+          audit_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          notification_sent: boolean | null
+          reminder_sent: boolean | null
+          role: string
+          scheduled_end: string | null
+          scheduled_start: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_end?: string | null
+          actual_start?: string | null
+          assigned_by: string
+          assigned_to: string
+          audit_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notification_sent?: boolean | null
+          reminder_sent?: boolean | null
+          role?: string
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_end?: string | null
+          actual_start?: string | null
+          assigned_by?: string
+          assigned_to?: string
+          audit_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notification_sent?: boolean | null
+          reminder_sent?: boolean | null
+          role?: string
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_assignments_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "audits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_issues: {
+        Row: {
+          attachments: string[] | null
+          audit_id: string
+          cabinet_id: string | null
+          category: string
+          created_at: string
+          description: string
+          follow_up_date: string | null
+          follow_up_required: boolean | null
+          id: string
+          incident_id: string | null
+          location_details: string | null
+          metadata: Json | null
+          photo_urls: string[] | null
+          requires_incident: boolean | null
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          title: string
+          unit_identifier: string | null
+          updated_at: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          audit_id: string
+          cabinet_id?: string | null
+          category: string
+          created_at?: string
+          description: string
+          follow_up_date?: string | null
+          follow_up_required?: boolean | null
+          id?: string
+          incident_id?: string | null
+          location_details?: string | null
+          metadata?: Json | null
+          photo_urls?: string[] | null
+          requires_incident?: boolean | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          status?: string
+          title: string
+          unit_identifier?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attachments?: string[] | null
+          audit_id?: string
+          cabinet_id?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          follow_up_date?: string | null
+          follow_up_required?: boolean | null
+          id?: string
+          incident_id?: string | null
+          location_details?: string | null
+          metadata?: Json | null
+          photo_urls?: string[] | null
+          requires_incident?: boolean | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          unit_identifier?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_issues_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "audits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_issues_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_issues_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audits: {
+        Row: {
+          assigned_to: string | null
+          audit_type: Database["public"]["Enums"]["audit_type"]
+          cabinet_id: string | null
+          checklist_template: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          data_hall_id: string | null
+          datacenter_id: string
+          description: string | null
+          estimated_duration: number | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          priority: Database["public"]["Enums"]["audit_priority"]
+          scheduled_date: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["audit_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          audit_type?: Database["public"]["Enums"]["audit_type"]
+          cabinet_id?: string | null
+          checklist_template?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          data_hall_id?: string | null
+          datacenter_id: string
+          description?: string | null
+          estimated_duration?: number | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          priority?: Database["public"]["Enums"]["audit_priority"]
+          scheduled_date?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["audit_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          audit_type?: Database["public"]["Enums"]["audit_type"]
+          cabinet_id?: string | null
+          checklist_template?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          data_hall_id?: string | null
+          datacenter_id?: string
+          description?: string | null
+          estimated_duration?: number | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          priority?: Database["public"]["Enums"]["audit_priority"]
+          scheduled_date?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["audit_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audits_cabinet_id_fkey"
+            columns: ["cabinet_id"]
+            isOneToOne: false
+            referencedRelation: "cabinets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audits_data_hall_id_fkey"
+            columns: ["data_hall_id"]
+            isOneToOne: false
+            referencedRelation: "data_halls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audits_datacenter_id_fkey"
+            columns: ["datacenter_id"]
+            isOneToOne: false
+            referencedRelation: "datacenters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cabinets: {
         Row: {
           capacity: number | null
@@ -517,6 +767,19 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "manager" | "technician" | "viewer"
+      audit_priority: "low" | "normal" | "high" | "critical"
+      audit_status:
+        | "draft"
+        | "scheduled"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+      audit_type:
+        | "routine"
+        | "compliance"
+        | "incident_followup"
+        | "security"
+        | "maintenance"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -645,6 +908,21 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "technician", "viewer"],
+      audit_priority: ["low", "normal", "high", "critical"],
+      audit_status: [
+        "draft",
+        "scheduled",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+      audit_type: [
+        "routine",
+        "compliance",
+        "incident_followup",
+        "security",
+        "maintenance",
+      ],
     },
   },
 } as const
