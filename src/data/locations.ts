@@ -1,3 +1,5 @@
+import rawCsv from './dcTrackRackslocationfull.csv?raw';
+
 // Location data for actual data centers
 export interface Cabinet {
   id: string;
@@ -16,118 +18,50 @@ export interface Datacenter {
   dataHalls: DataHall[];
 }
 
-// Sample cabinets for demonstration - these would be populated with actual cabinet data
-const sampleCabinets: Cabinet[] = [
-  { id: "C001", name: "Cabinet-001" },
-  { id: "C002", name: "Cabinet-002" },
-  { id: "C003", name: "Cabinet-003" },
-  { id: "C004", name: "Cabinet-004" },
-  { id: "C005", name: "Cabinet-005" }
-];
+const datacenterMap: Record<string, { id: string; name: string }> = {
+  "Quebec - Canada": { id: "quebec-canada", name: "Quebec, Canada" },
+  "Enebakk - Norway": { id: "enebakk-norway", name: "Enebakk, Norway" },
+  "Rjukan - Norway": { id: "rjukan-norway", name: "Rjukan, Norway" },
+  "Dallas - United States": { id: "dallas-usa", name: "Dallas, United States" },
+  "Houston - United States": { id: "houston-usa", name: "Houston, United States" },
+};
 
-// Organized location data
-export const locationData: Datacenter[] = [
-  {
-    id: "quebec-canada",
-    name: "Quebec, Canada",
-    dataHalls: [
-      {
-        id: "island-1",
-        name: "Island 1",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-8",
-        name: "Island 8",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-9",
-        name: "Island 9",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-10",
-        name: "Island 10",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-11",
-        name: "Island 11",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-12",
-        name: "Island 12",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "green-nitrogen",
-        name: "Green Nitrogen",
-        cabinets: [...sampleCabinets]
-      }
-    ]
-  },
-  {
-    id: "dallas-usa",
-    name: "Dallas, United States",
-    dataHalls: [
-      {
-        id: "island-1",
-        name: "Island 1",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-2",
-        name: "Island 2",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-3",
-        name: "Island 3",
-        cabinets: [...sampleCabinets]
-      },
-      {
-        id: "island-4",
-        name: "Island 4",
-        cabinets: [...sampleCabinets]
-      }
-    ]
-  },
-  {
-    id: "houston-usa",
-    name: "Houston, United States",
-    dataHalls: [
-      {
-        id: "h20-lab",
-        name: "H20 Lab",
-        cabinets: [...sampleCabinets]
-      }
-    ]
-  },
-  {
-    id: "enebakk-norway",
-    name: "Enebakk, Norway",
-    dataHalls: [
-      {
-        id: "island-1",
-        name: "Island 1",
-        cabinets: [...sampleCabinets]
-      }
-    ]
-  },
-  {
-    id: "rjukan-norway",
-    name: "Rjukan, Norway",
-    dataHalls: [
-      {
-        id: "island-1",
-        name: "Island 1",
-        cabinets: [...sampleCabinets]
-      }
-    ]
+export const locationData: Datacenter[] = (() => {
+  const lines = rawCsv.trim().split('\n').slice(1);
+  const data: [string, string, string][] = lines
+    .map((line) => {
+      const parts = line.split(',').map((p) => p.trim());
+      if (parts.length !== 3) return null;
+      return parts as [string, string, string];
+    })
+    .filter((item): item is [string, string, string] => item !== null);
+
+  const map = new Map<string, Map<string, Set<string>>>();
+  for (const [dc, dh, cab] of data) {
+    if (!map.has(dc)) map.set(dc, new Map());
+    const dhMap = map.get(dc)!;
+    if (!dhMap.has(dh)) dhMap.set(dh, new Set());
+    dhMap.get(dh)!.add(cab);
   }
-];
+
+  const locData: Datacenter[] = [];
+  for (const [csvDc, info] of Object.entries(datacenterMap)) {
+    const dc: Datacenter = { id: info.id, name: info.name, dataHalls: [] };
+    const dhMap = map.get(csvDc);
+    if (dhMap) {
+      const dhList = Array.from(dhMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+      for (const [dhName, cabSet] of dhList) {
+        const dhId = dhName.toLowerCase().replace(/\s+/g, '-');
+        const cabinets: Cabinet[] = Array.from(cabSet)
+          .sort((a, b) => a.localeCompare(b))
+          .map((c) => ({ id: c, name: `Cabinet ${c}` }));
+        dc.dataHalls.push({ id: dhId, name: dhName, cabinets });
+      }
+    }
+    locData.push(dc);
+  }
+  return locData.sort((a, b) => a.name.localeCompare(b.name));
+})();
 
 // Helper function to get data halls by datacenter ID
 export const getDataHallsByDatacenter = (datacenterId: string): DataHall[] => {
