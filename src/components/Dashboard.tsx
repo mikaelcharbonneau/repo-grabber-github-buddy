@@ -241,8 +241,8 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-1 justify-center">
-                        <div className="text-xs text-gray-500">Issues Found</div>
                         <div className="text-2xl font-bold">{audit.issues}</div>
+                        <div className="text-xs text-gray-500">Issues Found</div>
                       </div>
                       <div className="text-right space-y-1">
                         
