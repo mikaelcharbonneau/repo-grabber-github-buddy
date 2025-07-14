@@ -595,6 +595,7 @@ export type Database = {
           expires_at: string | null
           file_path: string | null
           file_size: number | null
+          file_url: string | null
           format: string
           generated_at: string | null
           generated_by: string
@@ -612,6 +613,7 @@ export type Database = {
           expires_at?: string | null
           file_path?: string | null
           file_size?: number | null
+          file_url?: string | null
           format: string
           generated_at?: string | null
           generated_by: string
@@ -629,6 +631,7 @@ export type Database = {
           expires_at?: string | null
           file_path?: string | null
           file_size?: number | null
+          file_url?: string | null
           format?: string
           generated_at?: string | null
           generated_by?: string
@@ -763,6 +766,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      request_report_generation: {
+        Args: { report_name: string; report_type: string; parameters?: Json }
+        Returns: string
       }
     }
     Enums: {

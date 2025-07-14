@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar, Plus } from "lucide-react";
+import { Download, FileText, Calendar, Plus, Loader2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { locationData } from "@/data/locations";
+import { useReports, ReportGenerationParams } from "@/hooks/useReports";
+import { format } from "date-fns";
 
 const Reports = () => {
   const navigate = useNavigate();
@@ -19,6 +21,10 @@ const Reports = () => {
   const [selectedDatacenters, setSelectedDatacenters] = useState<string[]>([]);
   const [selectedDataHalls, setSelectedDataHalls] = useState<string[]>([]);
   const [reportType, setReportType] = useState("");
+  const [reports, setReports] = useState<any[]>([]);
+  const [loadingReports, setLoadingReports] = useState(true);
+  
+  const { generateReport, getReports, downloadReport, isGenerating } = useReports();
 
   const datacenters = locationData.map(dc => dc.name);
 
@@ -27,32 +33,19 @@ const Reports = () => {
     { value: "incidents", label: "Incidents Report" }
   ];
 
-  const recentReports = [
-    {
-      id: "RPT-2024-001",
-      name: "January Audit Summary",
-      type: "Audit Summary",
-      generated: "2024-01-15 16:30",
-      size: "2.3 MB",
-      format: "CSV"
-    },
-    {
-      id: "RPT-2024-002", 
-      name: "Critical Incidents Q1",
-      type: "Incident Detail",
-      generated: "2024-01-14 09:15",
-      size: "1.8 MB", 
-      format: "PDF"
-    },
-    {
-      id: "RPT-2024-003",
-      name: "DC-EAST Compliance",
-      type: "Compliance",
-      generated: "2024-01-13 14:45",
-      size: "945 KB",
-      format: "CSV"
+  useEffect(() => {
+    loadReports();
+  }, []);
+
+  const loadReports = async () => {
+    setLoadingReports(true);
+    try {
+      const data = await getReports();
+      setReports(data || []);
+    } finally {
+      setLoadingReports(false);
     }
-  ];
+  };
 
   const handleDatacenterChange = (datacenter: string, checked: boolean) => {
     if (checked) {
@@ -83,15 +76,51 @@ const Reports = () => {
     }
   };
 
-  const generateReport = () => {
-    console.log("Generating report with:", {
+  const handleGenerateReport = async () => {
+    if (!reportType) return;
+
+    const params: ReportGenerationParams = {
       reportType,
-      dateRange,
-      selectedDatacenters,
-      selectedDataHalls
-    });
-    // Simulate report generation
-    alert("Report generation started! You will be notified when it's ready for download.");
+      datacenters: selectedDatacenters,
+      dataHalls: selectedDataHalls,
+      format: 'PDF'
+    };
+
+    if (dateRange?.from) {
+      params.dateRange = {
+        from: format(dateRange.from, 'yyyy-MM-dd'),
+        to: dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : format(dateRange.from, 'yyyy-MM-dd')
+      };
+    }
+
+    try {
+      await generateReport(params);
+      // Refresh reports list
+      await loadReports();
+    } catch (error) {
+      console.error('Report generation failed:', error);
+    }
+  };
+
+  const handleDownload = async (reportId: string) => {
+    await downloadReport(reportId);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'queued': return 'bg-yellow-100 text-yellow-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (!bytes) return 'Unknown';
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   return (
@@ -106,12 +135,16 @@ const Reports = () => {
                 Reports
               </h1>
               <Button 
-                onClick={generateReport}
+                onClick={handleGenerateReport}
                 className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
-                disabled={!reportType}
+                disabled={!reportType || isGenerating}
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Generate Report
+                {isGenerating ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="mr-2 h-4 w-4" />
+                )}
+                {isGenerating ? 'Generating...' : 'Generate Report'}
               </Button>
             </div>
           </CardHeader>
@@ -193,31 +226,59 @@ const Reports = () => {
             <CardTitle>Recent Reports</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentReports.map((report) => (
-                <div 
-                  key={report.id} 
-                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg cursor-pointer transition-shadow"
-                  onClick={() => navigate(`/reports/${report.id}`)}
-                >
-                  <div className="space-y-1 flex-1">
-                    <div className="font-medium text-sm">{report.name}</div>
-                    <div className="text-sm text-gray-600">{report.type}</div>
-                    <div className="text-xs text-gray-500">
-                      Generated: {report.generated}
+            {loadingReports ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span className="ml-2">Loading reports...</span>
+              </div>
+            ) : reports.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="mx-auto h-12 w-12 mb-4 opacity-50" />
+                <p>No reports found. Generate your first report to get started.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {reports.map((report) => (
+                  <div 
+                    key={report.id} 
+                    className="flex items-start justify-between p-3 bg-gray-50 rounded-lg cursor-pointer transition-shadow hover:shadow-md"
+                    onClick={() => navigate(`/reports/${report.id}`)}
+                  >
+                    <div className="space-y-1 flex-1">
+                      <div className="font-medium text-sm">{report.name}</div>
+                      <div className="text-sm text-gray-600">{report.type}</div>
+                      <div className="text-xs text-gray-500">
+                        Generated: {report.generated_at ? new Date(report.generated_at).toLocaleString() : 'Processing...'}
+                      </div>
+                      {report.file_size && (
+                        <div className="text-xs text-gray-500">
+                          Size: {formatFileSize(report.file_size)} • {report.format}
+                        </div>
+                      )}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Size: {report.size} • {report.format}
+                    <div className="text-right space-y-1 ml-4">
+                      <Badge className={getStatusColor(report.status)} variant="outline">
+                        {report.status}
+                      </Badge>
+                      {report.status === 'completed' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(report.id);
+                          }}
+                          className="mt-2"
+                        >
+                          <Download className="h-3 w-3 mr-1" />
+                          Download
+                        </Button>
+                      )}
                     </div>
                   </div>
-                  <div className="text-right space-y-1 ml-4">
-                    <Badge variant="outline" className="text-xs">
-                      Ready
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
