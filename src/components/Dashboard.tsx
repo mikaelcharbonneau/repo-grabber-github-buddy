@@ -269,16 +269,6 @@ const Dashboard = () => {
                         <div className="text-sm text-gray-900">{incident.description}</div>
                         <div className="text-xs text-gray-500">{incident.location}</div>
                       </div>
-                      <div className="text-center flex-1">
-                        <div className="text-xs text-gray-500 mb-1">Assigned to</div>
-                        <div className="text-sm font-medium">{incident.assignee}</div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        
-                          
-                        
-                          
-                      </div>
                     </div>)}
                 </div>
               </CardContent>
