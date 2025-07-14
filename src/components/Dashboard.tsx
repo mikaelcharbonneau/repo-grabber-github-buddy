@@ -142,7 +142,7 @@ const Dashboard = () => {
               </div>
               <div className="bg-inherit"></div>
               <div className="flex justify-end">
-                <Button onClick={() => navigate('/audit/start')} className="text-white bg-[#01a982]">
+                <Button onClick={() => navigate('/audit/start')} className="text-white bg-[#01a982] hover:bg-[#018f75] transition-colors duration-200">
                   <Plus className="mr-2 h-4 w-4" />
                   Start New Audit
                 </Button>
