@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,61 +14,22 @@ const IncidentList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [incidents, setIncidents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const incidents = [
-    {
-      id: "INC-2024-045",
-      location: "DC-EAST / Hall-A / Rack-15",
-      device: "PDU-A15-001",
-      description: "Overcurrent alarm triggered - Load exceeding 80% capacity",
-      severity: "Critical",
-      status: "Open",
-      assignee: "Tech Team Alpha",
-      created: "2024-01-15 14:23",
-      updated: "2024-01-15 15:30",
-      type: "Power",
-      scope: "Device"
-    },
-    {
-      id: "INC-2024-044", 
-      location: "DC-WEST / Hall-B / Rack-08",
-      device: "TEMP-B08-003",
-      description: "Temperature sensor offline - No readings for 2 hours",
-      severity: "Medium",
-      status: "In Progress", 
-      assignee: "Tech Team Beta",
-      created: "2024-01-14 09:15",
-      updated: "2024-01-15 08:45",
-      type: "Environmental",
-      scope: "Device"
-    },
-    {
-      id: "INC-2024-043",
-      location: "DC-CENTRAL / Hall-C",
-      device: "N/A",
-      description: "HVAC system malfunction affecting entire data hall",
-      severity: "Critical",
-      status: "In Progress",
-      assignee: "Facilities Team",
-      created: "2024-01-13 16:45",
-      updated: "2024-01-15 12:00",
-      type: "Environmental",
-      scope: "Data Hall"
-    },
-    {
-      id: "INC-2024-042",
-      location: "DC-EAST / Hall-A / Rack-23",
-      device: "UPS-A23-002",
-      description: "Battery backup test failure - Replacement required",
-      severity: "Medium",
-      status: "Resolved",
-      assignee: "Tech Team Gamma",
-      created: "2024-01-12 11:20",
-      updated: "2024-01-14 16:30",
-      type: "Power",
-      scope: "Device"
-    }
-  ];
+  useEffect(() => {
+    const fetchIncidents = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('incidents')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) console.error(error);
+      setIncidents(data || []);
+      setLoading(false);
+    };
+    fetchIncidents();
+  }, []);
 
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -126,7 +88,7 @@ const IncidentList = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900">Incidents</h1>
-            <Button className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+            <Button onClick={() => navigate('/incidents/new')} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
               <Plus className="mr-2 h-4 w-4" />
               Add Incident
             </Button>

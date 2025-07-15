@@ -15,6 +15,7 @@ import AuditDetails from "../pages/AuditDetails";
 import IncidentDetails from "../pages/IncidentDetails";
 import ReportDetails from "../pages/ReportDetails";
 import Settings from "../pages/Settings";
+import NewIncident from '@/pages/NewIncident';
 const AppLayout: React.FC = () => {
   return <div className="min-h-screen font-hpe flex flex-col bg-inherit">
       {/* Top header spanning full width */}
@@ -37,6 +38,7 @@ const AppLayout: React.FC = () => {
             <Route path="/audits/:id" element={<AuditDetails />} />
             <Route path="/incidents" element={<IncidentList />} />
             <Route path="/incidents/:id" element={<IncidentDetails />} />
+            <Route path="/incidents/new" element={<NewIncident />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/reports/:id" element={<ReportDetails />} />
             <Route path="/settings" element={<Settings />} />
