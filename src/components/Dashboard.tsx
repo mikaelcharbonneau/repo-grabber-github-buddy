@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { locationData, getDataHallsByDatacenter } from "@/data/locations";
 import { DateRange } from "react-day-picker";
 import { supabase } from "@/lib/supabaseClient";
+import { useStats } from "@/hooks/useStats";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
@@ -17,7 +18,8 @@ const Dashboard = () => {
   });
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
-  // Supabase state
+  // Fetch statistics and recent data
+  const { stats, loading: statsLoading } = useStats();
   const [recentAudits, setRecentAudits] = useState<any[]>([]);
   const [recentIncidents, setRecentIncidents] = useState<any[]>([]);
   const [recentReports, setRecentReports] = useState<any[]>([]);
@@ -70,35 +72,41 @@ const Dashboard = () => {
       dataHall: "all"
     });
   };
-  const stats = [{
-    title: "Completed Audits",
-    value: "47",
-    change: "+12",
-    changeType: "increase" as const,
-    icon: ClipboardCheck,
-    color: "text-hpe-brand"
-  }, {
-    title: "Active Incidents",
-    value: "8",
-    change: "-5",
-    changeType: "decrease" as const,
-    icon: Shield,
-    color: "text-orange-600"
-  }, {
-    title: "Resolved Incidents",
-    value: "24",
-    change: "+3",
-    changeType: "increase" as const,
-    icon: Shield,
-    color: "text-green-600"
-  }, {
-    title: "Reports Generated",
-    value: "18",
-    change: "+5",
-    changeType: "increase" as const,
-    icon: FileText,
-    color: "text-purple-600"
-  }];
+  // Dynamic stats based on real data
+  const statsData = [
+    {
+      title: "Completed Audits",
+      value: statsLoading ? "..." : stats.completedAudits.toString(),
+      change: "+12", // TODO: Calculate change from previous period
+      changeType: "increase" as const,
+      icon: ClipboardCheck,
+      color: "text-hpe-brand"
+    },
+    {
+      title: "Active Incidents",
+      value: statsLoading ? "..." : stats.activeIncidents.toString(),
+      change: "-5", // TODO: Calculate change from previous period
+      changeType: "decrease" as const,
+      icon: Shield,
+      color: "text-orange-600"
+    },
+    {
+      title: "Resolved Incidents",
+      value: statsLoading ? "..." : stats.resolvedIncidents.toString(),
+      change: "+3", // TODO: Calculate change from previous period
+      changeType: "increase" as const,
+      icon: Shield,
+      color: "text-green-600"
+    },
+    {
+      title: "Reports Generated",
+      value: statsLoading ? "..." : stats.reportsGenerated.toString(),
+      change: "+5", // TODO: Calculate change from previous period
+      changeType: "increase" as const,
+      icon: FileText,
+      color: "text-purple-600"
+    }
+  ];
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
       case 'critical':
@@ -184,7 +192,7 @@ const Dashboard = () => {
         <div className="w-full space-y-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map(stat => <Card key={stat.title} accentColor={stat.title === 'Completed Audits' ? 'border-hpe-brand' : stat.title === 'Active Incidents' ? 'border-hpe-red' : stat.title === 'Reports Generated' ? 'border-hpe-blue' : ''} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => {
+            {statsData.map(stat => <Card key={stat.title} accentColor={stat.title === 'Completed Audits' ? 'border-hpe-brand' : stat.title === 'Active Incidents' ? 'border-hpe-red' : stat.title === 'Reports Generated' ? 'border-hpe-blue' : ''} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => {
             if (stat.title === "Completed Audits") navigate("/audits");else if (stat.title === "Active Incidents" || stat.title === "Resolved Incidents") navigate("/incidents");else if (stat.title === "Reports Generated") navigate("/reports");
           }}>
                 <CardHeader className="flex flex-row items-center justify-center gap-3 min-h-[60px] py-4">
