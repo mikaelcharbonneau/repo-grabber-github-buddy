@@ -7,67 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Filter, Shield } from "lucide-react";
+import { useIncidents } from "@/hooks/useIncidents";
 
 const IncidentList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-
-  const incidents = [
-    {
-      id: "INC-2024-045",
-      location: "DC-EAST / Hall-A / Rack-15",
-      device: "PDU-A15-001",
-      description: "Overcurrent alarm triggered - Load exceeding 80% capacity",
-      severity: "Critical",
-      status: "Open",
-      assignee: "Javier Montoya",
-      created: "2024-01-15 14:23",
-      updated: "2024-01-15 15:30",
-      type: "Power",
-      scope: "Device"
-    },
-    {
-      id: "INC-2024-044", 
-      location: "DC-WEST / Hall-B / Rack-08",
-      device: "TEMP-B08-003",
-      description: "Temperature sensor offline - No readings for 2 hours",
-      severity: "Medium",
-      status: "In Progress", 
-      assignee: "Leena Saini",
-      created: "2024-01-14 09:15",
-      updated: "2024-01-15 08:45",
-      type: "Environmental",
-      scope: "Device"
-    },
-    {
-      id: "INC-2024-043",
-      location: "DC-CENTRAL / Hall-C",
-      device: "N/A",
-      description: "HVAC system malfunction affecting entire data hall",
-      severity: "Critical",
-      status: "In Progress",
-      assignee: "Mohcen Bousba",
-      created: "2024-01-13 16:45",
-      updated: "2024-01-15 12:00",
-      type: "Environmental",
-      scope: "Data Hall"
-    },
-    {
-      id: "INC-2024-042",
-      location: "DC-EAST / Hall-A / Rack-23",
-      device: "UPS-A23-002",
-      description: "Battery backup test failure - Replacement required",
-      severity: "Medium",
-      status: "Resolved",
-      assignee: "Clifford Chimezie",
-      created: "2024-01-12 11:20",
-      updated: "2024-01-14 16:30",
-      type: "Power",
-      scope: "Device"
-    }
-  ];
+  
+  const { incidents, loading, error } = useIncidents();
 
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -105,9 +53,7 @@ const IncidentList = () => {
   };
 
   const filteredIncidents = incidents.filter(incident => {
-    const matchesSearch = incident.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         incident.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         incident.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (incident.title || incident.description || incident.id).toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSeverity = severityFilter === "all" || incident.severity.toLowerCase() === severityFilter;
     const matchesStatus = statusFilter === "all" || incident.status.toLowerCase() === statusFilter;
     
@@ -173,55 +119,63 @@ const IncidentList = () => {
         </CardContent>
       </Card>
 
-      {/* Incident List */}
-      <div className="grid gap-4">
-        {filteredIncidents.map((incident) => (
-          <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => handleIncidentClick(incident.id)}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-3 flex-1">
-                  <div className="flex items-center space-x-3 flex-wrap gap-2">
-                    <h3 className="font-semibold text-lg">{incident.id}</h3>
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                  </div>
-                  <p className="text-gray-900 font-medium">{incident.description}</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div><strong>Location:</strong> {incident.location}</div>
-                    <div><strong>Device:</strong> {incident.device}</div>
-                    <div><strong>Assigned to:</strong> {incident.assignee}</div>
-                    <div><strong>Created:</strong> {incident.created}</div>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Last updated: {incident.updated}
-                  </div>
-                </div>
-                <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
-                  <Button variant="outline" size="sm" onClick={() => handleIncidentClick(incident.id)}>
-                    View Details
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Update Status
-                  </Button>
-                  {incident.status === "Resolved" && (
-                    <Button variant="outline" size="sm">
-                      Generate Report
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Loading and Error States */}
+      {loading && (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-500">Loading incidents...</div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {error && (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-red-500">Error: {error}</div>
+          </CardContent>
+        </Card>
+      )}
 
-      {filteredIncidents.length === 0 && (
+      {/* Incident List */}
+      {!loading && !error && (
+        <div className="grid gap-4">
+          {filteredIncidents.map((incident) => (
+            <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => handleIncidentClick(incident.id)}>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3 flex-1">
+                    <div className="flex items-center space-x-3 flex-wrap gap-2">
+                      <h3 className="font-semibold text-lg">{incident.title}</h3>
+                      <Badge variant={getSeverityVariant(incident.severity)}>{incident.severity}</Badge>
+                      <Badge variant={getStatusVariant(incident.status)}>{incident.status}</Badge>
+                    </div>
+                    <p className="text-gray-900 font-medium">{incident.description || 'No description'}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                      <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
+                      <div><strong>Last Updated:</strong> {new Date(incident.updated_at).toLocaleString()}</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
+                    <Button variant="outline" size="sm" onClick={() => handleIncidentClick(incident.id)}>
+                      View Details
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Update Status
+                    </Button>
+                    {incident.status === "resolved" && (
+                      <Button variant="outline" size="sm">
+                        Generate Report
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {!loading && !error && filteredIncidents.length === 0 && (
         <Card>
           <CardContent className="p-12 text-center">
             <div className="text-gray-500">

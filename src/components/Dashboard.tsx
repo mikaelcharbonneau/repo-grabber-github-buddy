@@ -48,15 +48,8 @@ const Dashboard = () => {
         if (incidentsError) throw incidentsError;
         setRecentIncidents(incidents || []);
 
-        // Fetch recent reports
-        const {
-          data: reports,
-          error: reportsError
-        } = await supabase.from('reports').select('*').order('generated_at', {
-          ascending: false
-        }).limit(5);
-        if (reportsError) throw reportsError;
-        setRecentReports(reports || []);
+        // Note: Reports table not yet created, using empty array for now
+        setRecentReports([]);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch data');
       } finally {
@@ -234,19 +227,14 @@ const Dashboard = () => {
                 <div className="space-y-4">
                   {recentAudits.map(audit => <div key={audit.id} onClick={() => navigate(`/audit/details/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
                       <div className="space-y-1 flex-1">
-                        <div className="font-medium text-sm">{audit.id}</div>
-                        <div className="text-sm text-gray-600">{audit.location}</div>
+                        <div className="font-medium text-sm">{audit.title}</div>
+                        <div className="text-sm text-gray-600">{audit.description || 'No description'}</div>
                         <div className="text-xs text-gray-500">
-                          {audit.technician} • {audit.date}
+                          Status: {audit.status} • {new Date(audit.created_at).toLocaleDateString()}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-1 justify-center">
-                        <div className="text-2xl font-bold">{audit.issues}</div>
-                        <div className="text-xs text-gray-500">Incidents</div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        
-                          
+                        <Badge variant={getStatusVariant(audit.status)}>{audit.status}</Badge>
                       </div>
                     </div>)}
                 </div>
@@ -265,13 +253,14 @@ const Dashboard = () => {
                 <div className="space-y-4">
                   {recentIncidents.map(incident => <div key={incident.id} onClick={() => navigate(`/incident/details/${incident.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
                       <div className="space-y-1 flex-1">
-                        <div className="font-medium text-sm">{incident.id}</div>
-                        <div className="text-sm text-gray-900">{incident.description}</div>
-                        <div className="text-xs text-gray-500">{incident.location}</div>
+                        <div className="font-medium text-sm">{incident.title}</div>
+                        <div className="text-sm text-gray-900">{incident.description || 'No description'}</div>
+                        <div className="text-xs text-gray-500">
+                          Severity: {incident.severity} • Status: {incident.status}
+                        </div>
                       </div>
                       <div className="flex items-center gap-2 flex-1 justify-center">
-                        <div className="text-2xl font-bold">{incident.recurrence || 1}</div>
-                        <div className="text-xs text-gray-500">Incident Recurrence</div>
+                        <Badge variant={getSeverityVariant(incident.severity)}>{incident.severity}</Badge>
                       </div>
                     </div>)}
                 </div>

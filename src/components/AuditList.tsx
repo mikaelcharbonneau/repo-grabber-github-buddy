@@ -8,6 +8,7 @@ import { Plus, Clipboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { locationData, getDataHallsByDatacenter } from "@/data/locations";
+import { useAudits } from "@/hooks/useAudits";
 const AuditList = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -15,6 +16,8 @@ const AuditList = () => {
     datacenter: "all",
     dataHall: "all"
   });
+  
+  const { audits, loading, error } = useAudits();
 
   // Get available data halls based on selected datacenter
   const availableDataHalls = filters.datacenter === "all" ? [] : getDataHallsByDatacenter(filters.datacenter);
@@ -27,71 +30,8 @@ const AuditList = () => {
       dataHall: "all"
     });
   };
-  const audits = [{
-    id: "AUD-2024-001",
-    location: "Quebec, Canada / Island 1",
-    technician: "Mikael Charbonneau",
-    date: "2024-01-15",
-    time: "14:30",
-    issues: 2,
-    severity: "Medium",
-    status: "Completed",
-    description: "Routine quarterly inspection",
-    deviceIssues: {
-      RDHX: 1,
-      PDU: 0,
-      PSU: 1,
-      CDU: 0
-    }
-  }, {
-    id: "AUD-2024-002",
-    location: "Rjukan, Norway / Island 1",
-    technician: "Javier Montoya",
-    date: "2024-01-14",
-    time: "09:15",
-    issues: 0,
-    severity: "None",
-    status: "Completed",
-    description: "Monthly infrastructure check",
-    deviceIssues: {
-      RDHX: 0,
-      PDU: 0,
-      PSU: 0,
-      CDU: 0
-    }
-  }, {
-    id: "AUD-2024-003",
-    location: "Dallas, United States / Island 2",
-    technician: "Clifford Chimezie",
-    date: "2024-01-13",
-    time: "16:45",
-    issues: 5,
-    severity: "Critical",
-    status: "Under Review",
-    description: "Emergency inspection - power anomalies",
-    deviceIssues: {
-      RDHX: 2,
-      PDU: 2,
-      PSU: 1,
-      CDU: 0
-    }
-  }, {
-    id: "AUD-2024-004",
-    location: "Houston, United States / H20 Lab",
-    technician: "Leena Saini",
-    date: "2024-01-12",
-    time: "11:20",
-    issues: 1,
-    severity: "Low",
-    status: "Completed",
-    description: "Follow-up inspection",
-    deviceIssues: {
-      RDHX: 0,
-      PDU: 0,
-      PSU: 0,
-      CDU: 1
-    }
-  }];
+  // For now, we'll filter audits directly - in a real app you might want to filter on the server
+  const filteredAudits = audits;
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
       case 'critical':
@@ -116,13 +56,6 @@ const AuditList = () => {
         return 'outline';
     }
   };
-  const filteredAudits = audits.filter(audit => {
-    // For demo purposes, we'll filter based on location text matching
-    // In a real app, audits would have datacenter/datahall IDs
-    const matchesDatacenter = filters.datacenter === "all" || locationData.find(dc => dc.id === filters.datacenter)?.name === audit.location.split(' / ')[0];
-    const matchesDataHall = filters.dataHall === "all" || availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
-    return matchesDatacenter && matchesDataHall;
-  });
   return <div className="py-6 px-[50px] space-y-6">
       <div className="w-full space-y-6">
 
@@ -184,55 +117,60 @@ const AuditList = () => {
         </CardContent>
       </Card>
 
-      {/* Audit List */}
-      <div className="grid gap-4">
-        {filteredAudits.map(audit => <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => navigate(`/audits/${audit.id}`)}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-2 max-w-sm flex-shrink-0">
-                  <div className="flex items-center space-x-3">
-                    <h3 className="font-semibold text-lg">{audit.id}</h3>
-                  </div>
-                  <p className="text-gray-900 font-medium">{audit.location}</p>
-                  <p className="text-gray-600">{audit.technician}</p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>{audit.date} at {audit.time}</span>
-                    <span>•</span>
-                    <span>{audit.issues} issues found</span>
-                  </div>
-                </div>
-                
-                
-                <div className="min-w-[300px] flex flex-col items-center justify-center py-4 my-auto">
-                  <div className="text-xs text-gray-500 mb-6 text-center">Issues by Device</div>
-                  <div className="grid grid-cols-7 gap-0 mx-0 items-center">
-                    {Object.entries(audit.deviceIssues).map(([device, count], index) => <>
-                        <div key={device} className="text-center">
-                          <div className="text-sm text-gray-400 mb-1 font-medium">{device}</div>
-                          <div className="text-3xl font-bold">{count}</div>
-                        </div>
-                        {index < 3 && <div key={`separator-${index}`} className="h-12 w-px bg-gray-200 mx-[24px]"></div>}
-                      </>)}
-                  </div>
-                </div>
-                
-                <div className="flex flex-col space-y-2 flex-shrink-0">
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
-                    View Details
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Generate Report
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Copy Link
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>)}
-      </div>
+      {/* Loading and Error States */}
+      {loading && (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-500">Loading audits...</div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {error && (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-red-500">Error: {error}</div>
+          </CardContent>
+        </Card>
+      )}
 
-      {filteredAudits.length === 0 && <Card>
+      {/* Audit List */}
+      {!loading && !error && (
+        <div className="grid gap-4">
+          {filteredAudits.map(audit => <Card key={audit.id} accentColor={getStatusVariant(audit.status) === 'hpe' ? 'border-hpe-brand' : getStatusVariant(audit.status) === 'medium' ? 'border-hpe-orange' : 'border-hpe-yellow'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => navigate(`/audits/${audit.id}`)}>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2 max-w-sm flex-shrink-0">
+                    <div className="flex items-center space-x-3">
+                      <h3 className="font-semibold text-lg">{audit.title}</h3>
+                      <Badge variant={getStatusVariant(audit.status)}>{audit.status}</Badge>
+                    </div>
+                    <p className="text-gray-900 font-medium">{audit.description || 'No description'}</p>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span>Created: {new Date(audit.created_at).toLocaleDateString()}</span>
+                      <span>•</span>
+                      <span>Last updated: {new Date(audit.updated_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col space-y-2 flex-shrink-0">
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
+                      View Details
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Generate Report
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Copy Link
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>)}
+        </div>
+      )}
+
+      {!loading && !error && filteredAudits.length === 0 && <Card>
           <CardContent className="p-12 text-center">
             <div className="text-gray-500">
               <Clipboard className="mx-auto h-12 w-12 mb-4" />

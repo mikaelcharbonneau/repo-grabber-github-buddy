@@ -69,15 +69,7 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "audits_auditor_id_fkey"
-            columns: ["auditor_id"]
-            isOneToOne: false
-            referencedRelation: "auditors"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       incidents: {
         Row: {
@@ -119,13 +111,6 @@ export type Database = {
             columns: ["audit_id"]
             isOneToOne: false
             referencedRelation: "audits"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "incidents_auditor_id_fkey"
-            columns: ["auditor_id"]
-            isOneToOne: false
-            referencedRelation: "auditors"
             referencedColumns: ["id"]
           },
         ]
