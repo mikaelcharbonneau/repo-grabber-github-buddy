@@ -50,10 +50,12 @@ const StartAudit = () => {
     if (selectedDatacenter && selectedDataHall) {
       // Store audit details in sessionStorage for the workflow
       sessionStorage.setItem('auditDetails', JSON.stringify({
-        datacenter: datacenters.find(dc => dc.id === selectedDatacenter)?.name || selectedDatacenter,
-        dataHall: dataHalls.find(dh => dh.id === selectedDataHall)?.name || selectedDataHall,
+        datacenterId: selectedDatacenter,
+        dataHallId: selectedDataHall,
+        datacenterName: datacenters.find(dc => dc.id === selectedDatacenter)?.name,
+        dataHallName: dataHalls.find(dh => dh.id === selectedDataHall)?.name,
         startTime: new Date().toISOString(),
-        technician: "John Doe" // This would come from user context
+        technician: "John Doe"
       }));
       navigate("/audit/issues");
     }
