@@ -29,25 +29,48 @@ const AuditSummary = () => {
 
   const handleSubmit = async () => {
     if (auditDetails) {
+      const issuesFound = auditDetails.issues ? auditDetails.issues.length : 0;
       const finalAudit = {
         ...auditDetails,
         completed_at: new Date().toISOString(),
         id: `AUD-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
         status: 'completed',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        issuesFound
       };
+      delete finalAudit.issues; // Remove issues array
 
-      const { error } = await supabase
+      const { data: auditData, error: auditError } = await supabase
         .from('audits')
-        .insert([finalAudit]);
+        .insert([finalAudit])
+        .select();
 
-      if (error) {
-        console.error(error);
+      if (auditError) {
+        console.error(auditError);
         alert('Failed to submit audit');
-      } else {
-        sessionStorage.removeItem('auditDetails');
-        navigate("/audit/complete");
+        return;
       }
+
+      const auditId = auditData[0].id;
+
+      for (const issue of auditDetails.issues || []) {
+        const issueEntry = {
+          ...issue,
+          audit_id: auditId,
+          created_at: new Date().toISOString()
+        };
+        const { error: issueError } = await supabase
+          .from('issues')
+          .insert([issueEntry]);
+        if (issueError) {
+          console.error(issueError);
+          alert('Failed to submit issues');
+          return;
+        }
+      }
+
+      sessionStorage.removeItem('auditDetails');
+      navigate("/audit/complete");
     }
   };
 
