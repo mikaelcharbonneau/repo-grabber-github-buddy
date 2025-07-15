@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,9 +26,9 @@ const queryClient = new QueryClient({
     }
   }
 });
-const App: React.FC = () => {
+const App = () => {
   // Error handler for development
-  const handleError = React.useCallback((error: Error, errorInfo: React.ErrorInfo) => {
+  const handleError = useCallback((error: Error, errorInfo: any) => {
     console.error('Application Error:', error, errorInfo);
     // In production, send to error monitoring service
   }, []);
