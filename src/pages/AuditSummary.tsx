@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Clock, User, CheckCircle, AlertTriangle } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 const AuditSummary = () => {
   const navigate = useNavigate();
@@ -26,21 +27,27 @@ const AuditSummary = () => {
     setAuditDetails(JSON.parse(stored));
   }, [navigate]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (auditDetails) {
       const finalAudit = {
         ...auditDetails,
-        completedAt: new Date().toISOString(),
-        auditId: `AUD-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`
+        completed_at: new Date().toISOString(),
+        id: `AUD-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+        status: 'completed',
+        created_at: new Date().toISOString()
       };
-      
-      // Store in localStorage for persistence (in real app, this would go to backend)
-      const existingAudits = JSON.parse(localStorage.getItem('completedAudits') || '[]');
-      existingAudits.push(finalAudit);
-      localStorage.setItem('completedAudits', JSON.stringify(existingAudits));
-      
-      sessionStorage.removeItem('auditDetails');
-      navigate("/audit/complete");
+
+      const { error } = await supabase
+        .from('audits')
+        .insert([finalAudit]);
+
+      if (error) {
+        console.error(error);
+        alert('Failed to submit audit');
+      } else {
+        sessionStorage.removeItem('auditDetails');
+        navigate("/audit/complete");
+      }
     }
   };
 
