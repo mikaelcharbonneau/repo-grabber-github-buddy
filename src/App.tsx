@@ -3,10 +3,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
+import { useAuth } from "@/hooks/useAuth";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 import AppLayout from "./components/AppLayout";
+import Auth from "./pages/Auth";
 
 // Configure React Query with best practices
 const queryClient = new QueryClient({
@@ -26,17 +29,78 @@ const queryClient = new QueryClient({
     }
   }
 });
+// Protected Route component
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// Public Route component (redirects to dashboard if already authenticated)
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 const App = () => {
   // Error handler for development
   const handleError = useCallback((error: Error, errorInfo: any) => {
     console.error('Application Error:', error, errorInfo);
     // In production, send to error monitoring service
   }, []);
-  return <ErrorBoundary onError={handleError} resetOnRouteChange>
+  
+  return (
+    <ErrorBoundary onError={handleError} resetOnRouteChange>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <BrowserRouter>
-            <AppLayout />
+            <Routes>
+              {/* Public routes */}
+              <Route 
+                path="/auth" 
+                element={
+                  <PublicRoute>
+                    <Auth />
+                  </PublicRoute>
+                } 
+              />
+
+              {/* Protected routes */}
+              <Route 
+                path="/*" 
+                element={
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+            
             {/* Toast notifications */}
             <Toaster />
             <Sonner />
@@ -45,6 +109,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
-    </ErrorBoundary>;
+    </ErrorBoundary>
+  );
 };
 export default App;
