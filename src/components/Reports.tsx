@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Calendar, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { locationData } from "@/data/locations";
+import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
+import { supabase } from "@/lib/supabaseClient";
 
 const Reports = () => {
   const navigate = useNavigate();
@@ -19,46 +20,48 @@ const Reports = () => {
   const [selectedDatacenters, setSelectedDatacenters] = useState<string[]>([]);
   const [selectedDataHalls, setSelectedDataHalls] = useState<string[]>([]);
   const [reportType, setReportType] = useState("");
+  const [reports, setReports] = useState<any[]>([]);
+  const [datacenters, setDatacenters] = useState<any[]>([]);
+  const [dataHalls, setDataHalls] = useState<any[]>([]);
+  const [selectedDatacenter, setSelectedDatacenter] = useState("");
+  const [selectedDataHall, setSelectedDataHall] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const datacenters = locationData.map(dc => dc.name);
+  useEffect(() => {
+    setLoading(true);
+    const fetchAll = async () => {
+      const { data: reportsData } = await supabase
+        .from('reports')
+        .select('*')
+        .order('generated_at', { ascending: false });
+      setReports(reportsData || []);
+      const dcs = await fetchDatacenters();
+      setDatacenters(dcs || []);
+      setLoading(false);
+    };
+    fetchAll();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDatacenter) {
+      fetchDataHalls(selectedDatacenter).then((halls) => {
+        setDataHalls(halls || []);
+      });
+    } else {
+      setDataHalls([]);
+    }
+  }, [selectedDatacenter]);
 
   const reportTypes = [
     { value: "audits", label: "Audits Report" },
     { value: "incidents", label: "Incidents Report" }
   ];
 
-  const recentReports = [
-    {
-      id: "RPT-2024-001",
-      name: "January Audit Summary",
-      type: "Audit Summary",
-      generated: "2024-01-15 16:30",
-      size: "2.3 MB",
-      format: "CSV"
-    },
-    {
-      id: "RPT-2024-002", 
-      name: "Critical Incidents Q1",
-      type: "Incident Detail",
-      generated: "2024-01-14 09:15",
-      size: "1.8 MB", 
-      format: "PDF"
-    },
-    {
-      id: "RPT-2024-003",
-      name: "DC-EAST Compliance",
-      type: "Compliance",
-      generated: "2024-01-13 14:45",
-      size: "945 KB",
-      format: "CSV"
-    }
-  ];
-
   const handleDatacenterChange = (datacenter: string, checked: boolean) => {
     if (checked) {
       setSelectedDatacenters([...selectedDatacenters, datacenter]);
       // Auto-select all data halls in this datacenter
-      const dc = locationData.find(dc => dc.name === datacenter);
+      const dc = datacenters.find(dc => dc.name === datacenter);
       if (dc) {
         const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
         const newDataHalls = [...selectedDataHalls, ...dataHallIds.filter(id => !selectedDataHalls.includes(id))];
@@ -67,7 +70,7 @@ const Reports = () => {
     } else {
       setSelectedDatacenters(selectedDatacenters.filter(dc => dc !== datacenter));
       // Auto-deselect all data halls in this datacenter
-      const dc = locationData.find(dc => dc.name === datacenter);
+      const dc = datacenters.find(dc => dc.name === datacenter);
       if (dc) {
         const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
         setSelectedDataHalls(selectedDataHalls.filter(dh => !dataHallIds.includes(dh)));
@@ -144,7 +147,7 @@ const Reports = () => {
             </div>
 
             <div className="space-y-6">
-              {locationData.map((datacenter) => (
+              {datacenters.map((datacenter) => (
                 <div key={datacenter.id} className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Checkbox
@@ -194,17 +197,17 @@ const Reports = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentReports.map((report) => (
+              {reports.map((report) => (
                 <div 
                   key={report.id} 
                   className="flex items-start justify-between p-3 bg-gray-50 rounded-lg cursor-pointer transition-shadow"
                   onClick={() => navigate(`/reports/${report.id}`)}
                 >
                   <div className="space-y-1 flex-1">
-                    <div className="font-medium text-sm">{report.name}</div>
+                    <div className="font-medium text-sm">{report.name || report.title}</div>
                     <div className="text-sm text-gray-600">{report.type}</div>
                     <div className="text-xs text-gray-500">
-                      Generated: {report.generated}
+                      Generated: {report.generated_at}
                     </div>
                     <div className="text-xs text-gray-500">
                       Size: {report.size} • {report.format}
