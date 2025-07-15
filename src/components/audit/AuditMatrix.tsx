@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { AlertTriangle, ChevronDown, MapPin, ChevronRight } from "lucide-react";
-import { getCabinetsByDataHall, getDatacenterById } from "@/data/locations";
+import { fetchDatacenters, fetchDataHalls, fetchCabinets } from "@/data/locations";
 interface Rack {
   id: number;
   name: string;
@@ -78,19 +78,25 @@ const AuditMatrix = ({
 
   // Pre-populate table with all available cabinets
   useEffect(() => {
-    const auditDetails = sessionStorage.getItem('auditDetails');
-    if (auditDetails) {
-      const details = JSON.parse(auditDetails);
-      // For demo purposes, we'll use Quebec - Canada / Island 1 as default
-      // In a real app, this would come from the audit details
-      const cabinets = getCabinetsByDataHall('quebec-canada', 'island-1');
-      const rackData = cabinets.map((cabinet, index) => ({
+    async function loadCabinets() {
+      // Fetch datacenters to get the id
+      const datacenters = await fetchDatacenters();
+      const dc = datacenters.find((d: any) => d.name === datacenter);
+      if (!dc) return setPrePopulatedRacks([]);
+      // Fetch data halls for the datacenter
+      const dataHalls = await fetchDataHalls(dc.id);
+      const dh = dataHalls.find((h: any) => h.name === dataHall);
+      if (!dh) return setPrePopulatedRacks([]);
+      // Fetch cabinets for the data hall
+      const cabinets = await fetchCabinets(dh.id);
+      const rackData = cabinets.map((cabinet: any, index: number) => ({
         id: index + 1,
         name: cabinet.name
       }));
       setPrePopulatedRacks(rackData);
     }
-  }, []);
+    loadCabinets();
+  }, [datacenter, dataHall]);
   const getSeverityColors = (severities: string[]) => {
     if (severities.includes('Critical')) return 'bg-red-100 border-red-300';
     if (severities.includes('Medium')) return 'bg-yellow-100 border-yellow-300';
