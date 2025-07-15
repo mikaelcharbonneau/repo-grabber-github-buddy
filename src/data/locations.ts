@@ -18,10 +18,10 @@ export async function fetchDataHalls(datacenterId: string) {
   return data;
 }
 
-export async function fetchTileLocations(datahallId: string) {
+export async function fetchCabinets(datahallId: string) {
   const { data, error } = await supabase.from('tile_locations').select('*').eq('datahall_id', datahallId).order('name');
   if (error) {
-    console.error('Error fetching tile locations:', error);
+    console.error('Error fetching cabinets:', error);
     return [];
   }
   return data;
