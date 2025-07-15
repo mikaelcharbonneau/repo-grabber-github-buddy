@@ -24,22 +24,23 @@ export interface User {
 
 // Location and Infrastructure types
 export interface Datacenter {
-  readonly id: string;
-  readonly name: string;
-  readonly location: string;
-  readonly address: string;
-  readonly timezone: string;
-  readonly isActive: boolean;
+  id: string;
+  name: string;
+  created_at: string;
 }
 
-export interface DataHall {
-  readonly id: string;
-  readonly name: string;
-  readonly datacenterId: string;
-  readonly floor: number;
-  readonly capacity: number;
-  readonly currentUsage: number;
-  readonly isActive: boolean;
+export interface Datahall {
+  id: string;
+  name: string;
+  datacenter_id: string;
+  created_at: string;
+}
+
+export interface TileLocation {
+  id: string;
+  name: string;
+  datahall_id: string;
+  created_at: string;
 }
 
 export interface Rack {
