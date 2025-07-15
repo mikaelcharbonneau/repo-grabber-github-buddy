@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { locationData, getDataHallsByDatacenter } from "@/data/locations";
+import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
 import { DateRange } from "react-day-picker";
 import { supabase } from "@/lib/supabaseClient";
 const Dashboard = () => {
@@ -23,6 +23,8 @@ const Dashboard = () => {
   const [recentReports, setRecentReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [datacenters, setDatacenters] = useState<any[]>([]);
+  const [dataHalls, setDataHalls] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +57,10 @@ const Dashboard = () => {
           .limit(5);
         if (reportsError) throw reportsError;
         setRecentReports(reports || []);
+
+        // Fetch datacenters
+        const dcs = await fetchDatacenters();
+        setDatacenters(dcs || []);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch data');
       } finally {
@@ -64,8 +70,16 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Get available data halls based on selected datacenter
-  const availableDataHalls = filters.datacenter === "all" ? [] : getDataHallsByDatacenter(filters.datacenter);
+  // Fetch data halls when datacenter changes
+  useEffect(() => {
+    if (filters.datacenter !== "all") {
+      fetchDataHalls(filters.datacenter).then((halls) => {
+        setDataHalls(halls || []);
+      });
+    } else {
+      setDataHalls([]);
+    }
+  }, [filters.datacenter]);
 
   // Reset data hall when datacenter changes
   const handleDatacenterChange = (value: string) => {
@@ -75,35 +89,43 @@ const Dashboard = () => {
       dataHall: "all"
     });
   };
-  const stats = [{
-    title: "Completed Audits",
-    value: "47",
-    change: "+12%",
-    changeType: "increase" as const,
-    icon: ClipboardCheck,
-    color: "text-hpe-brand"
-  }, {
-    title: "Active Incidents",
-    value: "8",
-    change: "-23%",
-    changeType: "decrease" as const,
-    icon: Shield,
-    color: "text-orange-600"
-  }, {
-    title: "Resolved Incidents",
-    value: "24",
-    change: "+3",
-    changeType: "increase" as const,
-    icon: Shield,
-    color: "text-green-600"
-  }, {
-    title: "Reports Generated",
-    value: "18",
-    change: "+5",
-    changeType: "increase" as const,
-    icon: FileText,
-    color: "text-purple-600"
-  }];
+
+  // Calculate stats from Supabase data
+  const stats = [
+    {
+      title: "Completed Audits",
+      value: recentAudits.filter(a => a.status && a.status.toLowerCase() === 'completed').length.toString(),
+      change: "+12%",
+      changeType: "increase" as const,
+      icon: ClipboardCheck,
+      color: "text-hpe-brand"
+    },
+    {
+      title: "Active Incidents",
+      value: recentIncidents.filter(i => i.status && i.status.toLowerCase() === 'open').length.toString(),
+      change: "-23%",
+      changeType: "decrease" as const,
+      icon: Shield,
+      color: "text-orange-600"
+    },
+    {
+      title: "Resolved Incidents",
+      value: recentIncidents.filter(i => i.status && i.status.toLowerCase() === 'resolved').length.toString(),
+      change: "+3",
+      changeType: "increase" as const,
+      icon: Shield,
+      color: "text-green-600"
+    },
+    {
+      title: "Reports Generated",
+      value: recentReports.length.toString(),
+      change: "+5",
+      changeType: "increase" as const,
+      icon: FileText,
+      color: "text-purple-600"
+    }
+  ];
+
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
       case 'critical':
@@ -159,9 +181,7 @@ const Dashboard = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Datacenters</SelectItem>
-                  {locationData.map(datacenter => <SelectItem key={datacenter.id} value={datacenter.id}>
-                      {datacenter.name}
-                    </SelectItem>)}
+                  {datacenters.map(dc => <SelectItem key={dc.id} value={dc.id}>{dc.name}</SelectItem>)}
                 </SelectContent>
               </Select>
               
@@ -174,9 +194,7 @@ const Dashboard = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Data Halls</SelectItem>
-                  {availableDataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>
-                      {hall.name}
-                    </SelectItem>)}
+                  {dataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>{hall.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

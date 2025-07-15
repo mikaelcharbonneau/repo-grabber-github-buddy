@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,9 @@ import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Plus, Clipboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
-import { locationData, getDataHallsByDatacenter } from "@/data/locations";
+import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
+import { supabase } from "@/lib/supabaseClient";
+
 const AuditList = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -15,9 +17,37 @@ const AuditList = () => {
     datacenter: "all",
     dataHall: "all"
   });
+  const [audits, setAudits] = useState<any[]>([]);
+  const [datacenters, setDatacenters] = useState<any[]>([]);
+  const [dataHalls, setDataHalls] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Get available data halls based on selected datacenter
-  const availableDataHalls = filters.datacenter === "all" ? [] : getDataHallsByDatacenter(filters.datacenter);
+  // Fetch audits and datacenters on mount
+  useEffect(() => {
+    setLoading(true);
+    const fetchAll = async () => {
+      const { data: auditsData } = await supabase
+        .from('audits')
+        .select('*')
+        .order('created_at', { ascending: false });
+      setAudits(auditsData || []);
+      const dcs = await fetchDatacenters();
+      setDatacenters(dcs || []);
+      setLoading(false);
+    };
+    fetchAll();
+  }, []);
+
+  // Fetch data halls when datacenter changes
+  useEffect(() => {
+    if (filters.datacenter !== "all") {
+      fetchDataHalls(filters.datacenter).then((halls) => {
+        setDataHalls(halls || []);
+      });
+    } else {
+      setDataHalls([]);
+    }
+  }, [filters.datacenter]);
 
   // Reset data hall when datacenter changes
   const handleDatacenterChange = (value: string) => {
@@ -27,73 +57,16 @@ const AuditList = () => {
       dataHall: "all"
     });
   };
-  const audits = [{
-    id: "AUD-2024-001",
-    location: "Quebec, Canada / Island 1",
-    technician: "Mikael Charbonneau",
-    date: "2024-01-15",
-    time: "14:30",
-    issues: 2,
-    severity: "Medium",
-    status: "Completed",
-    description: "Routine quarterly inspection",
-    deviceIssues: {
-      RDHX: 1,
-      PDU: 0,
-      PSU: 1,
-      CDU: 0
-    }
-  }, {
-    id: "AUD-2024-002",
-    location: "Rjukan, Norway / Island 1",
-    technician: "Javier Montoya",
-    date: "2024-01-14",
-    time: "09:15",
-    issues: 0,
-    severity: "None",
-    status: "Completed",
-    description: "Monthly infrastructure check",
-    deviceIssues: {
-      RDHX: 0,
-      PDU: 0,
-      PSU: 0,
-      CDU: 0
-    }
-  }, {
-    id: "AUD-2024-003",
-    location: "Dallas, United States / Island 2",
-    technician: "Clifford Chimezie",
-    date: "2024-01-13",
-    time: "16:45",
-    issues: 5,
-    severity: "Critical",
-    status: "Under Review",
-    description: "Emergency inspection - power anomalies",
-    deviceIssues: {
-      RDHX: 2,
-      PDU: 2,
-      PSU: 1,
-      CDU: 0
-    }
-  }, {
-    id: "AUD-2024-004",
-    location: "Houston, United States / H20 Lab",
-    technician: "Leena Saini",
-    date: "2024-01-12",
-    time: "11:20",
-    issues: 1,
-    severity: "Low",
-    status: "Completed",
-    description: "Follow-up inspection",
-    deviceIssues: {
-      RDHX: 0,
-      PDU: 0,
-      PSU: 0,
-      CDU: 1
-    }
-  }];
+
+  // Filter audits by datacenter and data hall (if those fields exist in audit)
+  const filteredAudits = audits.filter(audit => {
+    const matchesDatacenter = filters.datacenter === "all" || audit.datacenter_id === filters.datacenter;
+    const matchesDataHall = filters.dataHall === "all" || audit.datahall_id === filters.dataHall;
+    return matchesDatacenter && matchesDataHall;
+  });
+
   const getSeverityVariant = (severity: string) => {
-    switch (severity.toLowerCase()) {
+    switch (severity?.toLowerCase()) {
       case 'critical':
         return 'critical';
       case 'medium':
@@ -105,7 +78,7 @@ const AuditList = () => {
     }
   };
   const getStatusVariant = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'completed':
         return 'hpe';
       case 'under review':
@@ -116,13 +89,7 @@ const AuditList = () => {
         return 'outline';
     }
   };
-  const filteredAudits = audits.filter(audit => {
-    // For demo purposes, we'll filter based on location text matching
-    // In a real app, audits would have datacenter/datahall IDs
-    const matchesDatacenter = filters.datacenter === "all" || locationData.find(dc => dc.id === filters.datacenter)?.name === audit.location.split(' / ')[0];
-    const matchesDataHall = filters.dataHall === "all" || availableDataHalls.find(dh => dh.id === filters.dataHall)?.name === audit.location.split(' / ')[1];
-    return matchesDatacenter && matchesDataHall;
-  });
+
   return <div className="py-6 px-[50px] space-y-6">
       <div className="w-full space-y-6">
 
@@ -156,9 +123,7 @@ const AuditList = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Datacenters</SelectItem>
-                  {locationData.map(datacenter => <SelectItem key={datacenter.id} value={datacenter.id}>
-                      {datacenter.name}
-                    </SelectItem>)}
+                  {datacenters.map(dc => <SelectItem key={dc.id} value={dc.id}>{dc.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -173,9 +138,7 @@ const AuditList = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Data Halls</SelectItem>
-                  {availableDataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>
-                      {hall.name}
-                    </SelectItem>)}
+                  {dataHalls.map(hall => <SelectItem key={hall.id} value={hall.id}>{hall.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -201,21 +164,7 @@ const AuditList = () => {
                     <span>{audit.issues} issues found</span>
                   </div>
                 </div>
-                
-                
-                <div className="min-w-[300px] flex flex-col items-center justify-center py-4 my-auto">
-                  <div className="text-xs text-gray-500 mb-6 text-center">Issues by Device</div>
-                  <div className="grid grid-cols-7 gap-0 mx-0 items-center">
-                    {Object.entries(audit.deviceIssues).map(([device, count], index) => <>
-                        <div key={device} className="text-center">
-                          <div className="text-sm text-gray-400 mb-1 font-medium">{device}</div>
-                          <div className="text-3xl font-bold">{count}</div>
-                        </div>
-                        {index < 3 && <div key={`separator-${index}`} className="h-12 w-px bg-gray-200 mx-[24px]"></div>}
-                      </>)}
-                  </div>
-                </div>
-                
+                {/* Device issues and actions can be added here if available in audit */}
                 <div className="flex flex-col space-y-2 flex-shrink-0">
                   <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
                     View Details

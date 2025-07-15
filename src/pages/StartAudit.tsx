@@ -5,11 +5,37 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Building } from "lucide-react";
-import { locationData, getDataHallsByDatacenter } from "@/data/locations";
+import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
+
 const StartAudit = () => {
   const navigate = useNavigate();
   const [selectedDatacenter, setSelectedDatacenter] = useState("");
   const [selectedDataHall, setSelectedDataHall] = useState("");
+  const [datacenters, setDatacenters] = useState<any[]>([]);
+  const [dataHalls, setDataHalls] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Load datacenters on mount
+  useEffect(() => {
+    setLoading(true);
+    fetchDatacenters().then((dcs) => {
+      setDatacenters(dcs || []);
+      setLoading(false);
+    });
+  }, []);
+
+  // Load data halls when datacenter changes
+  useEffect(() => {
+    if (selectedDatacenter) {
+      setLoading(true);
+      fetchDataHalls(selectedDatacenter).then((halls) => {
+        setDataHalls(halls || []);
+        setLoading(false);
+      });
+    } else {
+      setDataHalls([]);
+    }
+  }, [selectedDatacenter]);
 
   // Check for preselected datacenter from dashboard
   useEffect(() => {
@@ -19,8 +45,7 @@ const StartAudit = () => {
       sessionStorage.removeItem('preselectedDatacenter');
     }
   }, []);
-  const datacenters = locationData;
-  const dataHalls = selectedDatacenter ? getDataHallsByDatacenter(selectedDatacenter) : [];
+
   const handleStartAudit = () => {
     if (selectedDatacenter && selectedDataHall) {
       // Store audit details in sessionStorage for the workflow
@@ -84,7 +109,7 @@ const StartAudit = () => {
             <Button variant="outline" onClick={() => navigate("/")}>
               Cancel
             </Button>
-            <Button onClick={handleStartAudit} disabled={!canStart} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+            <Button onClick={handleStartAudit} disabled={!canStart || loading} className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
               Begin Audit
             </Button>
           </div>

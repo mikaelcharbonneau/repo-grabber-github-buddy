@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,91 +14,39 @@ import {
   FileText,
   MessageSquare
 } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 const IncidentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [incident, setIncident] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock incident data - in a real app, this would come from an API
-  const incidentData = {
-    "INC-2024-045": {
-      id: "INC-2024-045",
-      location: "DC-EAST / Hall-A / Rack-15",
-      device: "PDU-A15-001",
-      description: "Overcurrent alarm triggered - Load exceeding 80% capacity",
-      severity: "Critical",
-      status: "Open",
-      assignee: "Tech Team Alpha",
-      created: "2024-01-15 14:23",
-      updated: "2024-01-15 15:30",
-      type: "Power",
-      scope: "Device",
-      reporter: "John Doe",
-      estimatedResolution: "2024-01-16 10:00",
-      impact: "High - Potential power failure risk",
-      updates: [
-        {
-          id: 1,
-          timestamp: "2024-01-15 15:30",
-          user: "Tech Team Alpha",
-          action: "Assigned",
-          comment: "Reviewing power consumption data and scheduling maintenance window"
-        },
-        {
-          id: 2,
-          timestamp: "2024-01-15 14:23",
-          user: "System Monitor",
-          action: "Created",
-          comment: "Automatic alert triggered by PDU monitoring system"
-        }
-      ],
-      relatedIncidents: [
-        { id: "INC-2024-043", description: "Power fluctuation in adjacent rack", status: "Resolved" }
-      ]
-    },
-    "INC-2024-044": {
-      id: "INC-2024-044",
-      location: "DC-WEST / Hall-B / Rack-08",
-      device: "TEMP-B08-003",
-      description: "Temperature sensor offline - No readings for 2 hours",
-      severity: "Medium",
-      status: "In Progress",
-      assignee: "Tech Team Beta",
-      created: "2024-01-14 09:15",
-      updated: "2024-01-15 08:45",
-      type: "Environmental",
-      scope: "Device",
-      reporter: "Jane Smith",
-      estimatedResolution: "2024-01-15 16:00",
-      impact: "Medium - Environmental monitoring compromised",
-      updates: [
-        {
-          id: 1,
-          timestamp: "2024-01-15 08:45",
-          user: "Tech Team Beta",
-          action: "Updated",
-          comment: "Replacement sensor ordered, temporary monitoring in place"
-        },
-        {
-          id: 2,
-          timestamp: "2024-01-14 12:30",
-          user: "Tech Team Beta",
-          action: "Investigated",
-          comment: "Confirmed sensor failure, checking warranty status"
-        },
-        {
-          id: 3,
-          timestamp: "2024-01-14 09:15",
-          user: "Jane Smith",
-          action: "Created",
-          comment: "Temperature readings stopped at 07:15, manual check shows normal temperature"
-        }
-      ],
-      relatedIncidents: []
-    }
-  };
+  useEffect(() => {
+    const fetchIncident = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('incidents')
+        .select('*')
+        .eq('id', id)
+        .single();
+      setIncident(data);
+      setLoading(false);
+    };
+    if (id) fetchIncident();
+  }, [id]);
 
-  const incident = incidentData[id] || null;
+  if (loading) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto text-center">
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-500">Loading incident...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!incident) {
     return (
@@ -123,7 +72,7 @@ const IncidentDetails = () => {
   }
 
   const getSeverityVariant = (severity: string) => {
-    switch (severity.toLowerCase()) {
+    switch (severity?.toLowerCase()) {
       case 'critical': return 'critical';
       case 'medium': return 'medium';
       case 'low': return 'low';
@@ -131,7 +80,7 @@ const IncidentDetails = () => {
     }
   };
   const getStatusVariant = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'open': return 'critical';
       case 'in progress': return 'medium';
       case 'resolved': return 'low';
@@ -139,7 +88,7 @@ const IncidentDetails = () => {
     }
   };
   const getTypeVariant = (type: string) => {
-    switch (type.toLowerCase()) {
+    switch (type?.toLowerCase()) {
       case 'power': return 'hpe';
       case 'environmental': return 'medium';
       case 'network': return 'low';
@@ -198,7 +147,7 @@ const IncidentDetails = () => {
               <Clock className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Created</div>
-                <div className="font-medium">{incident.created}</div>
+                <div className="font-medium">{incident.created_at}</div>
               </div>
             </div>
           </CardContent>
@@ -266,7 +215,7 @@ const IncidentDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {incident.updates.map((update) => (
+                {incident.updates.map((update: any) => (
                   <div key={update.id} className="flex items-start space-x-4">
                     <div className="w-2 h-2 bg-hpe-green rounded-full mt-2"></div>
                     <div className="flex-1">
@@ -285,14 +234,14 @@ const IncidentDetails = () => {
           </Card>
 
           {/* Related Incidents */}
-          {incident.relatedIncidents.length > 0 && (
+          {incident.related_incidents && incident.related_incidents.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle>Related Incidents</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {incident.relatedIncidents.map((related, index) => (
+                  {incident.related_incidents.map((related: any, index: number) => (
                     <div key={index} className="flex items-center justify-between p-2 border rounded">
                       <div className="flex-1">
                         <div className="font-medium text-sm">{related.id}</div>
@@ -333,10 +282,10 @@ const IncidentDetails = () => {
                   {incident.type}
                 </Badge>
               </div>
-              {incident.estimatedResolution && (
+              {incident.estimated_resolution && (
                 <div>
                   <div className="text-sm text-gray-500">Est. Resolution</div>
-                  <div className="font-medium">{incident.estimatedResolution}</div>
+                  <div className="font-medium">{incident.estimated_resolution}</div>
                 </div>
               )}
             </CardContent>

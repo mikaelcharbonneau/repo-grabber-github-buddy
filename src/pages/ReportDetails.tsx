@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,110 +14,39 @@ import {
   CheckCircle,
   Clock
 } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 const ReportDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [report, setReport] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock report data - in a real app, this would come from an API
-  const reportData = {
-    "RPT-2024-001": {
-      id: "RPT-2024-001",
-      name: "January Audit Summary",
-      type: "Audit Summary Report",
-      generated: "2024-01-15 16:30",
-      size: "2.3 MB",
-      format: "PDF",
-      status: "Ready",
-      description: "Comprehensive summary of all audits conducted in January 2024",
-      author: "System Generated",
-      dataRange: "2024-01-01 to 2024-01-31",
-      categories: ["Audits", "Infrastructure", "Compliance"],
-      summary: {
-        totalAudits: 47,
-        issuesFound: 23,
-        criticalIssues: 5,
-        facilitiesAudited: 12
-      },
-      sections: [
-        { name: "Executive Summary", pages: "1-2" },
-        { name: "Audit Overview", pages: "3-8" },
-        { name: "Issue Analysis", pages: "9-15" },
-        { name: "Recommendations", pages: "16-18" },
-        { name: "Appendices", pages: "19-24" }
-      ],
-      metrics: [
-        { label: "Completion Rate", value: "98.5%", trend: "up" },
-        { label: "Avg Resolution Time", value: "2.3 days", trend: "down" },
-        { label: "Critical Issues", value: "5", trend: "up" },
-        { label: "Compliance Score", value: "94.2%", trend: "up" }
-      ]
-    },
-    "RPT-2024-002": {
-      id: "RPT-2024-002",
-      name: "Critical Incidents Q1",
-      type: "Incident Detail Report",
-      generated: "2024-01-14 09:15",
-      size: "1.8 MB",
-      format: "CSV",
-      status: "Ready",
-      description: "Detailed analysis of all critical incidents in Q1 2024",
-      author: "Mike Johnson",
-      dataRange: "2024-01-01 to 2024-03-31",
-      categories: ["Incidents", "Critical", "Analysis"],
-      summary: {
-        totalIncidents: 156,
-        criticalIncidents: 23,
-        resolvedIncidents: 142,
-        avgResolutionTime: "4.2 hours"
-      },
-      sections: [
-        { name: "Incident Overview", pages: "Sheet 1" },
-        { name: "Critical Analysis", pages: "Sheet 2" },
-        { name: "Resolution Timeline", pages: "Sheet 3" },
-        { name: "Root Cause Analysis", pages: "Sheet 4" }
-      ],
-      metrics: [
-        { label: "Resolution Rate", value: "91.0%", trend: "up" },
-        { label: "MTTR", value: "4.2 hrs", trend: "down" },
-        { label: "Escalation Rate", value: "8.5%", trend: "down" },
-        { label: "Repeat Issues", value: "12%", trend: "up" }
-      ]
-    },
-    "RPT-2024-003": {
-      id: "RPT-2024-003",
-      name: "DC-EAST Compliance",
-      type: "Compliance Report",
-      generated: "2024-01-13 14:45",
-      size: "945 KB",
-      format: "PDF",
-      status: "Processing",
-      description: "Compliance assessment for DC-EAST facility",
-      author: "Sarah Wilson",
-      dataRange: "2024-01-01 to 2024-01-13",
-      categories: ["Compliance", "DC-EAST", "Assessment"],
-      summary: {
-        complianceScore: "96.8%",
-        passedChecks: 187,
-        failedChecks: 6,
-        exemptions: 2
-      },
-      sections: [
-        { name: "Compliance Summary", pages: "1-3" },
-        { name: "Detailed Assessment", pages: "4-12" },
-        { name: "Non-Compliance Items", pages: "13-15" },
-        { name: "Remediation Plan", pages: "16-18" }
-      ],
-      metrics: [
-        { label: "Overall Score", value: "96.8%", trend: "up" },
-        { label: "Security Score", value: "98.2%", trend: "stable" },
-        { label: "Environmental", value: "94.5%", trend: "up" },
-        { label: "Operations", value: "97.1%", trend: "up" }
-      ]
-    }
-  };
+  useEffect(() => {
+    const fetchReport = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('id', id)
+        .single();
+      setReport(data);
+      setLoading(false);
+    };
+    if (id) fetchReport();
+  }, [id]);
 
-  const report = reportData[id] || null;
+  if (loading) {
+    return (
+      <div className="p-6 max-w-4xl mx-auto text-center">
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="text-gray-500">Loading report...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!report) {
     return (
@@ -142,7 +72,7 @@ const ReportDetails = () => {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'ready': return 'bg-green-100 text-green-800';
       case 'processing': return 'bg-blue-100 text-blue-800';
       case 'failed': return 'bg-red-100 text-red-800';
@@ -254,7 +184,7 @@ const ReportDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {report.metrics.map((metric, index) => (
+                {report.metrics.map((metric: any, index: number) => (
                   <div key={index} className="p-4 border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm text-gray-500">{metric.label}</div>
@@ -293,7 +223,7 @@ const ReportDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {report.sections.map((section, index) => (
+                {report.sections.map((section: any, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-hpe-brand/10 rounded-full flex items-center justify-center">
@@ -334,7 +264,7 @@ const ReportDetails = () => {
               <div>
                 <div className="text-sm text-gray-500 mb-2">Categories</div>
                 <div className="flex flex-wrap gap-1">
-                  {report.categories.map((category, index) => (
+                  {report.categories.map((category: string, index: number) => (
                     <Badge key={index} variant="outline" className="text-xs">
                       {category}
                     </Badge>
