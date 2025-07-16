@@ -14,7 +14,7 @@ import {
   FileText,
   MessageSquare
 } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import  supabase  from "@/lib/supabaseClient";
 
 const IncidentDetails = () => {
   const { id } = useParams();
