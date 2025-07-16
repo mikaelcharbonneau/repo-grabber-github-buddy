@@ -29,16 +29,31 @@ const AuditSummary = () => {
 
   const handleSubmit = async () => {
     if (auditDetails) {
+      // Get current user's auditor ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Please log in to submit audit');
+        return;
+      }
+
+      const { data: auditor } = await supabase
+        .from('auditors')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!auditor) {
+        alert('Auditor profile not found');
+        return;
+      }
+
       const issuesFound = auditDetails.issues ? auditDetails.issues.length : 0;
       const finalAudit = {
-        ...auditDetails,
-        completed_at: new Date().toISOString(),
-        id: `AUD-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
-        status: 'completed',
-        created_at: new Date().toISOString(),
-        issuesFound
+        title: `Audit - ${auditDetails.datacenter}/${auditDetails.dataHall}`,
+        description: `Audit of ${auditDetails.datacenter} datacenter, ${auditDetails.dataHall} hall. ${issuesFound} issues found.`,
+        auditor_id: auditor.id,
+        status: 'completed'
       };
-      delete finalAudit.issues; // Remove issues array
 
       const { data: auditData, error: auditError } = await supabase
         .from('audits')
@@ -53,8 +68,27 @@ const AuditSummary = () => {
 
       const auditId = auditData[0].id;
 
-      // Skip issues insertion (issues table doesn't exist)
-      // Issues are stored as audit metadata for now
+      // Create incident records for each issue
+      if (auditDetails.issues && auditDetails.issues.length > 0) {
+        const incidents = auditDetails.issues.map(issue => ({
+          title: `${issue.device || issue.deviceType} - ${issue.alertType}`,
+          description: `Issue found in ${issue.rack}${issue.tile ? ` / ${issue.tile}` : ''}. Device: ${issue.device || issue.deviceType}${issue.impactedUnit ? ` (${issue.impactedUnit})` : ''}. Issue: ${issue.alertType}${issue.comments ? `. Notes: ${issue.comments}` : ''}`,
+          severity: issue.severity?.toLowerCase() || 'medium',
+          status: issue.resolved ? 'resolved' : 'open',
+          auditor_id: auditor.id,
+          audit_id: auditId
+        }));
+
+        const { error: incidentsError } = await supabase
+          .from('incidents')
+          .insert(incidents);
+
+        if (incidentsError) {
+          console.error(incidentsError);
+          alert('Audit created but failed to create incident records');
+          return;
+        }
+      }
 
       sessionStorage.removeItem('auditDetails');
       navigate("/audit/complete");
