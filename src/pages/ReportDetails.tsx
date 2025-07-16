@@ -14,7 +14,7 @@ import {
   CheckCircle,
   Clock
 } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import  supabase  from "@/lib/supabaseClient";
 
 const ReportDetails = () => {
   const { id } = useParams();

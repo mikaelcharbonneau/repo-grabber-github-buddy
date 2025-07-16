@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Calendar, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
-import { supabase } from "@/lib/supabaseClient";
+import  supabase  from "@/lib/supabaseClient";
 
 const Reports = () => {
   const navigate = useNavigate();

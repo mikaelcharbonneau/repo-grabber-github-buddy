@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
 import { DateRange } from "react-day-picker";
-import { supabase } from "@/lib/supabaseClient";
+import  supabase  from "@/lib/supabaseClient";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
