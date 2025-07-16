@@ -355,7 +355,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentIncidents.map(incident => <div key={incident.id} onClick={() => navigate(`/incident/details/${incident.id}`)} className="flex items-start gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
+                  {recentIncidents.map(incident => <div key={incident.id} onClick={() => navigate(`/incidents/${incident.id}`)} className="flex items-start gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
                       <div className="space-y-1 flex-1">
                         <div className="font-medium text-sm">{incident.id}</div>
                         <div className="text-sm text-gray-900">{incident.description}</div>
