@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 const NewIncident = () => {
   const navigate = useNavigate();
@@ -23,7 +23,30 @@ const NewIncident = () => {
   };
 
   const handleSubmit = async () => {
-    const { error } = await supabase.from('incidents').insert([form]);
+    // Get current user's auditor ID
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('Please log in to create incidents');
+      return;
+    }
+
+    const { data: auditor } = await supabase
+      .from('auditors')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!auditor) {
+      alert('Auditor profile not found');
+      return;
+    }
+
+    const incidentData = {
+      ...form,
+      auditor_id: auditor.id
+    };
+
+    const { error } = await supabase.from('incidents').insert([incidentData]);
     if (error) {
       console.error(error);
       alert('Failed to create incident');

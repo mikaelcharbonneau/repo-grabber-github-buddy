@@ -1,5 +1,5 @@
 
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

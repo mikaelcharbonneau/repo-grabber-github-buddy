@@ -14,7 +14,7 @@ import {
   CheckCircle,
   Clock
 } from "lucide-react";
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 const ReportDetails = () => {
   const { id } = useParams();
@@ -23,17 +23,9 @@ const ReportDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchReport = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('id', id)
-        .single();
-      setReport(data);
-      setLoading(false);
-    };
-    if (id) fetchReport();
+    // Mock report data (reports table doesn't exist)
+    setReport(null);
+    setLoading(false);
   }, [id]);
 
   if (loading) {

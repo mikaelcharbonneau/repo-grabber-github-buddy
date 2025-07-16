@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Calendar, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 const Reports = () => {
   const navigate = useNavigate();
@@ -30,11 +30,8 @@ const Reports = () => {
   useEffect(() => {
     setLoading(true);
     const fetchAll = async () => {
-      const { data: reportsData } = await supabase
-        .from('reports')
-        .select('*')
-        .order('generated_at', { ascending: false });
-      setReports(reportsData || []);
+      // Mock reports data (reports table doesn't exist)
+      setReports([]);
       const dcs = await fetchDatacenters();
       setDatacenters(dcs || []);
       setLoading(false);

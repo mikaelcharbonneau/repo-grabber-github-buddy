@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Clock, User, CheckCircle, AlertTriangle } from "lucide-react";
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuditSummary = () => {
   const navigate = useNavigate();
@@ -53,21 +53,8 @@ const AuditSummary = () => {
 
       const auditId = auditData[0].id;
 
-      for (const issue of auditDetails.issues || []) {
-        const issueEntry = {
-          ...issue,
-          audit_id: auditId,
-          created_at: new Date().toISOString()
-        };
-        const { error: issueError } = await supabase
-          .from('issues')
-          .insert([issueEntry]);
-        if (issueError) {
-          console.error(issueError);
-          alert('Failed to submit issues');
-          return;
-        }
-      }
+      // Skip issues insertion (issues table doesn't exist)
+      // Issues are stored as audit metadata for now
 
       sessionStorage.removeItem('auditDetails');
       navigate("/audit/complete");

@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
 import { DateRange } from "react-day-picker";
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
@@ -49,14 +49,8 @@ const Dashboard = () => {
         if (incidentsError) throw incidentsError;
         setRecentIncidents(incidents || []);
 
-        // Fetch recent reports
-        const { data: reports, error: reportsError } = await supabase
-          .from('reports')
-          .select('*')
-          .order('generated_at', { ascending: false })
-          .limit(5);
-        if (reportsError) throw reportsError;
-        setRecentReports(reports || []);
+        // Mock recent reports (reports table doesn't exist)
+        setRecentReports([]);
 
         // Fetch datacenters
         const dcs = await fetchDatacenters();

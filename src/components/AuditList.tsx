@@ -8,7 +8,7 @@ import { Plus, Clipboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
-import  supabase  from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuditList = () => {
   const navigate = useNavigate();
