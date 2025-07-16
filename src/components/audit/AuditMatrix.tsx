@@ -119,8 +119,8 @@ const AuditMatrix = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
+        <div className="overflow-x-auto overflow-y-visible">
+          <Table className="relative">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-48">Rack</TableHead>
@@ -158,10 +158,17 @@ const AuditMatrix = ({
                 if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
                   const units = device === "Power Supply Unit" ? psuUnits : pduUnits;
                   
-                  return <TableCell key={device}>
+                  return <TableCell key={device} className="relative">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-full justify-between text-left">
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-between text-left cursor-pointer hover:bg-gray-50"
+                          onClick={(e) => {
+                            console.log('Button clicked for PSU/PDU:', device);
+                            e.stopPropagation();
+                          }}
+                        >
                           <span className="truncate">
                             {displayText}
                           </span>
@@ -204,10 +211,17 @@ const AuditMatrix = ({
                   </TableCell>;
                 }
 
-                return <TableCell key={device}>
+                return <TableCell key={device} className="relative">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between text-left">
+                            <Button 
+                              variant="outline" 
+                              className="w-full justify-between text-left cursor-pointer hover:bg-gray-50"
+                              onClick={(e) => {
+                                console.log('Button clicked for device:', device);
+                                e.stopPropagation();
+                              }}
+                            >
                               <span className="truncate">
                                 {displayText}
                               </span>
