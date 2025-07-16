@@ -110,20 +110,24 @@ const IncidentDetails = () => {
           Back to Incidents
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{incident.id}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{incident.title}</h1>
           <p className="text-gray-600">{incident.description}</p>
         </div>
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <MapPin className="h-4 w-4 text-gray-500" />
+              <AlertTriangle className="h-4 w-4 text-gray-500" />
               <div>
-                <div className="text-sm text-gray-500">Location</div>
-                <div className="font-medium">{incident.location}</div>
+                <div className="text-sm text-gray-500">Severity</div>
+                <div className="font-medium">
+                  <Badge variant={getSeverityVariant(incident.severity)}>
+                    {incident.severity}
+                  </Badge>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -132,10 +136,14 @@ const IncidentDetails = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <User className="h-4 w-4 text-gray-500" />
+              <CheckCircle className="h-4 w-4 text-gray-500" />
               <div>
-                <div className="text-sm text-gray-500">Assigned To</div>
-                <div className="font-medium">{incident.assignee}</div>
+                <div className="text-sm text-gray-500">Status</div>
+                <div className="font-medium">
+                  <Badge variant={getStatusVariant(incident.status)}>
+                    {incident.status}
+                  </Badge>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -147,19 +155,7 @@ const IncidentDetails = () => {
               <Clock className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Created</div>
-                <div className="font-medium">{incident.created_at}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-4 w-4 text-gray-500" />
-              <div>
-                <div className="text-sm text-gray-500">Impact</div>
-                <div className="font-medium">{incident.impact.split(' - ')[0]}</div>
+                <div className="font-medium">{new Date(incident.created_at).toLocaleDateString()}</div>
               </div>
             </div>
           </CardContent>
@@ -180,27 +176,25 @@ const IncidentDetails = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-gray-500">Device</div>
-                  <div className="font-medium">{incident.device}</div>
+                  <div className="text-sm text-gray-500">Incident ID</div>
+                  <div className="font-medium font-mono text-sm">{incident.id}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Reporter</div>
-                  <div className="font-medium">{incident.reporter}</div>
+                  <div className="text-sm text-gray-500">Audit ID</div>
+                  <div className="font-medium font-mono text-sm">{incident.audit_id || 'N/A'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Type</div>
-                  <Badge variant={getTypeVariant(incident.type)}>
-                    {incident.type}
-                  </Badge>
+                  <div className="text-sm text-gray-500">Created At</div>
+                  <div className="font-medium">{new Date(incident.created_at).toLocaleString()}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-500">Scope</div>
-                  <div className="font-medium">{incident.scope}</div>
+                  <div className="text-sm text-gray-500">Last Updated</div>
+                  <div className="font-medium">{new Date(incident.updated_at).toLocaleString()}</div>
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500 mb-2">Impact Assessment</div>
-                <div className="p-3 bg-gray-50 rounded">{incident.impact}</div>
+                <div className="text-sm text-gray-500 mb-2">Description</div>
+                <div className="p-3 bg-gray-50 rounded">{incident.description || 'No description provided'}</div>
               </div>
             </CardContent>
           </Card>
@@ -215,47 +209,33 @@ const IncidentDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {incident.updates.map((update: any) => (
-                  <div key={update.id} className="flex items-start space-x-4">
-                    <div className="w-2 h-2 bg-hpe-green rounded-full mt-2"></div>
+                <div className="flex items-start space-x-4">
+                  <div className="w-2 h-2 bg-hpe-brand rounded-full mt-2"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium">Incident Created</span>
+                      <span className="text-sm text-gray-500">•</span>
+                      <span className="text-sm text-gray-500">{new Date(incident.created_at).toLocaleString()}</span>
+                    </div>
+                    <div className="text-sm text-gray-700 mt-1">Incident "{incident.title}" was created</div>
+                  </div>
+                </div>
+                {incident.updated_at !== incident.created_at && (
+                  <div className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2"></div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className="font-medium">{update.action}</span>
-                        <span className="text-sm text-gray-500">by {update.user}</span>
+                        <span className="font-medium">Last Updated</span>
                         <span className="text-sm text-gray-500">•</span>
-                        <span className="text-sm text-gray-500">{update.timestamp}</span>
+                        <span className="text-sm text-gray-500">{new Date(incident.updated_at).toLocaleString()}</span>
                       </div>
-                      <div className="text-sm text-gray-700 mt-1">{update.comment}</div>
+                      <div className="text-sm text-gray-700 mt-1">Incident information was updated</div>
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>
-
-          {/* Related Incidents */}
-          {incident.related_incidents && incident.related_incidents.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Related Incidents</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {incident.related_incidents.map((related: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded">
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{related.id}</div>
-                        <div className="text-sm text-gray-600">{related.description}</div>
-                      </div>
-                      <Badge variant={getStatusVariant(related.status)}>
-                        {related.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Sidebar */}
@@ -274,18 +254,25 @@ const IncidentDetails = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span>Severity</span>
-                <span className="font-medium">{incident.severity}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Type</span>
-                <Badge variant={getTypeVariant(incident.type)}>
-                  {incident.type}
+                <Badge variant={getSeverityVariant(incident.severity)}>
+                  {incident.severity}
                 </Badge>
               </div>
-              {incident.estimated_resolution && (
+              <div className="flex items-center justify-between">
+                <span>Auditor ID</span>
+                <span className="font-medium font-mono text-xs">{incident.auditor_id}</span>
+              </div>
+              {incident.audit_id && (
                 <div>
-                  <div className="text-sm text-gray-500">Est. Resolution</div>
-                  <div className="font-medium">{incident.estimated_resolution}</div>
+                  <div className="text-sm text-gray-500">Related Audit</div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate(`/audit/details/${incident.audit_id}`)}
+                    className="mt-1"
+                  >
+                    View Audit
+                  </Button>
                 </div>
               )}
             </CardContent>
