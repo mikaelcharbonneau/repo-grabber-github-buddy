@@ -67,11 +67,11 @@ const IncidentList = () => {
   };
 
   const filteredIncidents = incidents.filter(incident => {
-    const matchesSearch = incident.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         incident.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         incident.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSeverity = severityFilter === "all" || incident.severity.toLowerCase() === severityFilter;
-    const matchesStatus = statusFilter === "all" || incident.status.toLowerCase() === statusFilter;
+    const matchesSearch = (incident.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (incident.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (incident.id?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    const matchesSeverity = severityFilter === "all" || (incident.severity?.toLowerCase() || '') === severityFilter;
+    const matchesStatus = statusFilter === "all" || (incident.status?.toLowerCase() || '') === statusFilter;
     
     return matchesSearch && matchesSeverity && matchesStatus;
   });
