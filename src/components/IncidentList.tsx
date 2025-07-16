@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,11 +11,20 @@ import { Plus, Search, Filter, Shield } from "lucide-react";
 
 const IncidentList = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [incidents, setIncidents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Set initial status filter from URL parameters
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    if (statusParam && ['open', 'in progress', 'resolved'].includes(statusParam)) {
+      setStatusFilter(statusParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchIncidents = async () => {
