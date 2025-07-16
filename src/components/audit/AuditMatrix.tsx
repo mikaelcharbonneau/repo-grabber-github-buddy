@@ -168,20 +168,21 @@ const AuditMatrix = ({
                           <ChevronDown className="h-4 w-4 ml-2 shrink-0" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
+                      <DropdownMenuContent className="w-48 bg-white border shadow-lg z-50">
                         <DropdownMenuLabel>Select {device === "Power Supply Unit" ? "PSU" : "PDU"} & Issues</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         
                         {units.map(unit => (
                           <DropdownMenuSub key={unit}>
-                            <DropdownMenuSubTrigger>
+                            <DropdownMenuSubTrigger className="hover:bg-gray-100">
                               <span>{unit}</span>
                             </DropdownMenuSubTrigger>
-                            <DropdownMenuSubContent className="w-44">
+                            <DropdownMenuSubContent className="w-44 bg-white border shadow-lg z-50">
                               {alertTypes.filter(alert => alert.value !== 'none').map(alert => (
                                 <DropdownMenuCheckboxItem
                                   key={`${unit}-${alert.value}`}
                                   checked={currentValues.includes(`${unit}-${alert.value}`)}
+                                  className="hover:bg-gray-100 cursor-pointer"
                                   onCheckedChange={checked => {
                                     console.log(`Checkbox change: ${unit}-${alert.value}, checked: ${checked}`);
                                     const unitAlertValue = `${unit}-${alert.value}`;
@@ -213,10 +214,11 @@ const AuditMatrix = ({
                               <ChevronDown className="h-4 w-4 ml-2 shrink-0" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-64">
+                          <DropdownMenuContent className="w-64 bg-white border shadow-lg z-50">
                             {alertTypes.filter(alert => alert.value !== 'none').map(alert => <DropdownMenuCheckboxItem
                                 key={alert.value}
                                 checked={currentValues.includes(alert.value)}
+                                className="hover:bg-gray-100 cursor-pointer"
                                 onCheckedChange={checked => {
                                   const newValues = checked ? [...currentValues.filter(v => v !== 'none'), alert.value] : currentValues.filter(v => v !== alert.value);
                                   onUpdateIssue(rack.id, device, newValues.length > 0 ? newValues : ['none']);
