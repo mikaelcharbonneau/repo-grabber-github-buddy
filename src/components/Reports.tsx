@@ -33,7 +33,14 @@ const Reports = () => {
       // Mock reports data (reports table doesn't exist)
       setReports([]);
       const dcs = await fetchDatacenters();
-      setDatacenters(dcs || []);
+      // Fetch datahalls for each datacenter
+      const datacentersWithHalls = await Promise.all(
+        (dcs || []).map(async (dc) => {
+          const halls = await fetchDataHalls(dc.id);
+          return { ...dc, dataHalls: halls || [] };
+        })
+      );
+      setDatacenters(datacentersWithHalls);
       setLoading(false);
     };
     fetchAll();
@@ -59,7 +66,7 @@ const Reports = () => {
       setSelectedDatacenters([...selectedDatacenters, datacenter]);
       // Auto-select all data halls in this datacenter
       const dc = datacenters.find(dc => dc.name === datacenter);
-      if (dc) {
+      if (dc && dc.dataHalls) {
         const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
         const newDataHalls = [...selectedDataHalls, ...dataHallIds.filter(id => !selectedDataHalls.includes(id))];
         setSelectedDataHalls(newDataHalls);
@@ -68,7 +75,7 @@ const Reports = () => {
       setSelectedDatacenters(selectedDatacenters.filter(dc => dc !== datacenter));
       // Auto-deselect all data halls in this datacenter
       const dc = datacenters.find(dc => dc.name === datacenter);
-      if (dc) {
+      if (dc && dc.dataHalls) {
         const dataHallIds = dc.dataHalls.map(dh => `${dc.id}-${dh.id}`);
         setSelectedDataHalls(selectedDataHalls.filter(dh => !dataHallIds.includes(dh)));
       }
@@ -160,7 +167,7 @@ const Reports = () => {
                   </div>
                   
                   <div className="flex flex-wrap gap-4 ml-7">
-                    {datacenter.dataHalls.map((dataHall) => {
+                    {(datacenter.dataHalls || []).map((dataHall) => {
                       return (
                         <div key={dataHall.id} className="flex items-center space-x-2">
                            <Checkbox
