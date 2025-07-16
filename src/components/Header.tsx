@@ -7,6 +7,7 @@ import { Grid2x2, Clipboard, Shield, Database, Plus, Filter, FileText, Calendar 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
 const NotificationItem = ({
   notification,
   onClick
@@ -55,6 +56,7 @@ const NavigationItem = ({
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   // Sample notifications data
   const [notifications, setNotifications] = useState([{
@@ -226,9 +228,9 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>John Doe</DropdownMenuLabel>
+              <DropdownMenuLabel>{user?.user_metadata?.full_name || user?.email || 'User'}</DropdownMenuLabel>
               <DropdownMenuLabel className="text-sm font-normal text-gray-500">
-                Field Technician
+                {user?.email}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
@@ -237,7 +239,7 @@ const Header = () => {
                   Settings
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={signOut}>
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
