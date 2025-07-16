@@ -85,18 +85,62 @@ const AuditMatrix = ({
   // Pre-populate table with all available cabinets
   useEffect(() => {
     async function loadCabinets() {
+      console.log('Loading cabinets for:', { datacenter, dataHall });
+      
       // Fetch datacenters to get the id
       const datacenters = await fetchDatacenters();
+      console.log('Available datacenters:', datacenters);
       const dc = datacenters.find((d: any) => d.name === datacenter);
-      if (!dc) return setPrePopulatedRacks([]);
+      if (!dc) {
+        console.log('Datacenter not found, using first available');
+        if (datacenters.length > 0) {
+          const firstDc = datacenters[0];
+          
+          // Fetch data halls for the first datacenter
+          const dataHalls = await fetchDataHalls(firstDc.id);
+          console.log('Available datahalls:', dataHalls);
+          if (dataHalls.length > 0) {
+            const firstDh = dataHalls[0];
+            
+            // Fetch cabinets for the first data hall
+            const cabinets = await fetchCabinets(firstDh.id);
+            console.log('Available cabinets:', cabinets);
+            const rackData = cabinets.map((cabinet: any, index: number) => ({
+              id: index + 1,
+              name: cabinet.name
+            }));
+            
+            setPrePopulatedRacks(rackData);
+          }
+        }
+        return;
+      }
 
       // Fetch data halls for the datacenter
       const dataHalls = await fetchDataHalls(dc.id);
+      console.log('Available datahalls:', dataHalls);
       const dh = dataHalls.find((h: any) => h.name === dataHall);
-      if (!dh) return setPrePopulatedRacks([]);
+      if (!dh) {
+        console.log('Datahall not found, using first available');
+        if (dataHalls.length > 0) {
+          const firstDh = dataHalls[0];
+          
+          // Fetch cabinets for the first data hall
+          const cabinets = await fetchCabinets(firstDh.id);
+          console.log('Available cabinets:', cabinets);
+          const rackData = cabinets.map((cabinet: any, index: number) => ({
+            id: index + 1,
+            name: cabinet.name
+          }));
+          
+          setPrePopulatedRacks(rackData);
+        }
+        return;
+      }
 
       // Fetch cabinets for the data hall
       const cabinets = await fetchCabinets(dh.id);
+      console.log('Available cabinets:', cabinets);
       const rackData = cabinets.map((cabinet: any, index: number) => ({
         id: index + 1,
         name: cabinet.name
