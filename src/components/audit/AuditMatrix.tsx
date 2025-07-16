@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,10 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { AlertTriangle, ChevronDown, MapPin, ChevronRight } from "lucide-react";
 import { fetchDatacenters, fetchDataHalls, fetchCabinets } from "@/data/locations";
+
 interface Rack {
   id: number;
   name: string;
 }
+
 interface Issue {
   key: string;
   rackId: number;
@@ -22,6 +25,7 @@ interface Issue {
   psuId?: string;
   pduId?: string;
 }
+
 interface AuditMatrixProps {
   racks: Rack[];
   issues: Issue[];
@@ -30,6 +34,7 @@ interface AuditMatrixProps {
   onUpdateIssue: (rackId: number, deviceType: string, alertValues: string[]) => void;
   getIssueValues: (rackId: number, deviceType: string) => string[];
 }
+
 const deviceTypes = ["Power Supply Unit", "Power Distribution Unit", "Rear Door Heat Exchanger", "Cooling Distribution Unit"];
 
 const psuUnits = ["PSU-1", "PSU-2", "PSU-3", "PSU-4"];
@@ -68,6 +73,7 @@ const alertTypes = [{
   label: "Other",
   severity: "Low"
 }];
+
 const AuditMatrix = ({
   datacenter,
   dataHall,
@@ -83,27 +89,34 @@ const AuditMatrix = ({
       const datacenters = await fetchDatacenters();
       const dc = datacenters.find((d: any) => d.name === datacenter);
       if (!dc) return setPrePopulatedRacks([]);
+
       // Fetch data halls for the datacenter
       const dataHalls = await fetchDataHalls(dc.id);
       const dh = dataHalls.find((h: any) => h.name === dataHall);
       if (!dh) return setPrePopulatedRacks([]);
+
       // Fetch cabinets for the data hall
       const cabinets = await fetchCabinets(dh.id);
       const rackData = cabinets.map((cabinet: any, index: number) => ({
         id: index + 1,
         name: cabinet.name
       }));
+
       setPrePopulatedRacks(rackData);
     }
+
     loadCabinets();
   }, [datacenter, dataHall]);
+
   const getSeverityColors = (severities: string[]) => {
     if (severities.includes('Critical')) return 'bg-red-100 border-red-300';
     if (severities.includes('Medium')) return 'bg-yellow-100 border-yellow-300';
     if (severities.includes('Low')) return 'bg-green-100 border-green-300';
     return '';
   };
-  return <Card className="mb-6">
+
+  return (
+    <Card className="mb-6">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex flex-col space-y-2">
@@ -124,94 +137,100 @@ const AuditMatrix = ({
             <TableHeader>
               <TableRow>
                 <TableHead className="w-48">Rack</TableHead>
-                {deviceTypes.map(device => <TableHead key={device} className="w-56 text-center">
+                {deviceTypes.map(device => (
+                  <TableHead key={device} className="w-56 text-center">
                     {device}
-                  </TableHead>)}
+                  </TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {prePopulatedRacks.map(rack => <TableRow key={rack.id}>
+              {prePopulatedRacks.map(rack => (
+                <TableRow key={rack.id}>
                   <TableCell className="font-medium">
                     {rack.name}
                   </TableCell>
                   {deviceTypes.map(device => {
-                const currentValues = getIssueValues(rack.id, device);
-                console.log(`Debug - ${rack.name} ${device}:`, currentValues);
-                
-                // Handle display text for multi-level dropdowns (PSUs/PDUs)
-                let displayText = "No Issues";
-                if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
-                  const unitIncidents = currentValues.filter(v => v !== 'none');
-                  if (unitIncidents.length > 0) {
-                    const uniqueUnits = [...new Set(unitIncidents.map(v => v.split('-').slice(0, -1).join('-')))];
-                    displayText = uniqueUnits.length === 1 
-                      ? `${uniqueUnits[0]} (${unitIncidents.length} issues)`
-                      : `${uniqueUnits.length} units (${unitIncidents.length} issues)`;
-                  }
-                } else {
-                  // Simple display for other devices
-                  const selectedAlerts = alertTypes.filter(a => currentValues.includes(a.value) && a.value !== 'none');
-                  displayText = selectedAlerts.length === 0 ? "No Issues" : selectedAlerts.length === 1 ? selectedAlerts[0].label : `${selectedAlerts.length} Issues`;
-                }
-                
-                // Use multi-level dropdown for PSUs and PDUs
-                if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
-                  const units = device === "Power Supply Unit" ? psuUnits : pduUnits;
-                  
-                  return <TableCell key={device} className="relative">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          className="w-full justify-between text-left cursor-pointer hover:bg-gray-50"
-                          onClick={(e) => {
-                            console.log('Button clicked for PSU/PDU:', device);
-                            e.stopPropagation();
-                          }}
-                        >
-                          <span className="truncate">
-                            {displayText}
-                          </span>
-                          <ChevronDown className="h-4 w-4 ml-2 shrink-0" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48 bg-white border shadow-lg z-50">
-                        <DropdownMenuLabel>Select {device === "Power Supply Unit" ? "PSU" : "PDU"} & Issues</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        
-                        {units.map(unit => (
-                          <DropdownMenuSub key={unit}>
-                            <DropdownMenuSubTrigger className="hover:bg-gray-100">
-                              <span>{unit}</span>
-                            </DropdownMenuSubTrigger>
-                            <DropdownMenuSubContent className="w-44 bg-white border shadow-lg z-50">
-                              {alertTypes.filter(alert => alert.value !== 'none').map(alert => (
-                                <DropdownMenuCheckboxItem
-                                  key={`${unit}-${alert.value}`}
-                                  checked={currentValues.includes(`${unit}-${alert.value}`)}
-                                  className="hover:bg-gray-100 cursor-pointer"
-                                  onCheckedChange={checked => {
-                                    console.log(`Checkbox change: ${unit}-${alert.value}, checked: ${checked}`);
-                                    const unitAlertValue = `${unit}-${alert.value}`;
-                                    const newValues = checked 
-                                      ? [...currentValues.filter(v => v !== 'none'), unitAlertValue] 
-                                      : currentValues.filter(v => v !== unitAlertValue);
-                                    console.log('New values array:', newValues);
-                                    onUpdateIssue(rack.id, device, newValues.length > 0 ? newValues : ['none']);
-                                  }}
-                                >
-                                  <span>{alert.label}</span>
-                                </DropdownMenuCheckboxItem>
+                    const currentValues = getIssueValues(rack.id, device);
+                    console.log(`Debug - ${rack.name} ${device}:`, currentValues);
+                    
+                    // Handle display text for multi-level dropdowns (PSUs/PDUs)
+                    let displayText = "No Issues";
+                    if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
+                      const unitIncidents = currentValues.filter(v => v !== 'none');
+                      if (unitIncidents.length > 0) {
+                        const uniqueUnits = [...new Set(unitIncidents.map(v => v.split('-').slice(0, -1).join('-')))];
+                        displayText = uniqueUnits.length === 1 
+                          ? `${uniqueUnits[0]} (${unitIncidents.length} issues)`
+                          : `${uniqueUnits.length} units (${unitIncidents.length} issues)`;
+                      }
+                    } else {
+                      // Simple display for other devices
+                      const selectedAlerts = alertTypes.filter(a => currentValues.includes(a.value) && a.value !== 'none');
+                      displayText = selectedAlerts.length === 0 ? "No Issues" : selectedAlerts.length === 1 ? selectedAlerts[0].label : `${selectedAlerts.length} Issues`;
+                    }
+                    
+                    // Use multi-level dropdown for PSUs and PDUs
+                    if (device === "Power Supply Unit" || device === "Power Distribution Unit") {
+                      const units = device === "Power Supply Unit" ? psuUnits : pduUnits;
+                      
+                      return (
+                        <TableCell key={device} className="relative">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                className="w-full justify-between text-left cursor-pointer hover:bg-gray-50"
+                                onClick={(e) => {
+                                  console.log('Button clicked for PSU/PDU:', device);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <span className="truncate">
+                                  {displayText}
+                                </span>
+                                <ChevronDown className="h-4 w-4 ml-2 shrink-0" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-48 bg-white border shadow-lg z-50">
+                              <DropdownMenuLabel>Select {device === "Power Supply Unit" ? "PSU" : "PDU"} & Issues</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              
+                              {units.map(unit => (
+                                <DropdownMenuSub key={unit}>
+                                  <DropdownMenuSubTrigger className="hover:bg-gray-100">
+                                    <span>{unit}</span>
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuSubContent className="w-44 bg-white border shadow-lg z-50">
+                                    {alertTypes.filter(alert => alert.value !== 'none').map(alert => (
+                                      <DropdownMenuCheckboxItem
+                                        key={`${unit}-${alert.value}`}
+                                        checked={currentValues.includes(`${unit}-${alert.value}`)}
+                                        className="hover:bg-gray-100 cursor-pointer"
+                                        onCheckedChange={checked => {
+                                          console.log(`Checkbox change: ${unit}-${alert.value}, checked: ${checked}`);
+                                          const unitAlertValue = `${unit}-${alert.value}`;
+                                          const newValues = checked 
+                                            ? [...currentValues.filter(v => v !== 'none'), unitAlertValue] 
+                                            : currentValues.filter(v => v !== unitAlertValue);
+                                          console.log('New values array:', newValues);
+                                          onUpdateIssue(rack.id, device, newValues.length > 0 ? newValues : ['none']);
+                                        }}
+                                      >
+                                        <span>{alert.label}</span>
+                                      </DropdownMenuCheckboxItem>
+                                    ))}
+                                  </DropdownMenuSubContent>
+                                </DropdownMenuSub>
                               ))}
-                            </DropdownMenuSubContent>
-                          </DropdownMenuSub>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>;
-                }
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      );
+                    }
 
-                return <TableCell key={device} className="relative">
+                    return (
+                      <TableCell key={device} className="relative">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button 
@@ -229,12 +248,15 @@ const AuditMatrix = ({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-64 bg-white border shadow-lg z-50">
-                            {alertTypes.filter(alert => alert.value !== 'none').map(alert => <DropdownMenuCheckboxItem
+                            {alertTypes.filter(alert => alert.value !== 'none').map(alert => (
+                              <DropdownMenuCheckboxItem
                                 key={alert.value}
                                 checked={currentValues.includes(alert.value)}
                                 className="hover:bg-gray-100 cursor-pointer"
                                 onCheckedChange={checked => {
-                                  const newValues = checked ? [...currentValues.filter(v => v !== 'none'), alert.value] : currentValues.filter(v => v !== alert.value);
+                                  const newValues = checked 
+                                    ? [...currentValues.filter(v => v !== 'none'), alert.value] 
+                                    : currentValues.filter(v => v !== alert.value);
                                   onUpdateIssue(rack.id, device, newValues.length > 0 ? newValues : ['none']);
                                 }}
                               >
@@ -250,16 +272,21 @@ const AuditMatrix = ({
                                     </span>
                                   )}
                                 </div>
-                              </DropdownMenuCheckboxItem>)}
+                              </DropdownMenuCheckboxItem>
+                            ))}
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </TableCell>;
-              })}
-                </TableRow>)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
+
 export default AuditMatrix;
