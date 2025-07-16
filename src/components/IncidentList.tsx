@@ -5,17 +5,21 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Shield } from "lucide-react";
+import { Plus, Shield, CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 
 const IncidentList = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [severityFilter, setSeverityFilter] = useState("all");
+  const [datacenterFilter, setDatacenterFilter] = useState("all");
+  const [datahallFilter, setDatahallFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [incidents, setIncidents] = useState<any[]>([]);
+  const [datacenters, setDatacenters] = useState<any[]>([]);
+  const [datahalls, setDatahalls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Set initial status filter from URL parameters
@@ -27,18 +31,48 @@ const IncidentList = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    const fetchIncidents = async () => {
+    const fetchData = async () => {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch incidents
+      const { data: incidentsData, error: incidentsError } = await supabase
         .from('incidents')
         .select('*')
         .order('created_at', { ascending: false });
-      if (error) console.error(error);
-      setIncidents(data || []);
+      
+      // Fetch datacenters
+      const { data: datacentersData, error: datacentersError } = await supabase
+        .from('datacenters')
+        .select('*');
+      
+      if (incidentsError) console.error(incidentsError);
+      if (datacentersError) console.error(datacentersError);
+      
+      setIncidents(incidentsData || []);
+      setDatacenters(datacentersData || []);
       setLoading(false);
     };
-    fetchIncidents();
+    fetchData();
   }, []);
+
+  // Fetch datahalls when datacenter changes
+  useEffect(() => {
+    if (datacenterFilter !== "all") {
+      const fetchDatahalls = async () => {
+        const { data, error } = await supabase
+          .from('datahalls')
+          .select('*')
+          .eq('datacenter_id', datacenterFilter);
+        
+        if (error) console.error(error);
+        setDatahalls(data || []);
+      };
+      fetchDatahalls();
+    } else {
+      setDatahalls([]);
+      setDatahallFilter("all");
+    }
+  }, [datacenterFilter]);
 
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -76,13 +110,17 @@ const IncidentList = () => {
   };
 
   const filteredIncidents = incidents.filter(incident => {
-    const matchesSearch = (incident.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (incident.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         (incident.id?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    const matchesSeverity = severityFilter === "all" || (incident.severity?.toLowerCase() || '') === severityFilter;
+    const matchesDatacenter = datacenterFilter === "all" || incident.datacenter_id === datacenterFilter;
+    const matchesDatahall = datahallFilter === "all" || incident.datahall_id === datahallFilter;
     const matchesStatus = statusFilter === "all" || (incident.status?.toLowerCase() || '') === statusFilter;
     
-    return matchesSearch && matchesSeverity && matchesStatus;
+    // Date range filter
+    const matchesDateRange = !dateRange?.from || !dateRange?.to || 
+      (incident.created_at && 
+       new Date(incident.created_at) >= dateRange.from && 
+       new Date(incident.created_at) <= dateRange.to);
+    
+    return matchesDatacenter && matchesDatahall && matchesStatus && matchesDateRange;
   });
 
   const handleIncidentClick = (incidentId: string) => {
@@ -105,24 +143,34 @@ const IncidentList = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search incidents..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={severityFilter} onValueChange={setSeverityFilter}>
+            <DatePickerWithRange
+              date={dateRange}
+              setDate={setDateRange}
+            />
+            <Select value={datacenterFilter} onValueChange={setDatacenterFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by severity" />
+                <SelectValue placeholder="Filter by datacenter" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Severities</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="all">All Datacenters</SelectItem>
+                {datacenters.map(datacenter => (
+                  <SelectItem key={datacenter.id} value={datacenter.id}>
+                    {datacenter.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={datahallFilter} onValueChange={setDatahallFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Filter by datahall" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Datahalls</SelectItem>
+                {datahalls.map(datahall => (
+                  <SelectItem key={datahall.id} value={datahall.id}>
+                    {datahall.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -136,10 +184,6 @@ const IncidentList = () => {
                 <SelectItem value="resolved">Resolved</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline">
-              <Filter className="mr-2 h-4 w-4" />
-              Advanced Filters
-            </Button>
           </div>
         </CardContent>
       </Card>
