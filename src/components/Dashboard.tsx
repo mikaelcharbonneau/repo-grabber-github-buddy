@@ -25,12 +25,31 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
   const [datacenters, setDatacenters] = useState<any[]>([]);
   const [dataHalls, setDataHalls] = useState<any[]>([]);
+  
+  // Monthly comparison data
+  const [currentMonthStats, setCurrentMonthStats] = useState({
+    completedAudits: 0,
+    activeIncidents: 0,
+    resolvedIncidents: 0,
+    reportsGenerated: 0
+  });
+  const [lastMonthStats, setLastMonthStats] = useState({
+    completedAudits: 0,
+    activeIncidents: 0,
+    resolvedIncidents: 0,
+    reportsGenerated: 0
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
+        const now = new Date();
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
         // Fetch recent audits
         const { data: audits, error: auditsError } = await supabase
           .from('audits')
@@ -48,6 +67,46 @@ const Dashboard = () => {
           .limit(5);
         if (incidentsError) throw incidentsError;
         setRecentIncidents(incidents || []);
+
+        // Fetch current month data
+        const { data: currentAudits } = await supabase
+          .from('audits')
+          .select('*')
+          .gte('created_at', currentMonthStart.toISOString());
+        
+        const { data: currentIncidents } = await supabase
+          .from('incidents')
+          .select('*')
+          .gte('created_at', currentMonthStart.toISOString());
+
+        // Fetch last month data
+        const { data: lastAudits } = await supabase
+          .from('audits')
+          .select('*')
+          .gte('created_at', lastMonthStart.toISOString())
+          .lte('created_at', lastMonthEnd.toISOString());
+        
+        const { data: lastIncidents } = await supabase
+          .from('incidents')
+          .select('*')
+          .gte('created_at', lastMonthStart.toISOString())
+          .lte('created_at', lastMonthEnd.toISOString());
+
+        // Calculate current month stats
+        setCurrentMonthStats({
+          completedAudits: (currentAudits || []).filter(a => a.status === 'completed').length,
+          activeIncidents: (currentIncidents || []).filter(i => i.status === 'open').length,
+          resolvedIncidents: (currentIncidents || []).filter(i => i.status === 'resolved').length,
+          reportsGenerated: 0 // Mock data
+        });
+
+        // Calculate last month stats
+        setLastMonthStats({
+          completedAudits: (lastAudits || []).filter(a => a.status === 'completed').length,
+          activeIncidents: (lastIncidents || []).filter(i => i.status === 'open').length,
+          resolvedIncidents: (lastIncidents || []).filter(i => i.status === 'resolved').length,
+          reportsGenerated: 0 // Mock data
+        });
 
         // Mock recent reports (reports table doesn't exist)
         setRecentReports([]);
@@ -84,37 +143,60 @@ const Dashboard = () => {
     });
   };
 
-  // Calculate stats from Supabase data
+  // Helper function to calculate change percentage and type
+  const calculateChange = (current: number, previous: number) => {
+    if (previous === 0) {
+      return current > 0 ? { change: `+${current}`, changeType: "increase" as const } : { change: "0", changeType: "neutral" as const };
+    }
+    
+    const diff = current - previous;
+    const percentage = Math.round((diff / previous) * 100);
+    
+    if (diff > 0) {
+      return { change: `+${percentage}%`, changeType: "increase" as const };
+    } else if (diff < 0) {
+      return { change: `${percentage}%`, changeType: "decrease" as const };
+    } else {
+      return { change: "0%", changeType: "neutral" as const };
+    }
+  };
+
+  // Calculate stats with real month-over-month comparison
+  const completedAuditsChange = calculateChange(currentMonthStats.completedAudits, lastMonthStats.completedAudits);
+  const activeIncidentsChange = calculateChange(currentMonthStats.activeIncidents, lastMonthStats.activeIncidents);
+  const resolvedIncidentsChange = calculateChange(currentMonthStats.resolvedIncidents, lastMonthStats.resolvedIncidents);
+  const reportsChange = calculateChange(currentMonthStats.reportsGenerated, lastMonthStats.reportsGenerated);
+
   const stats = [
     {
       title: "Completed Audits",
-      value: recentAudits.filter(a => a.status && a.status.toLowerCase() === 'completed').length.toString(),
-      change: "+12%",
-      changeType: "increase" as const,
+      value: currentMonthStats.completedAudits.toString(),
+      change: completedAuditsChange.change,
+      changeType: completedAuditsChange.changeType,
       icon: ClipboardCheck,
       color: "text-hpe-brand"
     },
     {
       title: "Active Incidents",
-      value: recentIncidents.filter(i => i.status && i.status.toLowerCase() === 'open').length.toString(),
-      change: "-23%",
-      changeType: "decrease" as const,
+      value: currentMonthStats.activeIncidents.toString(),
+      change: activeIncidentsChange.change,
+      changeType: activeIncidentsChange.changeType,
       icon: Shield,
       color: "text-orange-600"
     },
     {
       title: "Resolved Incidents",
-      value: recentIncidents.filter(i => i.status && i.status.toLowerCase() === 'resolved').length.toString(),
-      change: "+3",
-      changeType: "increase" as const,
+      value: currentMonthStats.resolvedIncidents.toString(),
+      change: resolvedIncidentsChange.change,
+      changeType: resolvedIncidentsChange.changeType,
       icon: Shield,
       color: "text-green-600"
     },
     {
       title: "Reports Generated",
-      value: recentReports.length.toString(),
-      change: "+5",
-      changeType: "increase" as const,
+      value: currentMonthStats.reportsGenerated.toString(),
+      change: reportsChange.change,
+      changeType: reportsChange.changeType,
       icon: FileText,
       color: "text-purple-600"
     }
