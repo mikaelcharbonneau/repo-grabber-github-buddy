@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient";
+import supabase from "@/lib/supabaseClient";
 
 export async function fetchDatacenters() {
   const { data, error } = await supabase.from('datacenters').select('*').order('name');
