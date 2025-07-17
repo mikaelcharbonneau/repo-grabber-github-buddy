@@ -9,8 +9,16 @@ import { supabase } from "@/integrations/supabase/client";
 
 const NewIncident = () => {
   const navigate = useNavigate();
+  // Map datacenter aliases to their full names
+  const datacenterNames: Record<string, string> = {
+    'Q': 'Quebec',
+    'M': 'Montreal',
+    'T': 'Toronto',
+    'V': 'Vancouver'
+    // Add more mappings as needed
+  };
+
   const [form, setForm] = useState({
-    title: "",
     description: "",
     severity: "medium",
     status: "open",
@@ -45,9 +53,18 @@ const NewIncident = () => {
       return;
     }
 
+    // Auto-generate title based on device type and location
+    const deviceType = form.device_id.startsWith('PSU') ? 'Power Supply' : 
+                      form.device_id.startsWith('PDU') ? 'Power Distribution' :
+                      form.device_id.startsWith('SW') ? 'Network Switch' :
+                      'Device';
+                      
+    const locationName = datacenterNames[form.datacenter_alias] || `DC-${form.datacenter_alias}`;
+    const title = `${deviceType} Issue - ${locationName} ${form.datahall_alias}`;
+
     // Prepare incident data with all required fields
     const incidentData = {
-      title: form.title,
+      title: title,
       description: form.description,
       severity: form.severity,
       status: form.status,
@@ -83,14 +100,6 @@ const NewIncident = () => {
           <CardTitle>Report New Incident</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={form.title}
-              onChange={(e) => handleChange('title', e.target.value)}
-            />
-          </div>
           <div>
             <Label htmlFor="description">Description</Label>
             <Input
