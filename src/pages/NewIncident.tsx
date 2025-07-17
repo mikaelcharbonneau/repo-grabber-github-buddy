@@ -14,7 +14,11 @@ const NewIncident = () => {
     description: "",
     severity: "medium",
     status: "open",
-    location: "",
+    datacenter_alias: "",
+    datahall_alias: "",
+    tile_location: "",
+    u_height: "",
+    device_id: "",
     created_at: new Date().toISOString()
   });
 
@@ -41,16 +45,33 @@ const NewIncident = () => {
       return;
     }
 
+    // Prepare incident data with all required fields
     const incidentData = {
-      ...form,
-      auditor_id: auditor.id
+      title: form.title,
+      description: form.description,
+      severity: form.severity,
+      status: form.status,
+      datacenter_alias: form.datacenter_alias,
+      datahall_alias: form.datahall_alias,
+      tile_location: form.tile_location,
+      u_height: form.u_height,
+      device_id: form.device_id,
+      auditor_id: auditor.id,
+      created_at: new Date().toISOString()
     };
 
-    const { error } = await supabase.from('incidents').insert([incidentData]);
+    console.log('Submitting incident:', incidentData);
+
+    const { data, error } = await supabase
+      .from('incidents')
+      .insert([incidentData])
+      .select();
+      
     if (error) {
-      console.error(error);
-      alert('Failed to create incident');
+      console.error('Error creating incident:', error);
+      alert(`Failed to create incident: ${error.message}`);
     } else {
+      console.log('Incident created successfully:', data);
       navigate("/incidents");
     }
   };
@@ -104,13 +125,58 @@ const NewIncident = () => {
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={form.location}
-              onChange={(e) => handleChange('location', e.target.value)}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="datacenter_alias">Datacenter Alias</Label>
+              <Input
+                id="datacenter_alias"
+                value={form.datacenter_alias}
+                onChange={(e) => handleChange('datacenter_alias', e.target.value)}
+                placeholder="e.g., Q"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="datahall_alias">Datahall Alias</Label>
+              <Input
+                id="datahall_alias"
+                value={form.datahall_alias}
+                onChange={(e) => handleChange('datahall_alias', e.target.value)}
+                placeholder="e.g., 01"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="tile_location">Tile Location</Label>
+              <Input
+                id="tile_location"
+                value={form.tile_location}
+                onChange={(e) => handleChange('tile_location', e.target.value)}
+                placeholder="e.g., X2494"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="u_height">U-Height</Label>
+              <Input
+                id="u_height"
+                type="number"
+                value={form.u_height}
+                onChange={(e) => handleChange('u_height', e.target.value)}
+                placeholder="e.g., 33"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="device_id">Device ID</Label>
+              <Input
+                id="device_id"
+                value={form.device_id}
+                onChange={(e) => handleChange('device_id', e.target.value)}
+                placeholder="e.g., PSU2"
+                required
+              />
+            </div>
           </div>
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={() => navigate("/incidents")}>
