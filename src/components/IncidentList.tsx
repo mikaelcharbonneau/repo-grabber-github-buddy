@@ -22,6 +22,23 @@ const IncidentList = () => {
   const [datahalls, setDatahalls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Map datacenter aliases to their full names
+  const datacenterNames: Record<string, string> = {
+    'Q': 'Quebec Island',
+    'M': 'Montreal',
+    'T': 'Toronto',
+    'V': 'Vancouver'
+    // Add more mappings as needed
+  };
+
+  // Get full location name from datacenter and datahall aliases
+  const getLocationName = (incident: any) => {
+    if (!incident) return '';
+    const dcName = datacenterNames[incident.datacenter_alias] || incident.datacenter_alias || '';
+    const dhName = incident.datahall_alias || '';
+    return [dcName, dhName].filter(Boolean).join(' ');
+  };
+
   // Set initial status filter from URL parameters
   useEffect(() => {
     const statusParam = searchParams.get('status');
@@ -155,7 +172,7 @@ const IncidentList = () => {
                 <SelectItem value="all">All Datacenters</SelectItem>
                 {datacenters.map(datacenter => (
                   <SelectItem key={datacenter.id} value={datacenter.id}>
-                    {datacenter.name}
+                    {datacenterNames[datacenter.alias] || datacenter.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -196,25 +213,17 @@ const IncidentList = () => {
               <div className="flex items-start justify-between">
                 <div className="space-y-3 flex-1">
                   <div className="flex items-center space-x-3 flex-wrap gap-2">
-                    <h3 className="font-semibold text-lg">{incident.id}</h3>
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
+                    <h3 className="font-semibold text-lg">{incident.title}</h3>
                   </div>
-                  <p className="text-gray-900 font-medium">{incident.description}</p>
+                  <p className="text-gray-900 font-medium">{getLocationName(incident)}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div><strong>Location:</strong> {incident.location}</div>
-                    <div><strong>Device:</strong> {incident.device}</div>
-                    <div><strong>Assigned to:</strong> {incident.assignee}</div>
-                    <div><strong>Created:</strong> {incident.created}</div>
+                    <div><strong>Tile Location:</strong> {incident.tile_location || 'N/A'}</div>
+                    <div><strong>Device ID:</strong> {incident.device_id || 'N/A'}</div>
+                    <div><strong>U-Height:</strong> {incident.u_height || 'N/A'}</div>
+                    <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
                   </div>
                   <div className="text-xs text-gray-500">
-                    Last updated: {incident.updated}
+                    UUID: {incident.formatted_id || incident.id}
                   </div>
                 </div>
                 <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
