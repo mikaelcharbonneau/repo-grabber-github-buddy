@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
-import { Plus, Clipboard } from "lucide-react";
+import { Plus, Clipboard, FileText, Share2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
@@ -215,15 +215,18 @@ const AuditList = () => {
                   </div>
                 </div>
                 {/* Device issues and actions can be added here if available in audit */}
-                <div className="flex flex-col space-y-2 flex-shrink-0">
-                  <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)}>
-                    View Details
+                <div className="flex space-x-2 flex-shrink-0">
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)} className="flex flex-col items-center h-auto py-3 px-4">
+                    <Clipboard className="h-4 w-4 mb-1" />
+                    <span className="text-xs">View Details</span>
                   </Button>
-                  <Button variant="outline" size="sm">
-                    Generate Report
+                  <Button variant="outline" size="sm" className="flex flex-col items-center h-auto py-3 px-4">
+                    <FileText className="h-4 w-4 mb-1" />
+                    <span className="text-xs">Generate Report</span>
                   </Button>
-                  <Button variant="outline" size="sm">
-                    Copy Link
+                  <Button variant="outline" size="sm" className="flex flex-col items-center h-auto py-3 px-4">
+                    <Share2 className="h-4 w-4 mb-1" />
+                    <span className="text-xs">Copy Link</span>
                   </Button>
                 </div>
               </div>
