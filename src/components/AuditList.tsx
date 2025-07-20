@@ -139,9 +139,10 @@ const AuditList = () => {
 
   // Filter audits by date range, datacenter and data hall
   const filteredAudits = audits.filter(audit => {
-    // Date range filter
+    // Date range filter - make end date inclusive by setting it to end of day
     const matchesDateRange = !dateRange?.from || !dateRange?.to || 
-      (new Date(audit.created_at) >= dateRange.from && new Date(audit.created_at) <= dateRange.to);
+      (new Date(audit.created_at) >= dateRange.from && 
+       new Date(audit.created_at) <= new Date(dateRange.to.getTime() + 24 * 60 * 60 * 1000 - 1));
     
     // Datacenter filter  
     const matchesDatacenter = filters.datacenter === "all" || audit.datacenter_id === filters.datacenter;
