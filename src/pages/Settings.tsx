@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,6 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   User, 
   Bell, 
@@ -17,6 +21,82 @@ import {
 } from "lucide-react";
 
 const Settings = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  
+  // Profile state
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [location, setLocation] = useState("");
+  
+  // Load user profile data
+  useEffect(() => {
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
+
+  const loadProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('auditors')
+        .select('*')
+        .eq('user_id', user?.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setName(data.name || "");
+        setEmail(data.email || "");
+        setEmployeeId(data.Employee_ID?.toString() || "");
+        setLocation(data.Location || "");
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profile data",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('auditors')
+        .update({
+          name,
+          email,
+          Employee_ID: employeeId ? parseInt(employeeId) : null,
+          Location: location,
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save changes",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       <div className="mb-6">
@@ -66,33 +146,43 @@ const Settings = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="John" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue="Doe" />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input 
+                  id="name" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue="john.doe@hpe.com" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select defaultValue="technician">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="technician">Field Technician</SelectItem>
-                    <SelectItem value="supervisor">Supervisor</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="admin">Administrator</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="employeeId">Employee ID</Label>
+                <Input 
+                  id="employeeId" 
+                  type="number"
+                  value={employeeId}
+                  onChange={(e) => setEmployeeId(e.target.value)}
+                  placeholder="Enter your employee ID"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input 
+                  id="location" 
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Enter your location"
+                />
               </div>
             </CardContent>
           </Card>
@@ -251,9 +341,13 @@ const Settings = () => {
             <Button variant="outline">
               Cancel
             </Button>
-            <Button className="bg-hpe-brand hover:bg-hpe-brand/90 text-white">
+            <Button 
+              className="bg-hpe-brand hover:bg-hpe-brand/90 text-white"
+              onClick={handleSaveChanges}
+              disabled={loading}
+            >
               <Save className="mr-2 h-4 w-4" />
-              Save Changes
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>
