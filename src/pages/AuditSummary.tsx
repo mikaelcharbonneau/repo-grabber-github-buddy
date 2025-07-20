@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Clock, User, CheckCircle, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { generateAuditId } from "@/utils/auditId";
 
 const AuditSummary = () => {
   const navigate = useNavigate();
@@ -55,18 +56,24 @@ const AuditSummary = () => {
         status: 'completed'
       };
 
-      const { data: auditData, error: auditError } = await supabase
+      // Generate a unique audit ID
+      const auditId = generateAuditId();
+      
+      // Add the generated ID to the audit data
+      const auditWithId = {
+        ...finalAudit,
+        id: auditId
+      };
+
+      const { error: auditError } = await supabase
         .from('audits')
-        .insert([finalAudit])
-        .select();
+        .insert([auditWithId]);
 
       if (auditError) {
         console.error(auditError);
         alert('Failed to submit audit');
         return;
       }
-
-      const auditId = auditData[0].id;
 
       // Create incident records for each issue
       if (auditDetails.issues && auditDetails.issues.length > 0) {

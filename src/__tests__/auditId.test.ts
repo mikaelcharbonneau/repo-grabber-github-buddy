@@ -1,0 +1,93 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { generateAuditId, resetSequenceCounter } from '@/utils/auditId';
+
+describe('Audit ID Generation', () => {
+  // Reset sequence counter before each test
+  beforeEach(() => {
+    resetSequenceCounter();
+  });
+
+  it('should generate an ID in the correct format', () => {
+    // Mock the current date for consistent testing
+    const mockDate = new Date('2025-07-19T12:00:00Z');
+    const id = generateAuditId(mockDate);
+    
+    // Expected format: YYYYMMDD-AUD-QXX-XX
+    const regex = /^\d{8}-AUD-Q0[1-4]-\d{2}$/;
+    expect(id).toMatch(regex);
+    
+    // Check date part
+    expect(id.startsWith('20250719')).toBe(true);
+  });
+
+  it('should increment sequence numbers correctly', () => {
+    const mockDate = new Date('2025-07-19T12:00:00Z');
+    
+    // First ID
+    const id1 = generateAuditId(mockDate);
+    expect(id1.endsWith('-01')).toBe(true);
+    
+    // Second ID should increment sequence
+    const id2 = generateAuditId(mockDate);
+    expect(id2.endsWith('-02')).toBe(true);
+    
+    // Third ID with same date should increment sequence
+    const id3 = generateAuditId(mockDate);
+    expect(id3.endsWith('-03')).toBe(true);
+  });
+
+  it('should handle quarter changes', () => {
+    // Q1 date
+    const q1Date = new Date('2025-02-15T12:00:00Z');
+    const q1Id = generateAuditId(q1Date);
+    expect(q1Id).toContain('-Q01-');
+    
+    // Q2 date
+    const q2Date = new Date('2025-05-15T12:00:00Z');
+    const q2Id = generateAuditId(q2Date);
+    expect(q2Id).toContain('-Q02-');
+    
+    // Q3 date
+    const q3Date = new Date('2025-08-15T12:00:00Z');
+    const q3Id = generateAuditId(q3Date);
+    expect(q3Id).toContain('-Q03-');
+    
+    // Q4 date
+    const q4Date = new Date('2025-11-15T12:00:00Z');
+    const q4Id = generateAuditId(q4Date);
+    expect(q4Id).toContain('-Q04-');
+  });
+
+  it('should reset sequence when it reaches 99', () => {
+    const mockDate = new Date('2025-07-19T12:00:00Z');
+    
+    // Set sequence to 99
+    for (let i = 0; i < 99; i++) {
+      generateAuditId(mockDate);
+    }
+    
+    // Next ID should be 99
+    const id99 = generateAuditId(mockDate);
+    expect(id99.endsWith('-99')).toBe(true);
+    
+    // Following ID should reset to 01
+    const id100 = generateAuditId(mockDate);
+    expect(id100.endsWith('-01')).toBe(true);
+  });
+
+  it('should handle different dates correctly', () => {
+    const date1 = new Date('2025-01-01T00:00:00Z');
+    const date2 = new Date('2025-12-31T23:59:59Z');
+    
+    const id1 = generateAuditId(date1);
+    const id2 = generateAuditId(date2);
+    
+    // Different dates should have different date parts
+    expect(id1.startsWith('20250101')).toBe(true);
+    expect(id2.startsWith('20251231')).toBe(true);
+    
+    // Both should have sequence starting at 01
+    expect(id1.endsWith('-01')).toBe(true);
+    expect(id2.endsWith('-01')).toBe(true);
+  });
+});
