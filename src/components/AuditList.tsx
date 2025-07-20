@@ -137,11 +137,19 @@ const AuditList = () => {
     });
   };
 
-  // Filter audits by datacenter and data hall (if those fields exist in audit)
+  // Filter audits by date range, datacenter and data hall
   const filteredAudits = audits.filter(audit => {
+    // Date range filter
+    const matchesDateRange = !dateRange?.from || !dateRange?.to || 
+      (new Date(audit.created_at) >= dateRange.from && new Date(audit.created_at) <= dateRange.to);
+    
+    // Datacenter filter  
     const matchesDatacenter = filters.datacenter === "all" || audit.datacenter_id === filters.datacenter;
+    
+    // Data hall filter
     const matchesDataHall = filters.dataHall === "all" || audit.datahall_id === filters.dataHall;
-    return matchesDatacenter && matchesDataHall;
+    
+    return matchesDateRange && matchesDatacenter && matchesDataHall;
   });
   const getSeverityVariant = (severity: string) => {
     switch (severity?.toLowerCase()) {
