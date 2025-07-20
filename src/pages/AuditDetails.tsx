@@ -331,7 +331,7 @@ const AuditDetails = () => {
               <div>
                 <div className="text-sm text-gray-500">Datahall</div>
                 <div className="text-2xl font-bold">
-                  {audit.datacenter?.name || 'Unknown'}/{audit.datahall?.name || 'Unknown'}
+                  {audit.datahall?.name || 'Unknown'}
                 </div>
                 <div className="font-medium">{audit.duration}</div>
               </div>
