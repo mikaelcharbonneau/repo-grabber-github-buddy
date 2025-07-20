@@ -403,7 +403,7 @@ const AuditDetails = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <FileText className="h-5 w-5" />
-                <span>Incidents ({audit.findings?.length || 0})</span>
+                <span>Incidents</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
