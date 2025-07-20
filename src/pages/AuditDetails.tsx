@@ -302,7 +302,7 @@ const AuditDetails = () => {
             <div className="flex items-center space-x-2">
               <MapPin className="h-4 w-4 text-gray-500" />
               <div>
-                <div className="text-sm text-gray-500">Location</div>
+                <div className="text-sm text-gray-500">Datacenter</div>
                 <div className="font-medium">
                   {audit.datacenter?.name}
                   {audit.datahall?.name && ` / ${audit.datahall?.name}`}
