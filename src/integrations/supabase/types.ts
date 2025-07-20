@@ -42,7 +42,9 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          Employee_ID: number | null
           id: string
+          Location: string | null
           name: string
           updated_at: string
           user_id: string
@@ -50,7 +52,9 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          Employee_ID?: number | null
           id?: string
+          Location?: string | null
           name: string
           updated_at?: string
           user_id: string
@@ -58,7 +62,9 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          Employee_ID?: number | null
           id?: string
+          Location?: string | null
           name?: string
           updated_at?: string
           user_id?: string
@@ -69,8 +75,13 @@ export type Database = {
         Row: {
           auditor_id: string
           created_at: string
+          custom_audit_id: string | null
+          datacenter_id: string | null
+          datahall_id: string | null
           description: string | null
+          end_time: string | null
           id: string
+          start_time: string | null
           status: string
           title: string
           updated_at: string
@@ -78,8 +89,13 @@ export type Database = {
         Insert: {
           auditor_id: string
           created_at?: string
+          custom_audit_id?: string | null
+          datacenter_id?: string | null
+          datahall_id?: string | null
           description?: string | null
+          end_time?: string | null
           id?: string
+          start_time?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -87,26 +103,49 @@ export type Database = {
         Update: {
           auditor_id?: string
           created_at?: string
+          custom_audit_id?: string | null
+          datacenter_id?: string | null
+          datahall_id?: string | null
           description?: string | null
+          end_time?: string | null
           id?: string
+          start_time?: string | null
           status?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "audits_datacenter_id_fkey"
+            columns: ["datacenter_id"]
+            isOneToOne: false
+            referencedRelation: "datacenters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audits_datahall_id_fkey"
+            columns: ["datahall_id"]
+            isOneToOne: false
+            referencedRelation: "datahalls"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       datacenters: {
         Row: {
+          alias: string | null
           created_at: string
           id: string
           name: string
         }
         Insert: {
+          alias?: string | null
           created_at?: string
           id?: string
           name: string
         }
         Update: {
+          alias?: string | null
           created_at?: string
           id?: string
           name?: string
@@ -115,18 +154,21 @@ export type Database = {
       }
       datahalls: {
         Row: {
+          alias: string | null
           created_at: string
           datacenter_id: string
           id: string
           name: string
         }
         Insert: {
+          alias?: string | null
           created_at?: string
           datacenter_id: string
           id?: string
           name: string
         }
         Update: {
+          alias?: string | null
           created_at?: string
           datacenter_id?: string
           id?: string
@@ -162,36 +204,60 @@ export type Database = {
       }
       incidents: {
         Row: {
+          assigned_to: string | null
           audit_id: string | null
           auditor_id: string
           created_at: string
+          datacenter_alias: string | null
+          datahall_alias: string | null
           description: string | null
+          device_id: string | null
+          formatted_id: string | null
           id: string
+          resolved_at: string | null
           severity: string
           status: string
+          tile_location: string | null
           title: string
+          u_height: string | null
           updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
           audit_id?: string | null
           auditor_id: string
           created_at?: string
+          datacenter_alias?: string | null
+          datahall_alias?: string | null
           description?: string | null
+          device_id?: string | null
+          formatted_id?: string | null
           id?: string
+          resolved_at?: string | null
           severity?: string
           status?: string
+          tile_location?: string | null
           title: string
+          u_height?: string | null
           updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
           audit_id?: string | null
           auditor_id?: string
           created_at?: string
+          datacenter_alias?: string | null
+          datahall_alias?: string | null
           description?: string | null
+          device_id?: string | null
+          formatted_id?: string | null
           id?: string
+          resolved_at?: string | null
           severity?: string
           status?: string
+          tile_location?: string | null
           title?: string
+          u_height?: string | null
           updated_at?: string
         }
         Relationships: [
