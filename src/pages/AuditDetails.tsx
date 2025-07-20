@@ -333,7 +333,7 @@ const AuditDetails = () => {
                 <div className="text-2xl font-bold">
                   {audit.datahall?.name || 'Unknown'}
                 </div>
-                <div className="font-medium">{audit.duration}</div>
+                
               </div>
             </div>
           </CardContent>
