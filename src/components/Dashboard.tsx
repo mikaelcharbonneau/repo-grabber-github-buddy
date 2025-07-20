@@ -3,6 +3,16 @@ import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+
+// Helper function to get severity variant
+const getSeverityVariant = (severity: string) => {
+  switch (severity?.toLowerCase()) {
+    case 'critical': return 'critical';
+    case 'medium': return 'medium';
+    case 'low': return 'low';
+    default: return 'default';
+  }
+};
 import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -358,23 +368,40 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentIncidents.map(incident => <div key={incident.id} onClick={() => navigate(`/incidents/${incident.id}`)} className="flex items-start gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
-                      <div className="space-y-1 flex-1">
-                        <div className="font-medium text-sm">{incident.id}</div>
-                        <div className="text-sm text-gray-900">{incident.description}</div>
-                        <div className="text-xs text-gray-500">{incident.location}</div>
-                      </div>
-                      <div className="text-center flex-1">
-                        <div className="text-xs text-gray-500 mb-1">Assigned to</div>
-                        <div className="text-sm font-medium">{incident.assignee}</div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        
-                          
-                        
-                          
-                      </div>
-                    </div>)}
+                  {recentIncidents.map((incident) => (
+                    <Card 
+                      key={incident.id} 
+                      className={`hover:shadow-hpe-brand transition-shadow cursor-pointer ${
+                        getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : 
+                        getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : 
+                        getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 
+                        'border-hpe-brand'
+                      }`}
+                      onClick={() => navigate(`/incidents/${incident.id}`)}
+                    >
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-3 flex-1">
+                            <div className="flex items-center space-x-3 flex-wrap gap-2">
+                              <h3 className="font-semibold text-lg">{incident.title || 'Untitled Incident'}</h3>
+                            </div>
+                            <p className="text-gray-900 font-medium">
+                              {incident.datacenter_alias && `${incident.datacenter_alias}${incident.datahall_alias ? ` ${incident.datahall_alias}` : ''}`}
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                              <div><strong>Tile Location:</strong> {incident.tile_location || 'N/A'}</div>
+                              <div><strong>Device ID:</strong> {incident.device_id || 'N/A'}</div>
+                              <div><strong>U-Height:</strong> {incident.u_height || 'N/A'}</div>
+                              <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              UUID: {incident.formatted_id || incident.id}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </CardContent>
             </Card>
