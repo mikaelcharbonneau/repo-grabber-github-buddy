@@ -10,121 +10,129 @@ import {
   AlertTriangle,
   CheckCircle,
   Calendar,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Audit {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  datacenter_name?: string;
+  datahall_name?: string;
+  auditor_name?: string;
+  issues_count?: number;
+  findings?: Array<{
+    id: string;
+    type: string;
+    location: string;
+    severity: string;
+    description: string;
+    resolved: boolean;
+    resolved_at?: string;
+    assigned_to?: string;
+  }>;
+  checklist?: Array<{
+    item: string;
+    status: string;
+    issues: number;
+  }>;
+}
 
 const AuditDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [audit, setAudit] = useState<Audit | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock audit data - in a real app, this would come from an API
-  const auditData = {
-    "AUD-2024-001": {
-      id: "AUD-2024-001",
-      location: "DC-EAST / Hall-A",
-      technician: "John Doe",
-      date: "2024-01-15",
-      time: "14:30",
-      issues: 2,
-      severity: "Medium",
-      status: "Completed",
-      description: "Routine quarterly inspection",
-      duration: "2 hours 15 minutes",
-      completedAt: "2024-01-15 16:45",
-      findings: [
-        {
-          id: 1,
-          type: "Temperature Warning",
-          location: "Rack-15 / PDU-A15-001",
-          severity: "Medium",
-          description: "Temperature sensor reading 28°C - above normal threshold",
-          resolved: true,
-          resolvedAt: "2024-01-15 17:30"
-        },
-        {
-          id: 2,
-          type: "Communication Failure",
-          location: "Rack-23 / Switch-A23-002",
-          severity: "Low",
-          description: "Intermittent network connectivity issues detected",
-          resolved: false,
-          assignedTo: "Network Team"
+  useEffect(() => {
+    const fetchAudit = async () => {
+      if (!id) return;
+      
+      try {
+        setLoading(true);
+        
+        // Fetch the audit
+        const { data: auditData, error: auditError } = await supabase
+          .from('audits')
+          .select(`
+            *,
+            datacenter:datacenters(name),
+            datahall:datahalls(name),
+            auditor:auditors(name)
+          `)
+          .eq('id', id)
+          .single();
+
+        if (auditError) throw auditError;
+        if (!auditData) {
+          setError('Audit not found');
+          setLoading(false);
+          return;
         }
-      ],
-      checklist: [
-        { item: "Power Distribution Units", status: "Completed", issues: 1 },
-        { item: "Environmental Controls", status: "Completed", issues: 0 },
-        { item: "Network Equipment", status: "Completed", issues: 1 },
-        { item: "Security Systems", status: "Completed", issues: 0 },
-        { item: "Fire Suppression", status: "Completed", issues: 0 }
-      ]
-    },
-    "AUD-2024-002": {
-      id: "AUD-2024-002",
-      location: "DC-WEST / Hall-B",
-      technician: "Jane Smith",
-      date: "2024-01-14",
-      time: "09:15",
-      issues: 0,
-      severity: "None",
-      status: "Completed",
-      description: "Monthly infrastructure check",
-      duration: "1 hour 45 minutes",
-      completedAt: "2024-01-14 11:00",
-      findings: [],
-      checklist: [
-        { item: "Power Distribution Units", status: "Completed", issues: 0 },
-        { item: "Environmental Controls", status: "Completed", issues: 0 },
-        { item: "Network Equipment", status: "Completed", issues: 0 },
-        { item: "Security Systems", status: "Completed", issues: 0 },
-        { item: "Fire Suppression", status: "Completed", issues: 0 }
-      ]
-    },
-    "AUD-2024-003": {
-      id: "AUD-2024-003",
-      location: "DC-CENTRAL / Hall-C",
-      technician: "Mike Johnson",
-      date: "2024-01-13",
-      time: "16:45",
-      issues: 5,
-      severity: "Critical",
-      status: "Under Review",
-      description: "Emergency inspection - power anomalies",
-      duration: "3 hours 20 minutes",
-      completedAt: "2024-01-13 20:05",
-      findings: [
-        {
-          id: 1,
-          type: "Overcurrent Alarm",
-          location: "Rack-10 / PDU-C10-001",
-          severity: "Critical",
-          description: "PDU exceeding 90% capacity - immediate action required",
-          resolved: false,
-          assignedTo: "Power Team"
-        },
-        {
-          id: 2,
-          type: "Fan Failure",
-          location: "Rack-15 / Server-C15-003",
-          severity: "Medium",
-          description: "Primary cooling fan failure detected",
-          resolved: true,
-          resolvedAt: "2024-01-14 08:30"
-        }
-      ],
-      checklist: [
-        { item: "Power Distribution Units", status: "Completed", issues: 3 },
-        { item: "Environmental Controls", status: "Completed", issues: 1 },
-        { item: "Network Equipment", status: "Completed", issues: 0 },
-        { item: "Security Systems", status: "Completed", issues: 1 },
-        { item: "Fire Suppression", status: "Completed", issues: 0 }
-      ]
-    }
-  };
 
-  const audit = auditData[id] || null;
+        // Fetch related incidents (findings)
+        const { data: incidents, error: incidentsError } = await supabase
+          .from('incidents')
+          .select('*')
+          .eq('audit_id', id);
 
-  if (!audit) {
+        if (incidentsError) throw incidentsError;
+
+        // Transform the data to match the expected format
+        const transformedAudit: Audit = {
+          ...auditData,
+          datacenter_name: auditData.datacenter?.name || 'Unknown',
+          datahall_name: auditData.datahall?.name || 'Unknown',
+          auditor_name: auditData.auditor?.name || 'Unknown',
+          issues_count: incidents?.length || 0,
+          findings: incidents?.map((incident, index) => ({
+            id: incident.id,
+            type: incident.title || 'Incident',
+            location: incident.tile_location || 'Unknown location',
+            severity: incident.severity || 'Medium',
+            description: incident.description || 'No description provided',
+            resolved: incident.status === 'resolved',
+            resolved_at: incident.resolved_at,
+            assigned_to: incident.assigned_to
+          })) || [],
+          // Mock checklist for now - in a real app this would come from the database
+          checklist: [
+            { item: "Power Distribution Units", status: "Completed", issues: 0 },
+            { item: "Environmental Controls", status: "Completed", issues: 0 },
+            { item: "Network Equipment", status: "Completed", issues: 0 },
+            { item: "Security Systems", status: "Completed", issues: 0 },
+            { item: "Fire Suppression", status: "Completed", issues: 0 }
+          ]
+        };
+
+        setAudit(transformedAudit);
+      } catch (err) {
+        console.error('Error fetching audit:', err);
+        setError('Failed to load audit details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAudit();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-hpe-brand" />
+      </div>
+    );
+  }
+
+  if (error || !audit) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <Card>
@@ -132,7 +140,7 @@ const AuditDetails = () => {
             <div className="text-gray-500">
               <AlertTriangle className="mx-auto h-12 w-12 mb-4" />
               <h3 className="text-lg font-medium mb-2">Audit Not Found</h3>
-              <p>The requested audit could not be found.</p>
+              <p>{error || 'The requested audit could not be found.'}</p>
               <Button 
                 variant="outline" 
                 className="mt-4"
@@ -146,6 +154,8 @@ const AuditDetails = () => {
       </div>
     );
   }
+
+
 
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -178,7 +188,7 @@ const AuditDetails = () => {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{audit.id}</h1>
-          <p className="text-gray-600">{audit.description}</p>
+          <div className="text-gray-600">{audit.description || 'No description available'}</div>
         </div>
       </div>
 
@@ -190,7 +200,10 @@ const AuditDetails = () => {
               <MapPin className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Location</div>
-                <div className="font-medium">{audit.location}</div>
+                <div className="font-medium">
+                  {audit.datacenter_name}
+                  {audit.datahall_name && ` / ${audit.datahall_name}`}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -202,7 +215,7 @@ const AuditDetails = () => {
               <User className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Technician</div>
-                <div className="font-medium">{audit.technician}</div>
+                <div className="font-medium">{audit.auditor_name || 'Unknown'}</div>
               </div>
             </div>
           </CardContent>
@@ -213,7 +226,7 @@ const AuditDetails = () => {
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-gray-500" />
               <div>
-                <div className="text-sm text-gray-500">Duration</div>
+                <div className="text-2xl font-bold">{audit.title || `Audit ${audit.id.substring(0, 8)}`}</div>
                 <div className="font-medium">{audit.duration}</div>
               </div>
             </div>
@@ -226,7 +239,7 @@ const AuditDetails = () => {
               <AlertTriangle className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Issues Found</div>
-                <div className="font-medium">{audit.issues}</div>
+                <div className="font-medium">{audit.issues_count || 0}</div>
               </div>
             </div>
           </CardContent>
@@ -250,14 +263,18 @@ const AuditDetails = () => {
                   <div className="w-2 h-2 bg-hpe-green rounded-full"></div>
                   <div className="flex-1">
                     <div className="font-medium">Audit Started</div>
-                    <div className="text-sm text-gray-500">{audit.date} at {audit.time}</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(audit.created_at).toLocaleDateString()} at {new Date(audit.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="w-2 h-2 bg-hpe-green rounded-full"></div>
                   <div className="flex-1">
                     <div className="font-medium">Inspection Completed</div>
-                    <div className="text-sm text-gray-500">{audit.completedAt}</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(audit.updated_at).toLocaleString()}
+                    </div>
                   </div>
                 </div>
                 {audit.status === "Completed" && (
@@ -265,7 +282,9 @@ const AuditDetails = () => {
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <div className="flex-1">
                       <div className="font-medium">Audit Finalized</div>
-                      <div className="text-sm text-gray-500">{audit.completedAt}</div>
+                      <div className="text-sm text-gray-500">
+                        {new Date(audit.updated_at).toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -278,11 +297,11 @@ const AuditDetails = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <FileText className="h-5 w-5" />
-                <span>Findings ({audit.findings.length})</span>
+                <span>Findings ({audit.findings?.length || 0})</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {audit.findings.length === 0 ? (
+              {(!audit.findings || audit.findings.length === 0) ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                   <div className="text-lg font-medium text-gray-900">No Issues Found</div>
@@ -290,7 +309,7 @@ const AuditDetails = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {audit.findings.map((finding) => (
+                  {audit.findings?.map((finding) => (
                     <div key={finding.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
@@ -328,8 +347,8 @@ const AuditDetails = () => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span>Status</span>
-                <Badge variant={getStatusVariant(audit.status)}>
-                  {audit.status}
+                <Badge variant={getStatusVariant(audit.status)} className="capitalize">
+                  {audit.status.replace('_', ' ')}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
@@ -350,7 +369,7 @@ const AuditDetails = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {audit.checklist.map((item, index) => (
+                {audit.checklist?.map((item, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
