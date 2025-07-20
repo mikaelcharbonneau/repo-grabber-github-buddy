@@ -8,16 +8,6 @@
  */
 
 /**
- * Gets the current quarter (1-4) based on the provided date
- * @param date The date to get the quarter for
- */
-function getQuarter(date: Date): string {
-  const month = date.getMonth() + 1; // getMonth() is 0-indexed
-  const quarter = Math.ceil(month / 3);
-  return quarter.toString().padStart(2, '0');
-}
-
-/**
  * Pads a number with leading zeros to ensure it has at least 2 digits
  */
 function padNumber(num: number, length = 2): string {

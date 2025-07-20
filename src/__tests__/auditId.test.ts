@@ -36,26 +36,20 @@ describe('Audit ID Generation', () => {
     expect(id3.endsWith('-02')).toBe(true);
   });
 
-  it('should handle quarter changes', () => {
-    // Q1 date
-    const q1Date = new Date('2025-02-15T12:00:00Z');
-    const q1Id = generateAuditId(q1Date);
-    expect(q1Id).toContain('-Q01-');
-    
-    // Q2 date
-    const q2Date = new Date('2025-05-15T12:00:00Z');
-    const q2Id = generateAuditId(q2Date);
-    expect(q2Id).toContain('-Q02-');
-    
-    // Q3 date
-    const q3Date = new Date('2025-08-15T12:00:00Z');
-    const q3Id = generateAuditId(q3Date);
-    expect(q3Id).toContain('-Q03-');
-    
-    // Q4 date
-    const q4Date = new Date('2025-11-15T12:00:00Z');
-    const q4Id = generateAuditId(q4Date);
-    expect(q4Id).toContain('-Q04-');
+  it('should parse datahall names correctly', () => {
+    const date = new Date('2025-02-15T12:00:00Z');
+
+    const id1 = generateAuditId(date, undefined, 'Quebec island 01');
+    expect(id1).toContain('-Q01-');
+
+    const id2 = generateAuditId(date, undefined, 'Quebec island 02');
+    expect(id2).toContain('-Q02-');
+
+    const id3 = generateAuditId(date, undefined, 'Quebec island 03');
+    expect(id3).toContain('-Q03-');
+
+    const id4 = generateAuditId(date, undefined, 'Quebec island 04');
+    expect(id4).toContain('-Q04-');
   });
 
   it('should reset sequence when it reaches 99', () => {
