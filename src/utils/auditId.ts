@@ -9,11 +9,12 @@
 
 /**
  * Gets the current quarter (1-4) based on the provided date
- * @param date The date to get the quarter for (defaults to current date)
+ * @param date The date to get the quarter for
  */
-function getQuarter(date: Date = new Date()): number {
+function getQuarter(date: Date): string {
   const month = date.getMonth() + 1; // getMonth() is 0-indexed
-  return Math.floor((month - 1) / 3) + 1;
+  const quarter = Math.ceil(month / 3);
+  return quarter.toString().padStart(2, '0');
 }
 
 /**
@@ -27,14 +28,6 @@ function padNumber(num: number, length = 2): string {
 let sequenceCounters: Record<string, number> = {};
 const MAX_SEQUENCE = 99; // Maximum sequence number before rolling over
 
-// Helper function to get the sequence key for a given date and quarter
-function getSequenceKey(date: Date, quarter: number): string {
-  const year = date.getFullYear();
-  const month = padNumber(date.getMonth() + 1);
-  const day = padNumber(date.getDate());
-  return `${year}${month}${day}-Q${quarter}`;
-}
-
 /**
  * Generates a unique audit ID
  * @param date Optional date to use for the ID (defaults to current date)
@@ -45,17 +38,17 @@ export function generateAuditId(date: Date = new Date(), sequence?: number): str
   // Create a new date object to ensure we're working with a clean copy
   const dateObj = new Date(date);
   
-  // Format date as YYYYMMDD
-  const year = dateObj.getFullYear();
-  const month = padNumber(dateObj.getMonth() + 1);
-  const day = padNumber(dateObj.getDate());
+  // Format date as YYYYMMDD using UTC to avoid timezone issues
+  const year = dateObj.getUTCFullYear();
+  const month = padNumber(dateObj.getUTCMonth() + 1);
+  const day = padNumber(dateObj.getUTCDate());
   const dateStr = `${year}${month}${day}`;
   
-  // Get quarter (1-4)
+  // Get quarter (01-04)
   const quarter = getQuarter(dateObj);
   
-  // Get the sequence key for this date and quarter
-  const sequenceKey = getSequenceKey(dateObj, quarter);
+  // Create a unique key for this date and quarter
+  const sequenceKey = `${dateStr}-Q${quarter}`;
   
   // Handle sequence number
   let seqNum: number;
@@ -63,22 +56,22 @@ export function generateAuditId(date: Date = new Date(), sequence?: number): str
   if (sequence !== undefined) {
     // Use the provided sequence number for testing
     seqNum = sequence;
-    // Set the next sequence to be one more than the provided sequence
-    sequenceCounters[sequenceKey] = sequence + 1;
+    // Don't update the counter when a specific sequence is provided
   } else {
     // For normal operation, get the next sequence number
     if (sequenceCounters[sequenceKey] === undefined) {
       // First time for this key, start at 1
       seqNum = 1;
-      sequenceCounters[sequenceKey] = 2; // Next will be 2
+      sequenceCounters[sequenceKey] = 1; // Next will be 1
     } else {
       // Get the current sequence number
       seqNum = sequenceCounters[sequenceKey];
       
-      // Increment for next time, handling reset if needed
-      if (seqNum >= MAX_SEQUENCE) {
-        sequenceCounters[sequenceKey] = 1; // Will wrap around to 1 next time
+      // If we've reached the max, reset to 1 for the next time
+      if (seqNum >= 99) {
+        sequenceCounters[sequenceKey] = 1;
       } else {
+        // Otherwise, increment for next time
         sequenceCounters[sequenceKey] = seqNum + 1;
       }
     }
@@ -88,7 +81,7 @@ export function generateAuditId(date: Date = new Date(), sequence?: number): str
   const seqStr = padNumber(seqNum);
   
   // Combine all parts
-  return `${dateStr}-AUD-Q${padNumber(quarter)}-${seqStr}`;
+  return `${dateStr}-AUD-Q${quarter}-${seqStr}`;
 }
 
 /**
