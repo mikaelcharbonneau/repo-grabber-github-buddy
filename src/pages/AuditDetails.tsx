@@ -298,10 +298,10 @@ const AuditDetails = () => {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-4 flex items-center justify-center">
             <div className="flex items-center space-x-2">
               <MapPin className="h-4 w-4 text-gray-500" />
-              <div>
+              <div className="text-center">
                 <div className="text-sm text-gray-500">Datacenter</div>
                 <div className="font-medium">
                   {audit.datacenter?.name}
@@ -313,10 +313,10 @@ const AuditDetails = () => {
         </Card>
         
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-4 flex items-center justify-center">
             <div className="flex items-center space-x-2">
               <User className="h-4 w-4 text-gray-500" />
-              <div>
+              <div className="text-center">
                 <div className="text-sm text-gray-500">Technician</div>
                 <div className="font-medium">{audit.auditor?.name || 'Unknown'}</div>
               </div>
@@ -325,25 +325,24 @@ const AuditDetails = () => {
         </Card>
         
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-4 flex items-center justify-center">
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-gray-500" />
-              <div>
+              <div className="text-center">
                 <div className="text-sm text-gray-500">Datahall</div>
                 <div className="text-2xl font-bold">
                   {audit.datahall?.name || 'Unknown'}
                 </div>
-                
               </div>
             </div>
           </CardContent>
         </Card>
         
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-4 flex items-center justify-center">
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-4 w-4 text-gray-500" />
-              <div>
+              <div className="text-center">
                 <div className="text-sm text-gray-500">Issues Found</div>
                 <div className="font-medium">{audit.issues_count || 0}</div>
               </div>
