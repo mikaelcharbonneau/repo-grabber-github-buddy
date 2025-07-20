@@ -329,7 +329,7 @@ const AuditDetails = () => {
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-gray-500" />
               <div>
-                <div className="text-sm text-gray-500">Audit</div>
+                <div className="text-sm text-gray-500">Datahall</div>
                 <div className="text-2xl font-bold">
                   {audit.datacenter?.name || 'Unknown'}/{audit.datahall?.name || 'Unknown'}
                 </div>
