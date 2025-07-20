@@ -27,6 +27,7 @@ const AuditList = () => {
     updated_at: string;
     datacenter_id?: string;
     datahall_id?: string;
+    auditor_id: string;
     severity?: string;
     datacenter?: { name: string };
     datahall?: { name: string };
@@ -46,12 +47,30 @@ const AuditList = () => {
         .from('audits')
         .select(`
           *,
-          datacenter:datacenters(name),
-          datahall:datahalls(name),
-          auditor:auditors(name)
+          datacenter:datacenters!audits_datacenter_id_fkey(name),
+          datahall:datahalls!audits_datahall_id_fkey(name)
         `)
         .order('created_at', { ascending: false }) as { data: Audit[] | null };
-      setAudits(auditsData || []);
+      
+      // Fetch auditor data separately since there's no FK relationship
+      if (auditsData) {
+        const auditorIds = [...new Set(auditsData.map(audit => audit.auditor_id))];
+        const { data: auditorsData } = await supabase
+          .from('auditors')
+          .select('id, name')
+          .in('id', auditorIds);
+        
+        // Map auditor names to audits
+        const auditorsMap = new Map(auditorsData?.map(auditor => [auditor.id, auditor]) || []);
+        const enrichedAudits = auditsData.map(audit => ({
+          ...audit,
+          auditor: auditorsMap.get(audit.auditor_id)
+        }));
+        
+        setAudits(enrichedAudits);
+      } else {
+        setAudits([]);
+      }
       const dcs = await fetchDatacenters();
       setDatacenters(dcs || []);
       setLoading(false);
