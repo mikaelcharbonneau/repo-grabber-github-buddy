@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
 import { supabase } from "@/integrations/supabase/client";
-
 const AuditList = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -29,12 +28,21 @@ const AuditList = () => {
     datahall_id?: string;
     auditor_id: string;
     severity?: string;
-    datacenter?: { name: string };
-    datahall?: { name: string };
-    auditor?: { name: string };
-    incidents?: { reported: number; resolved: number; active: number };
+    datacenter?: {
+      name: string;
+    };
+    datahall?: {
+      name: string;
+    };
+    auditor?: {
+      name: string;
+    };
+    incidents?: {
+      reported: number;
+      resolved: number;
+      active: number;
+    };
   }
-
   const [audits, setAudits] = useState<Audit[]>([]);
   const [datacenters, setDatacenters] = useState<any[]>([]);
   const [dataHalls, setDataHalls] = useState<any[]>([]);
@@ -44,35 +52,39 @@ const AuditList = () => {
   useEffect(() => {
     setLoading(true);
     const fetchAll = async () => {
-      const { data: auditsData } = await supabase
-        .from('audits')
-        .select(`
+      const {
+        data: auditsData
+      } = (await supabase.from('audits').select(`
           *,
           datacenter:datacenters!audits_datacenter_id_fkey(name),
           datahall:datahalls!audits_datahall_id_fkey(name)
-        `)
-        .order('created_at', { ascending: false }) as { data: Audit[] | null };
-      
+        `).order('created_at', {
+        ascending: false
+      })) as {
+        data: Audit[] | null;
+      };
       if (auditsData) {
         // Fetch auditor data separately since there's no FK relationship
         const auditorIds = [...new Set(auditsData.map(audit => audit.auditor_id))];
-        const { data: auditorsData } = await supabase
-          .from('auditors')
-          .select('id, name')
-          .in('id', auditorIds);
-        
+        const {
+          data: auditorsData
+        } = await supabase.from('auditors').select('id, name').in('id', auditorIds);
+
         // Fetch incidents data for all audits
         const auditIds = auditsData.map(audit => audit.id);
-        const { data: incidentsData } = await supabase
-          .from('incidents')
-          .select('audit_id, status')
-          .in('audit_id', auditIds);
-        
+        const {
+          data: incidentsData
+        } = await supabase.from('incidents').select('audit_id, status').in('audit_id', auditIds);
+
         // Create incidents count map
         const incidentsMap = new Map();
         incidentsData?.forEach(incident => {
           if (!incidentsMap.has(incident.audit_id)) {
-            incidentsMap.set(incident.audit_id, { reported: 0, resolved: 0, active: 0 });
+            incidentsMap.set(incident.audit_id, {
+              reported: 0,
+              resolved: 0,
+              active: 0
+            });
           }
           const counts = incidentsMap.get(incident.audit_id);
           counts.reported += 1;
@@ -82,15 +94,18 @@ const AuditList = () => {
             counts.active += 1;
           }
         });
-        
+
         // Map auditor names and incident counts to audits
         const auditorsMap = new Map(auditorsData?.map(auditor => [auditor.id, auditor]) || []);
         const enrichedAudits = auditsData.map(audit => ({
           ...audit,
           auditor: auditorsMap.get(audit.auditor_id),
-          incidents: incidentsMap.get(audit.id) || { reported: 0, resolved: 0, active: 0 }
+          incidents: incidentsMap.get(audit.id) || {
+            reported: 0,
+            resolved: 0,
+            active: 0
+          }
         }));
-        
         setAudits(enrichedAudits);
       } else {
         setAudits([]);
@@ -105,7 +120,7 @@ const AuditList = () => {
   // Fetch data halls when datacenter changes
   useEffect(() => {
     if (filters.datacenter !== "all") {
-      fetchDataHalls(filters.datacenter).then((halls) => {
+      fetchDataHalls(filters.datacenter).then(halls => {
         setDataHalls(halls || []);
       });
     } else {
@@ -128,7 +143,6 @@ const AuditList = () => {
     const matchesDataHall = filters.dataHall === "all" || audit.datahall_id === filters.dataHall;
     return matchesDatacenter && matchesDataHall;
   });
-
   const getSeverityVariant = (severity: string) => {
     switch (severity?.toLowerCase()) {
       case 'critical':
@@ -153,7 +167,6 @@ const AuditList = () => {
         return 'outline';
     }
   };
-
   return <div className="py-6 px-[50px] space-y-6">
       <div className="w-full space-y-6">
 
@@ -252,7 +265,7 @@ const AuditList = () => {
                       <div className="text-gray-500">Resolved</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-hpe-orange">{audit.incidents?.active || 0}</div>
+                      <div className="text-2xl font-bold text-black">{audit.incidents?.active || 0}</div>
                       <div className="text-gray-500">Active</div>
                     </div>
                   </div>
