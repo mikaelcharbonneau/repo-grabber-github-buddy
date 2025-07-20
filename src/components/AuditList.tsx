@@ -32,6 +32,7 @@ const AuditList = () => {
     datacenter?: { name: string };
     datahall?: { name: string };
     auditor?: { name: string };
+    incidents?: { reported: number; resolved: number; active: number };
   }
 
   const [audits, setAudits] = useState<Audit[]>([]);
@@ -52,19 +53,42 @@ const AuditList = () => {
         `)
         .order('created_at', { ascending: false }) as { data: Audit[] | null };
       
-      // Fetch auditor data separately since there's no FK relationship
       if (auditsData) {
+        // Fetch auditor data separately since there's no FK relationship
         const auditorIds = [...new Set(auditsData.map(audit => audit.auditor_id))];
         const { data: auditorsData } = await supabase
           .from('auditors')
           .select('id, name')
           .in('id', auditorIds);
         
-        // Map auditor names to audits
+        // Fetch incidents data for all audits
+        const auditIds = auditsData.map(audit => audit.id);
+        const { data: incidentsData } = await supabase
+          .from('incidents')
+          .select('audit_id, status')
+          .in('audit_id', auditIds);
+        
+        // Create incidents count map
+        const incidentsMap = new Map();
+        incidentsData?.forEach(incident => {
+          if (!incidentsMap.has(incident.audit_id)) {
+            incidentsMap.set(incident.audit_id, { reported: 0, resolved: 0, active: 0 });
+          }
+          const counts = incidentsMap.get(incident.audit_id);
+          counts.reported += 1;
+          if (incident.status === 'resolved') {
+            counts.resolved += 1;
+          } else {
+            counts.active += 1;
+          }
+        });
+        
+        // Map auditor names and incident counts to audits
         const auditorsMap = new Map(auditorsData?.map(auditor => [auditor.id, auditor]) || []);
         const enrichedAudits = auditsData.map(audit => ({
           ...audit,
-          auditor: auditorsMap.get(audit.auditor_id)
+          auditor: auditorsMap.get(audit.auditor_id),
+          incidents: incidentsMap.get(audit.id) || { reported: 0, resolved: 0, active: 0 }
         }));
         
         setAudits(enrichedAudits);
@@ -214,7 +238,24 @@ const AuditList = () => {
                     </div>
                   </div>
                 </div>
-                {/* Device issues and actions can be added here if available in audit */}
+                
+                {/* Incidents Section */}
+                <div className="flex items-center space-x-8 text-sm">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">{audit.incidents?.reported || 0}</div>
+                    <div className="text-gray-500">Reported</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-hpe-green">{audit.incidents?.resolved || 0}</div>
+                    <div className="text-gray-500">Resolved</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-hpe-orange">{audit.incidents?.active || 0}</div>
+                    <div className="text-gray-500">Active</div>
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
                 <div className="flex space-x-2 flex-shrink-0">
                   <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)} className="flex flex-col items-center h-auto py-3 px-4">
                     <Clipboard className="h-4 w-4 mb-1" />
