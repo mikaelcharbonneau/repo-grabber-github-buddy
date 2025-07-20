@@ -289,7 +289,9 @@ const AuditDetails = () => {
           <h1 className="text-2xl font-bold text-gray-900">
           {audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}
         </h1>
-          <div className="text-gray-600">{audit.description || 'No description available'}</div>
+          <div className="text-gray-600">
+            Audit of {audit.datacenter?.name || 'unknown datacenter'}, {audit.datahall?.name || 'unknown hall'}. {audit.issues_count} issues found.
+          </div>
         </div>
       </div>
 
@@ -327,7 +329,10 @@ const AuditDetails = () => {
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-gray-500" />
               <div>
-                <div className="text-2xl font-bold">{audit.title || `Audit ${audit.id.substring(0, 8)}`}</div>
+                <div className="text-sm text-gray-500">Audit</div>
+                <div className="text-2xl font-bold">
+                  {audit.datacenter?.name || 'Unknown'}/{audit.datahall?.name || 'Unknown'}
+                </div>
                 <div className="font-medium">{audit.duration}</div>
               </div>
             </div>
