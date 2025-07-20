@@ -355,50 +355,7 @@ const AuditDetails = () => {
       {/* Status and Details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* Audit Timeline */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
-                <span>Audit Timeline</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-hpe-green rounded-full"></div>
-                  <div className="flex-1">
-                    <div className="font-medium">Audit Started</div>
-                    <div className="text-sm text-gray-500">
-                      {new Date(audit.created_at).toLocaleDateString()} at {new Date(audit.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-hpe-green rounded-full"></div>
-                  <div className="flex-1">
-                    <div className="font-medium">Inspection Completed</div>
-                    <div className="text-sm text-gray-500">
-                      {new Date(audit.updated_at).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-                {audit.status === "Completed" && (
-                  <div className="flex items-center space-x-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <div className="flex-1">
-                      <div className="font-medium">Audit Finalized</div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(audit.updated_at).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Findings */}
+          {/* Incidents */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -439,6 +396,49 @@ const AuditDetails = () => {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Audit Timeline */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5" />
+                <span>Audit Timeline</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-hpe-green rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="font-medium">Audit Started</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(audit.created_at).toLocaleDateString()} at {new Date(audit.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-hpe-green rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="font-medium">Inspection Completed</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(audit.updated_at).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+                {audit.status === "Completed" && (
+                  <div className="flex items-center space-x-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <div className="font-medium">Audit Finalized</div>
+                      <div className="text-sm text-gray-500">
+                        {new Date(audit.updated_at).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
