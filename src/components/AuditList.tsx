@@ -17,7 +17,23 @@ const AuditList = () => {
     datacenter: "all",
     dataHall: "all"
   });
-  const [audits, setAudits] = useState<any[]>([]);
+  // Define Audit type
+  interface Audit {
+    id: string;
+    custom_audit_id?: string;
+    title: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    datacenter_id?: string;
+    datahall_id?: string;
+    severity?: string;
+    datacenter?: { name: string };
+    datahall?: { name: string };
+    auditor?: { name: string };
+  }
+
+  const [audits, setAudits] = useState<Audit[]>([]);
   const [datacenters, setDatacenters] = useState<any[]>([]);
   const [dataHalls, setDataHalls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +45,7 @@ const AuditList = () => {
       const { data: auditsData } = await supabase
         .from('audits')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: Audit[] | null };
       setAudits(auditsData || []);
       const dcs = await fetchDatacenters();
       setDatacenters(dcs || []);
@@ -152,16 +168,26 @@ const AuditList = () => {
         {filteredAudits.map(audit => <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => navigate(`/audits/${audit.id}`)}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
-                <div className="space-y-2 max-w-sm flex-shrink-0">
-                  <div className="flex items-center space-x-3">
-                    <h3 className="font-semibold text-lg">{audit.id}</h3>
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <Clipboard className="h-5 w-5 text-gray-500" />
+                    </div>
                   </div>
-                  <p className="text-gray-900 font-medium">{audit.location}</p>
-                  <p className="text-gray-600">{audit.technician}</p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>{audit.date} at {audit.time}</span>
-                    <span>•</span>
-                    <span>{audit.issues} issues found</span>
+                  <div>
+                    <p className="text-gray-900 font-medium">
+                      {audit.datacenter?.name || 'Unknown'} / {audit.datahall?.name || 'Unknown'}
+                    </p>
+                    <p className="text-gray-600">
+                      {audit.auditor?.name || 'Unknown Auditor'}
+                    </p>
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <span>{audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}</span>
+                      <span>•</span>
+                      <span>{new Date(audit.created_at).toLocaleDateString()}</span>
+                      <span>•</span>
+                      <span>{audit.status}</span>
+                    </div>
                   </div>
                 </div>
                 {/* Device issues and actions can be added here if available in audit */}

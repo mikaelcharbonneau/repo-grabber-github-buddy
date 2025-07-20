@@ -56,18 +56,22 @@ const AuditSummary = () => {
         status: 'completed'
       };
 
-      // Generate a unique audit ID
-      const auditId = generateAuditId();
+      // Generate a custom audit ID for display and reference
+      const customAuditId = generateAuditId();
       
-      // Add the generated ID to the audit data
-      const auditWithId = {
-        ...finalAudit,
-        id: auditId
-      };
-
-      const { error: auditError } = await supabase
+      // Create the audit with a UUID primary key and custom audit ID
+      const { data: auditData, error: auditError } = await supabase
         .from('audits')
-        .insert([auditWithId]);
+        .insert([{
+          ...finalAudit,
+          custom_audit_id: customAuditId
+        }])
+        .select()
+        .single();
+        
+      if (!auditData) {
+        throw new Error('Failed to create audit: No data returned');
+      }
 
       if (auditError) {
         console.error(auditError);
@@ -83,7 +87,7 @@ const AuditSummary = () => {
           severity: issue.severity?.toLowerCase() || 'medium',
           status: issue.resolved ? 'resolved' : 'open',
           auditor_id: auditor.id,
-          audit_id: auditId
+          audit_id: auditData.id
         }));
 
         const { error: incidentsError } = await supabase

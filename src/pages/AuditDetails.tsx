@@ -16,27 +16,34 @@ import {
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+interface Incident {
+  id: string;
+  audit_id: string;
+  title: string;
+  description: string;
+  severity: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  tile_location?: string;
+  resolved_at?: string;
+  assigned_to?: string;
+  auditor_id: string;
+}
+
 interface Audit {
   id: string;
+  custom_audit_id?: string;
   title: string;
   description: string;
   status: string;
   created_at: string;
   updated_at: string;
-  datacenter_name?: string;
-  datahall_name?: string;
-  auditor_name?: string;
+  datacenter?: { name: string };
+  datahall?: { name: string };
+  auditor?: { name: string };
   issues_count?: number;
-  findings?: Array<{
-    id: string;
-    type: string;
-    location: string;
-    severity: string;
-    description: string;
-    resolved: boolean;
-    resolved_at?: string;
-    assigned_to?: string;
-  }>;
+  findings?: Incident[];
   checklist?: Array<{
     item: string;
     status: string;
@@ -58,20 +65,43 @@ const AuditDetails = () => {
       try {
         setLoading(true);
         
-        // Fetch the audit
+        // First fetch the audit with basic info
         const { data: auditData, error: auditError } = await supabase
           .from('audits')
-          .select(`
-            *,
-            datacenter:datacenters(name),
-            datahall:datahalls(name),
-            auditor:auditors(name)
-          `)
+          .select('*')
           .eq('id', id)
           .single();
-
+          
         if (auditError) throw auditError;
-        if (!auditData) {
+        
+        // Then fetch related data separately to avoid relation errors
+        const [{ data: datacenter }, { data: datahall }, { data: auditor }] = await Promise.all([
+          supabase
+            .from('datacenters')
+            .select('name')
+            .eq('id', auditData.datacenter_id)
+            .single(),
+          supabase
+            .from('datahalls')
+            .select('name')
+            .eq('id', auditData.datahall_id)
+            .single(),
+          supabase
+            .from('auditors')
+            .select('name')
+            .eq('id', auditData.auditor_id)
+            .single()
+        ]);
+        
+        // Combine the data
+        const enrichedAuditData = {
+          ...auditData,
+          datacenter,
+          datahall,
+          auditor
+        };
+
+        if (!enrichedAuditData) {
           setError('Audit not found');
           setLoading(false);
           return;
@@ -87,29 +117,14 @@ const AuditDetails = () => {
 
         // Transform the data to match the expected format
         const transformedAudit: Audit = {
-          ...auditData,
-          datacenter_name: auditData.datacenter?.name || 'Unknown',
-          datahall_name: auditData.datahall?.name || 'Unknown',
-          auditor_name: auditData.auditor?.name || 'Unknown',
+          ...enrichedAuditData,
           issues_count: incidents?.length || 0,
-          findings: incidents?.map((incident, index) => ({
-            id: incident.id,
+          findings: incidents?.map(incident => ({
+            ...incident,
             type: incident.title || 'Incident',
             location: incident.tile_location || 'Unknown location',
-            severity: incident.severity || 'Medium',
-            description: incident.description || 'No description provided',
-            resolved: incident.status === 'resolved',
-            resolved_at: incident.resolved_at,
-            assigned_to: incident.assigned_to
-          })) || [],
-          // Mock checklist for now - in a real app this would come from the database
-          checklist: [
-            { item: "Power Distribution Units", status: "Completed", issues: 0 },
-            { item: "Environmental Controls", status: "Completed", issues: 0 },
-            { item: "Network Equipment", status: "Completed", issues: 0 },
-            { item: "Security Systems", status: "Completed", issues: 0 },
-            { item: "Fire Suppression", status: "Completed", issues: 0 }
-          ]
+            resolved: incident.status === 'resolved'
+          })) || []
         };
 
         setAudit(transformedAudit);
@@ -155,8 +170,6 @@ const AuditDetails = () => {
     );
   }
 
-
-
   const getSeverityVariant = (severity: string) => {
     switch (severity.toLowerCase()) {
       case 'critical': return 'critical';
@@ -187,7 +200,9 @@ const AuditDetails = () => {
           Back to Audits
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{audit.id}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+          {audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}
+        </h1>
           <div className="text-gray-600">{audit.description || 'No description available'}</div>
         </div>
       </div>
@@ -201,8 +216,8 @@ const AuditDetails = () => {
               <div>
                 <div className="text-sm text-gray-500">Location</div>
                 <div className="font-medium">
-                  {audit.datacenter_name}
-                  {audit.datahall_name && ` / ${audit.datahall_name}`}
+                  {audit.datacenter?.name}
+                  {audit.datahall?.name && ` / ${audit.datahall?.name}`}
                 </div>
               </div>
             </div>
@@ -215,7 +230,7 @@ const AuditDetails = () => {
               <User className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Technician</div>
-                <div className="font-medium">{audit.auditor_name || 'Unknown'}</div>
+                <div className="font-medium">{audit.auditor?.name || 'Unknown'}</div>
               </div>
             </div>
           </CardContent>
@@ -321,12 +336,12 @@ const AuditDetails = () => {
                       {finding.resolved ? (
                         <div className="flex items-center space-x-2 text-green-600">
                           <CheckCircle className="h-4 w-4" />
-                          <span className="text-sm">Resolved on {finding.resolvedAt}</span>
+                          <span className="text-sm">Resolved on {finding.resolved_at}</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-2 text-orange-600">
                           <AlertTriangle className="h-4 w-4" />
-                          <span className="text-sm">Assigned to {finding.assignedTo}</span>
+                          <span className="text-sm">Assigned to {finding.assigned_to}</span>
                         </div>
                       )}
                     </div>
