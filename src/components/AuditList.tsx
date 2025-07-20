@@ -240,18 +240,21 @@ const AuditList = () => {
                 </div>
                 
                 {/* Incidents Section */}
-                <div className="flex items-center space-x-8 text-sm">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">{audit.incidents?.reported || 0}</div>
-                    <div className="text-gray-500">Reported</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-hpe-green">{audit.incidents?.resolved || 0}</div>
-                    <div className="text-gray-500">Resolved</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-hpe-orange">{audit.incidents?.active || 0}</div>
-                    <div className="text-gray-500">Active</div>
+                <div className="text-center">
+                  <h3 className="text-sm font-medium text-gray-700 mb-3">Incidents</h3>
+                  <div className="flex items-center space-x-8 text-sm">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gray-900">{audit.incidents?.reported || 0}</div>
+                      <div className="text-gray-500">Reported</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-hpe-green">{audit.incidents?.resolved || 0}</div>
+                      <div className="text-gray-500">Resolved</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-hpe-orange">{audit.incidents?.active || 0}</div>
+                      <div className="text-gray-500">Active</div>
+                    </div>
                   </div>
                 </div>
                 
