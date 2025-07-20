@@ -35,25 +35,36 @@ interface Incident {
   resolved?: boolean;
 }
 
-interface Audit {
+// Define the base audit data from the database
+interface AuditData {
   id: string;
-  custom_audit_id?: string;
   title: string;
   description: string;
   status: string;
   created_at: string;
   updated_at: string;
+  auditor_id: string;
   datacenter_id?: string | null;
   datahall_id?: string | null;
-  auditor_id: string;
   start_time?: string | null;
   end_time?: string | null;
-  datacenter?: { name: string };
-  datahall?: { name: string };
-  auditor?: { name: string };
-  issues_count?: number;
-  findings?: Incident[];
-  duration?: string;
+  custom_audit_id?: string;
+  datacenter?: {
+    name: string;
+  } | null;
+  datahall?: {
+    name: string;
+  } | null;
+  auditor?: {
+    name: string;
+  } | null;
+}
+
+// Extended interface for the component's needs
+interface Audit extends AuditData {
+  issues_count: number;
+  findings: Incident[];
+  duration: string;
   severity?: string;
   issues?: any[];
   checklist?: Array<{
@@ -67,135 +78,139 @@ const AuditDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [audit, setAudit] = useState<Audit | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAudit = async () => {
+    const fetchAuditDetails = async () => {
       if (!id) return;
       
+      setIsLoading(true);
       try {
-        setLoading(true);
-        
-        // First fetch the audit with basic info
+        // First, fetch the basic audit data without relationships
         const { data: auditData, error: auditError } = await supabase
           .from('audits')
           .select('*')
           .eq('id', id)
-          .single<{
-            id: string;
-            title: string;
-            description: string;
-            status: string;
-            created_at: string;
-            updated_at: string;
-            auditor_id: string;
-            datacenter_id?: string | null;
-            datahall_id?: string | null;
-            start_time?: string | null;
-            end_time?: string | null;
-            custom_audit_id?: string;
-          }>();
-          
+          .single();
+
         if (auditError) throw auditError;
         if (!auditData) {
           setError('Audit not found');
-          setLoading(false);
+          setIsLoading(false);
           return;
         }
-        
-        // Fetch related data with error handling
-        const fetchRelatedData = async () => {
-          const result = {
-            datacenter: { name: 'N/A' },
-            datahall: { name: 'N/A' },
-            auditor: { name: 'N/A' },
-            incidents: [] as any[]
-          };
-          
-          try {
-            // Fetch datacenter if datacenter_id exists
-            if (auditData.datacenter_id) {
-              const { data } = await supabase
-                .from('datacenters')
-                .select('name')
-                .eq('id', auditData.datacenter_id)
-                .single();
-              if (data) result.datacenter = data;
-            }
-            
-            // Fetch datahall if datahall_id exists
-            if (auditData.datahall_id) {
-              const { data } = await supabase
-                .from('datahalls')
-                .select('name')
-                .eq('id', auditData.datahall_id)
-                .single();
-              if (data) result.datahall = data;
-            }
-            
-            // Fetch auditor if auditor_id exists
-            if (auditData.auditor_id) {
-              const { data } = await supabase
-                .from('auditors')
-                .select('name')
-                .eq('id', auditData.auditor_id)
-                .single();
-              if (data) result.auditor = data;
-            }
-            
-            // Fetch incidents
-            const { data: incidents } = await supabase
-              .from('incidents')
-              .select('*')
-              .eq('audit_id', id);
-              
-            if (incidents) result.incidents = incidents;
-            
-          } catch (e) {
-            console.error('Error fetching related data:', e);
-          }
-          
-          return result;
+
+        // Safely cast the audit data to include our custom fields
+        const safeAuditData = auditData as unknown as {
+          id: string;
+          title: string;
+          description: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+          auditor_id: string;
+          datacenter_id?: string | null;
+          datahall_id?: string | null;
+          start_time?: string | null;
+          end_time?: string | null;
+          custom_audit_id?: string;
         };
-        
-        const { datacenter, datahall, auditor, incidents } = await fetchRelatedData();
-        
-        // Calculate duration if start_time and end_time exist
+
+        // Initialize variables for related data with safe defaults
+        let datacenter = { name: 'N/A' };
+        let datahall = { name: 'N/A' };
+        let auditor = { name: 'Unknown Auditor' };
+        let incidents: any[] = [];
+
+        // Try to fetch related data, but don't fail if relationships aren't set up
+        try {
+          // Fetch datacenter if datacenter_id exists
+          if (safeAuditData.datacenter_id) {
+            const { data: dcData } = await supabase
+              .from('datacenters')
+              .select('name')
+              .eq('id', safeAuditData.datacenter_id)
+              .single();
+            if (dcData) datacenter = dcData;
+          }
+
+          // Fetch datahall if datahall_id exists
+          if (safeAuditData.datahall_id) {
+            const { data: dhData } = await supabase
+              .from('datahalls')
+              .select('name')
+              .eq('id', safeAuditData.datahall_id)
+              .single();
+            if (dhData) datahall = dhData;
+          }
+
+          // Fetch auditor if auditor_id exists
+          if (safeAuditData.auditor_id) {
+            const { data: auditorData } = await supabase
+              .from('auditors')
+              .select('name')
+              .eq('id', safeAuditData.auditor_id)
+              .single();
+            if (auditorData) auditor = auditorData;
+          }
+
+          // Fetch related incidents
+          const { data: incidentsData } = await supabase
+            .from('incidents')
+            .select('*')
+            .eq('audit_id', id);
+          
+          if (incidentsData) incidents = incidentsData;
+        } catch (relationError) {
+          console.warn('Error fetching related data, using fallback values:', relationError);
+        }
+
+        // Calculate duration if start and end times are available
         let duration = 'N/A';
-        if (auditData.start_time && auditData.end_time) {
-          const start = new Date(auditData.start_time);
-          const end = new Date(auditData.end_time);
+        if (safeAuditData.start_time && safeAuditData.end_time) {
+          const start = new Date(safeAuditData.start_time);
+          const end = new Date(safeAuditData.end_time);
           const diffMs = end.getTime() - start.getTime();
           const diffMins = Math.round(diffMs / 60000);
           duration = `${diffMins} minutes`;
         }
         
-        // Transform the data to match the expected format
+        // Transform the data to match the expected format with safe defaults
         const transformedAudit: Audit = {
-          id: auditData.id,
-          title: auditData.title || 'Untitled Audit',
-          description: auditData.description || '',
-          status: auditData.status || 'draft',
-          created_at: auditData.created_at,
-          updated_at: auditData.updated_at,
-          auditor_id: auditData.auditor_id,
-          datacenter_id: auditData.datacenter_id,
-          datahall_id: auditData.datahall_id,
-          start_time: auditData.start_time,
-          end_time: auditData.end_time,
-          custom_audit_id: auditData.custom_audit_id,
+          id: safeAuditData.id,
+          title: safeAuditData.title || 'Untitled Audit',
+          description: safeAuditData.description || 'No description provided',
+          status: safeAuditData.status || 'draft',
+          created_at: safeAuditData.created_at,
+          updated_at: safeAuditData.updated_at,
+          auditor_id: safeAuditData.auditor_id,
+          datacenter_id: safeAuditData.datacenter_id || null,
+          datahall_id: safeAuditData.datahall_id || null,
+          start_time: safeAuditData.start_time || null,
+          end_time: safeAuditData.end_time || null,
+          custom_audit_id: safeAuditData.custom_audit_id || '',
+          // Use the related data we fetched
           datacenter,
           datahall,
           auditor,
           duration,
-          issues_count: incidents?.length || 0,
-          findings: incidents?.map(incident => ({
+          issues_count: Array.isArray(incidents) ? incidents.length : 0,
+          findings: (Array.isArray(incidents) ? incidents : []).map(incident => ({
             ...incident,
+            id: incident.id || '',
+            audit_id: incident.audit_id || auditData.id || '',
+            title: incident.title || 'Untitled Incident',
+            description: incident.description || 'No description',
+            severity: incident.severity || 'medium',
+            status: incident.status || 'open',
+            created_at: incident.created_at || new Date().toISOString(),
+            updated_at: incident.updated_at || new Date().toISOString(),
+            auditor_id: incident.auditor_id || auditData.auditor_id || '',
             type: incident.title || 'Incident',
             location: incident.tile_location || 'Unknown location',
             resolved: incident.status === 'resolved'
-          })) || []
+          }))
         };
 
         setAudit(transformedAudit);
@@ -203,14 +218,14 @@ const AuditDetails = () => {
         console.error('Error fetching audit:', err);
         setError('Failed to load audit details');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    fetchAudit();
+    fetchAuditDetails();
   }, [id]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-hpe-brand" />
