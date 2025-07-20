@@ -44,7 +44,12 @@ const AuditList = () => {
     const fetchAll = async () => {
       const { data: auditsData } = await supabase
         .from('audits')
-        .select('*')
+        .select(`
+          *,
+          datacenter:datacenters(name),
+          datahall:datahalls(name),
+          auditor:auditors(name)
+        `)
         .order('created_at', { ascending: false }) as { data: Audit[] | null };
       setAudits(auditsData || []);
       const dcs = await fetchDatacenters();
