@@ -3,8 +3,8 @@
  * Where:
  * - YYYYMMDD is the current date
  * - AUD is a static identifier
- * - QXX represents the quarter (Q1-Q4)
- * - XX is a sequential number for the audit in that quarter
+ * - QXX represents the datahall island number (e.g., Q01 for Quebec island 01)
+ * - XX is a sequential number for the audit in that datahall
  */
 
 /**
@@ -34,7 +34,7 @@ const MAX_SEQUENCE = 99; // Maximum sequence number before rolling over
  * @param sequence Optional sequence number (auto-increments if not provided)
  * @returns Formatted audit ID string
  */
-export function generateAuditId(date: Date = new Date(), sequence?: number): string {
+export function generateAuditId(date: Date = new Date(), sequence?: number, datahall?: string): string {
   // Create a new date object to ensure we're working with a clean copy
   const dateObj = new Date(date);
   
@@ -44,11 +44,18 @@ export function generateAuditId(date: Date = new Date(), sequence?: number): str
   const day = padNumber(dateObj.getUTCDate());
   const dateStr = `${year}${month}${day}`;
   
-  // Get quarter (01-04)
-  const quarter = getQuarter(dateObj);
+  // Get datahall island number (default to '01' if not provided)
+  let islandNumber = '01';
+  if (datahall) {
+    // Extract the island number from the datahall string (e.g., 'Quebec island 01' -> '01')
+    const match = datahall.match(/island\s*(\d+)/i);
+    if (match && match[1]) {
+      islandNumber = match[1].padStart(2, '0');
+    }
+  }
   
-  // Create a unique key for this date and quarter
-  const sequenceKey = `${dateStr}-Q${quarter}`;
+  // Create a unique key for this date and datahall island
+  const sequenceKey = `${dateStr}-Q${islandNumber}`;
   
   // Handle sequence number
   let seqNum: number;
@@ -80,8 +87,8 @@ export function generateAuditId(date: Date = new Date(), sequence?: number): str
   // Format sequence with leading zeros
   const seqStr = padNumber(seqNum);
   
-  // Combine all parts
-  return `${dateStr}-AUD-Q${quarter}-${seqStr}`;
+  // Combine all parts with the datahall island number
+  return `${dateStr}-AUD-Q${islandNumber}-${seqStr}`;
 }
 
 /**

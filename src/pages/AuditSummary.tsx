@@ -84,8 +84,8 @@ const AuditSummary = () => {
       };
 
       console.log('Generating custom audit ID...');
-      const customAuditId = generateAuditId();
-      console.log('Generated custom audit ID:', customAuditId);
+      const customAuditId = generateAuditId(new Date(), undefined, auditDetails.dataHall);
+      console.log('Generated custom audit ID:', customAuditId, 'for datahall:', auditDetails.dataHall);
       
       console.log('Inserting audit record...');
       const { data: auditData, error: auditError } = await supabase
