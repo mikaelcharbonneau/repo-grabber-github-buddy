@@ -468,30 +468,6 @@ const AuditDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Checklist */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Inspection Checklist</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {audit.checklist?.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{item.item}</span>
-                    </div>
-                    {item.issues > 0 && (
-                      <Badge variant="outline" className="text-xs">
-                        {item.issues} issues
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Actions */}
           <Card>
             <CardHeader>
