@@ -11,8 +11,7 @@ import {
   CheckCircle,
   Calendar,
   FileText,
-  Loader2,
-  Building2
+  Loader2
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -328,7 +327,7 @@ const AuditDetails = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Building2 className="h-4 w-4 text-gray-500" />
+              <Clock className="h-4 w-4 text-gray-500" />
               <div>
                 <div className="text-sm text-gray-500">Datahall</div>
                 <div className="text-2xl font-bold">
