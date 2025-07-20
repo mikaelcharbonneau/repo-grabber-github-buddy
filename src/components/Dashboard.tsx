@@ -337,23 +337,48 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentAudits.map(audit => <div key={audit.id} onClick={() => navigate(`/audits/${audit.id}`)} className="flex items-center gap-4 p-3 rounded-lg border border-gray-200 bg-zinc-50 hover:border-gray-600 hover:shadow-md cursor-pointer transition-all duration-200">
-                      <div className="space-y-1 flex-1">
-                        <div className="font-medium text-sm">{audit.id}</div>
-                        <div className="text-sm text-gray-600">{audit.location}</div>
-                        <div className="text-xs text-gray-500">
-                          {audit.technician} • {audit.date}
-                        </div>
-                      </div>
-                      <div className="text-center flex-1">
-                        <div className="text-xs text-gray-500 mb-1">Issues Found</div>
-                        <div className="text-lg font-semibold">{audit.issues}</div>
-                      </div>
-                      <div className="text-right space-y-1">
-                        
+                  {recentAudits.map(audit => (
+                    <Card key={audit.id} className="hover:shadow-hpe-brand transition-shadow cursor-pointer border-hpe-brand" onClick={() => navigate(`/audits/${audit.id}`)}>
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-shrink-0">
+                              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <ClipboardCheck className="h-4 w-4 text-gray-500" />
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-gray-900 font-medium text-sm">
+                                {audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                {new Date(audit.created_at).toLocaleDateString()}
+                              </p>
+                              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                <span>{audit.status}</span>
+                              </div>
+                            </div>
+                          </div>
                           
-                      </div>
-                    </div>)}
+                          {/* Incidents Section - Simplified for dashboard */}
+                          <div className="text-center">
+                            <div className="text-sm font-bold text-gray-900">0</div>
+                            <div className="text-xs text-gray-500">Issues</div>
+                          </div>
+                          
+                          {/* Action Button */}
+                          <div className="flex-shrink-0">
+                            <Button variant="outline" size="sm" onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/audits/${audit.id}`);
+                            }} className="flex items-center h-auto py-2 px-3">
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </CardContent>
             </Card>
