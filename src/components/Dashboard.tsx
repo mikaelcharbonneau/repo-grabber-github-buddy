@@ -213,6 +213,8 @@ const Dashboard = () => {
   ];
 
   const getSeverityVariant = (severity: string) => {
+    if (!severity) return 'hpe';
+    
     switch (severity.toLowerCase()) {
       case 'critical':
         return 'critical';
