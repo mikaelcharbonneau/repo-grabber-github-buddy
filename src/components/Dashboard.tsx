@@ -13,7 +13,7 @@ const getSeverityVariant = (severity: string) => {
     default: return 'default';
   }
 };
-import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink } from "lucide-react";
+import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink, Clipboard, Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
@@ -337,42 +337,65 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentAudits.map(audit => (
-                    <Card key={audit.id} className="hover:shadow-hpe-brand transition-shadow cursor-pointer border-hpe-brand" onClick={() => navigate(`/audits/${audit.id}`)}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-3">
+                {recentAudits.map(audit => (
+                    <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => navigate(`/audits/${audit.id}`)}>
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
                             <div className="flex-shrink-0">
-                              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <ClipboardCheck className="h-4 w-4 text-gray-500" />
+                              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <Clipboard className="h-5 w-5 text-gray-500" />
                               </div>
                             </div>
                             <div>
-                              <p className="text-gray-900 font-medium text-sm">
-                                {audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}
+                              <p className="text-gray-900 font-medium">
+                                {audit.datacenter?.name || 'Unknown'} / {audit.datahall?.name || 'Unknown'}
                               </p>
-                              <p className="text-gray-600 text-sm">
-                                {new Date(audit.created_at).toLocaleDateString()}
+                              <p className="text-gray-600">
+                                {audit.auditor?.name || 'Unknown Auditor'}
                               </p>
-                              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                              <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>{audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}</span>
+                                <span>•</span>
+                                <span>{new Date(audit.created_at).toLocaleDateString()}</span>
+                                <span>•</span>
                                 <span>{audit.status}</span>
                               </div>
                             </div>
                           </div>
                           
-                          {/* Incidents Section - Simplified for dashboard */}
+                          {/* Incidents Section */}
                           <div className="text-center">
-                            <div className="text-sm font-bold text-gray-900">0</div>
-                            <div className="text-xs text-gray-500">Issues</div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-3">Incidents</h3>
+                            <div className="flex items-center space-x-8 text-sm">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-gray-900">{audit.incidents?.reported || 0}</div>
+                                <div className="text-gray-500">Reported</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-hpe-green">{audit.incidents?.resolved || 0}</div>
+                                <div className="text-gray-500">Resolved</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-black">{audit.incidents?.active || 0}</div>
+                                <div className="text-gray-500">Active</div>
+                              </div>
+                            </div>
                           </div>
                           
-                          {/* Action Button */}
-                          <div className="flex-shrink-0">
-                            <Button variant="outline" size="sm" onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/audits/${audit.id}`);
-                            }} className="flex items-center h-auto py-2 px-3">
-                              <ExternalLink className="h-3 w-3" />
+                          {/* Action Buttons */}
+                          <div className="flex space-x-2 flex-shrink-0">
+                            <Button variant="outline" size="sm" onClick={() => navigate(`/audits/${audit.id}`)} className="flex flex-col items-center h-auto py-3 px-4">
+                              <Clipboard className="h-4 w-4 mb-1" />
+                              <span className="text-xs">View Details</span>
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex flex-col items-center h-auto py-3 px-4">
+                              <FileText className="h-4 w-4 mb-1" />
+                              <span className="text-xs">Generate Report</span>
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex flex-col items-center h-auto py-3 px-4">
+                              <Share2 className="h-4 w-4 mb-1" />
+                              <span className="text-xs">Copy Link</span>
                             </Button>
                           </div>
                         </div>
