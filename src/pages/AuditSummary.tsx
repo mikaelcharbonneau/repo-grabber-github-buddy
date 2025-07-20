@@ -29,37 +29,65 @@ const AuditSummary = () => {
   }, [navigate]);
 
   const handleSubmit = async () => {
-    if (auditDetails) {
-      // Get current user's auditor ID
-      const { data: { user } } = await supabase.auth.getUser();
+    try {
+      console.log('Starting audit submission...');
+      
+      if (!auditDetails) {
+        console.error('No audit details found');
+        alert('No audit data to submit');
+        return;
+      }
+
+      console.log('Getting current user...');
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('Error getting user:', userError);
+        throw userError;
+      }
+      
       if (!user) {
+        console.error('No user logged in');
         alert('Please log in to submit audit');
         return;
       }
 
-      const { data: auditor } = await supabase
+      console.log('Fetching auditor profile for user:', user.id);
+      const { data: auditor, error: auditorError } = await supabase
         .from('auditors')
-        .select('id')
+        .select('id, user_id')
         .eq('user_id', user.id)
         .single();
 
+      if (auditorError) {
+        console.error('Error fetching auditor:', auditorError);
+        throw auditorError;
+      }
+
       if (!auditor) {
-        alert('Auditor profile not found');
+        console.error('No auditor profile found for user:', user.id);
+        alert('Auditor profile not found. Please complete your profile before submitting audits.');
         return;
       }
 
+      console.log('Preparing audit data...');
       const issuesFound = auditDetails.issues ? auditDetails.issues.length : 0;
       const finalAudit = {
         title: `Audit - ${auditDetails.datacenter}/${auditDetails.dataHall}`,
         description: `Audit of ${auditDetails.datacenter} datacenter, ${auditDetails.dataHall} hall. ${issuesFound} issues found.`,
         auditor_id: auditor.id,
-        status: 'completed'
+        status: 'completed',
+        datacenter_id: auditDetails.datacenterId, // Make sure these IDs are included
+        datahall_id: auditDetails.dataHallId,
+        start_time: auditDetails.startTime,
+        end_time: new Date().toISOString()
       };
 
-      // Generate a custom audit ID for display and reference
+      console.log('Generating custom audit ID...');
       const customAuditId = generateAuditId();
+      console.log('Generated custom audit ID:', customAuditId);
       
-      // Create the audit with a UUID primary key and custom audit ID
+      console.log('Inserting audit record...');
       const { data: auditData, error: auditError } = await supabase
         .from('audits')
         .insert([{
@@ -69,40 +97,60 @@ const AuditSummary = () => {
         .select()
         .single();
         
-      if (!auditData) {
-        throw new Error('Failed to create audit: No data returned');
+      if (auditError) {
+        console.error('Error creating audit:', auditError);
+        throw auditError;
       }
 
-      if (auditError) {
-        console.error(auditError);
-        alert('Failed to submit audit');
-        return;
+      if (!auditData) {
+        throw new Error('Failed to create audit: No data returned from insert');
       }
+
+      console.log('Audit created successfully:', auditData);
 
       // Create incident records for each issue
       if (auditDetails.issues && auditDetails.issues.length > 0) {
-        const incidents = auditDetails.issues.map(issue => ({
-          title: `${issue.device || issue.deviceType} - ${issue.alertType}`,
-          description: `Issue found in ${issue.rack}${issue.tile ? ` / ${issue.tile}` : ''}. Device: ${issue.device || issue.deviceType}${issue.impactedUnit ? ` (${issue.impactedUnit})` : ''}. Issue: ${issue.alertType}${issue.comments ? `. Notes: ${issue.comments}` : ''}`,
-          severity: issue.severity?.toLowerCase() || 'medium',
-          status: issue.resolved ? 'resolved' : 'open',
-          auditor_id: auditor.id,
-          audit_id: auditData.id
-        }));
+        console.log(`Creating ${auditDetails.issues.length} incident records...`);
+        
+        const incidents = auditDetails.issues.map((issue, index) => {
+          const incidentData = {
+            title: `${issue.device || issue.deviceType} - ${issue.alertType}`,
+            description: `Issue found in ${issue.rack}${issue.tile ? ` / ${issue.tile}` : ''}. Device: ${issue.device || issue.deviceType}${issue.impactedUnit ? ` (${issue.impactedUnit})` : ''}. Issue: ${issue.alertType}${issue.comments ? `. Notes: ${issue.comments}` : ''}`,
+            severity: issue.severity?.toLowerCase() || 'medium',
+            status: issue.resolved ? 'resolved' : 'open',
+            auditor_id: auditor.id,
+            audit_id: auditData.id,
+            tile_location: issue.tile || null,
+            resolved_at: issue.resolved ? (issue.resolvedAt || new Date().toISOString()) : null,
+            assigned_to: issue.assignedTo || null
+          };
+          
+          console.log(`Incident ${index + 1} data:`, incidentData);
+          return incidentData;
+        });
 
         const { error: incidentsError } = await supabase
           .from('incidents')
           .insert(incidents);
 
         if (incidentsError) {
-          console.error(incidentsError);
-          alert('Audit created but failed to create incident records');
-          return;
+          console.error('Error creating incidents:', incidentsError);
+          alert('Audit created but failed to create incident records. Please contact support.');
+          // Don't return here - we still want to clean up and navigate
         }
+      } else {
+        console.log('No issues to create incident records for');
       }
 
+      console.log('Cleaning up session storage...');
       sessionStorage.removeItem('auditDetails');
+      
+      console.log('Navigation to completion page...');
       navigate("/audit/complete");
+      
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+      alert(`Failed to submit audit: ${error.message || 'Unknown error'}`);
     }
   };
 
