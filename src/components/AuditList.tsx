@@ -238,7 +238,7 @@ const AuditList = () => {
         {filteredAudits.map(audit => <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => navigate(`/audits/${audit.id}`)}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4 h-full">
+                <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
                     <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
                       <Clipboard className="h-5 w-5 text-gray-500" />
