@@ -58,15 +58,15 @@ const AuditIssueEntry = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <AuditHeader 
-        datacenter={auditDetails.datacenter} 
-        dataHall={auditDetails.dataHall} 
+        datacenter={auditDetails.datacenterName} 
+        dataHall={auditDetails.dataHallName} 
       />
 
       <AuditMatrix
         racks={racks}
         issues={issues}
-        datacenter={auditDetails.datacenter}
-        dataHall={auditDetails.dataHall}
+        datacenter={auditDetails.datacenterName}
+        dataHall={auditDetails.dataHallName}
         onUpdateIssue={updateIssue}
         getIssueValues={getIssueValues}
       />

@@ -169,8 +169,10 @@ const AuditMatrix = ({
               <span>Incidents</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-600 text-sm font-normal">
-              <MapPin className="h-4 w-4" />
-              <span>{datacenter} / {dataHall}</span>
+              <MapPin className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate max-w-xs">
+                {datacenter || 'No datacenter selected'} / {dataHall || 'No datahall selected'}
+              </span>
             </div>
           </div>
         </CardTitle>
