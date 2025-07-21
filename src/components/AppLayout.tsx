@@ -40,42 +40,46 @@ const AppLayout: React.FC = () => {
     </div>;
   }
 
-  return <div className="min-h-screen font-hpe flex flex-col bg-inherit">
+  return (
+    <div className="min-h-screen font-hpe flex flex-col bg-inherit">
       <Routes>
         <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/" replace />} />
         <Route path="/*" element={
           <ProtectedRoute>
             {/* Top header spanning full width */}
             <Header />
-            {/* Main content area */}
-            <div className="flex-1 bg-black/[0.02] pt-20">
-              <div className="min-h-full w-full overflow-y-auto">
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/audits" element={<AuditList />} />
-                  <Route path="/audits/start" element={<StartAudit />} />
-                  <Route path="/audit/walkthrough" element={<AuditWalkthrough />} />
-                  <Route path="/audit/start" element={<StartAudit />} />
-                  <Route path="/audit/issues" element={<AuditIssueEntry />} />
-                  <Route path="/audit/summary" element={<AuditSummary />} />
-                  <Route path="/audit/complete" element={<AuditComplete />} />
-                  <Route path="/audits/:id/issue" element={<AuditIssueEntry />} />
-                  <Route path="/audits/:id/summary" element={<AuditSummary />} />
-                  <Route path="/audits/:id/complete" element={<AuditComplete />} />
-                  <Route path="/audits/:id" element={<AuditDetails />} />
-                  <Route path="/incidents" element={<IncidentList />} />
-                  <Route path="/incidents/:id" element={<IncidentDetails />} />
-                  <Route path="/incidents/new" element={<NewIncident />} />
-                  <Route path="/reports" element={<Reports />} />
-                  <Route path="/reports/:id" element={<ReportDetails />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+            {/* Main content area with responsive padding */}
+            <div className="flex-1 bg-black/[0.02] pt-20 pb-16 sm:pb-0">
+              <div className="min-h-[calc(100vh-5rem)] w-full overflow-y-auto px-2 sm:px-4 md:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl w-full">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/audits" element={<AuditList />} />
+                    <Route path="/audits/start" element={<StartAudit />} />
+                    <Route path="/audit/walkthrough" element={<AuditWalkthrough />} />
+                    <Route path="/audit/start" element={<StartAudit />} />
+                    <Route path="/audit/issues" element={<AuditIssueEntry />} />
+                    <Route path="/audit/summary" element={<AuditSummary />} />
+                    <Route path="/audit/complete" element={<AuditComplete />} />
+                    <Route path="/audits/:id/issue" element={<AuditIssueEntry />} />
+                    <Route path="/audits/:id/summary" element={<AuditSummary />} />
+                    <Route path="/audits/:id/complete" element={<AuditComplete />} />
+                    <Route path="/audits/:id" element={<AuditDetails />} />
+                    <Route path="/incidents" element={<IncidentList />} />
+                    <Route path="/incidents/:id" element={<IncidentDetails />} />
+                    <Route path="/incidents/new" element={<NewIncident />} />
+                    <Route path="/reports" element={<Reports />} />
+                    <Route path="/reports/:id" element={<ReportDetails />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </div>
               </div>
             </div>
           </ProtectedRoute>
         } />
       </Routes>
-    </div>;
+    </div>
+  );
 };
 export default AppLayout;

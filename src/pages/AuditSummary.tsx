@@ -18,14 +18,61 @@ const AuditSummary = () => {
   const [auditDetails, setAuditDetails] = useState(null);
   const [editingIssue, setEditingIssue] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        // First get the authenticated user
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) throw authError;
+        
+        if (user) {
+          // Then fetch the full auditor profile from the database
+          const { data: auditorData, error: auditorError } = await supabase
+            .from('auditors')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (auditorError) throw auditorError;
+          
+          // Use the name from the auditor profile if available
+          // Otherwise fall back to user_metadata or email
+          setCurrentUser({
+            name: auditorData?.name || 
+                   user.user_metadata?.full_name || 
+                   user.email || 
+                   'Auditor',
+            email: user.email
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        // If there's an error, try to at least show the email from auth
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            setCurrentUser({
+              name: user.email || 'Auditor',
+              email: user.email
+            });
+          }
+        } catch (e) {
+          console.error('Fallback user fetch failed:', e);
+        }
+      }
+    };
+
     const stored = sessionStorage.getItem('auditDetails');
     if (!stored) {
       navigate("/audit/start");
       return;
     }
     setAuditDetails(JSON.parse(stored));
+    
+    // Fetch current user
+    fetchUser();
   }, [navigate]);
 
   const handleSubmit = async () => {
@@ -207,14 +254,23 @@ const AuditSummary = () => {
                 <MapPin className="h-4 w-4 text-gray-500" />
                 <div>
                   <div className="text-sm text-gray-500">Location</div>
-                  <div className="font-medium">{auditDetails.datacenter} / {auditDetails.dataHall}</div>
+                  <div className="font-medium">
+                    {auditDetails.datacenterName || auditDetails.datacenter}
+                    {auditDetails.dataHallName ? ` / ${auditDetails.dataHallName}` : auditDetails.dataHall ? ` / ${auditDetails.dataHall}` : ''}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <User className="h-4 w-4 text-gray-500" />
                 <div>
-                  <div className="text-sm text-gray-500">Technician</div>
-                  <div className="font-medium">{auditDetails.technician}</div>
+                  <div className="text-sm text-gray-500">Auditor</div>
+                  <div className="font-medium">
+                    {currentUser?.name || 
+                     auditDetails.auditorName || 
+                     auditDetails.technician || 
+                     (auditDetails.auditor && auditDetails.auditor.name) || 
+                     'Loading...'}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-2">

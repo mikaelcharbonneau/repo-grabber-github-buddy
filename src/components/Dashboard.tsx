@@ -14,6 +14,22 @@ const getSeverityVariant = (severity: string) => {
   }
 };
 import { ClipboardCheck, Shield, Circle, Plus, ArrowUp, ArrowDown, FileText, Building, Filter, Calendar, ExternalLink, Clipboard, Share2 } from "lucide-react";
+
+// Device alias mapping
+const DEVICE_ALIASES: Record<string, string> = {
+  'Rear Door Heat Exchanger': 'RDHX',
+  'Power Distribution Unit': 'PDU',
+  'Power Supply Unit': 'PSU',
+  'Cooling Distribution Unit': 'CDU',
+  'Uninterruptible Power Supply': 'UPS',
+  'Computer Room Air Conditioner': 'CRAC',
+  'Computer Room Air Handler': 'CRAH'
+};
+
+// Helper function to get device alias
+const getDeviceAlias = (deviceName: string): string => {
+  return DEVICE_ALIASES[deviceName] || deviceName;
+};
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDatacenters, fetchDataHalls } from "@/data/locations";
@@ -419,38 +435,91 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-4">
                   {recentIncidents.map((incident) => (
-                    <Card 
-                      key={incident.id} 
-                      className={`hover:shadow-hpe-brand transition-shadow cursor-pointer ${
-                        getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : 
-                        getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : 
-                        getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 
-                        'border-hpe-brand'
-                      }`}
-                      onClick={() => navigate(`/incidents/${incident.id}`)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-3 flex-1">
-                            <div className="flex items-center space-x-3 flex-wrap gap-2">
-                              <h3 className="font-semibold text-lg">{incident.title || 'Untitled Incident'}</h3>
-                            </div>
-                            <p className="text-gray-900 font-medium">
-                              {incident.datacenter_alias && `${incident.datacenter_alias}${incident.datahall_alias ? ` ${incident.datahall_alias}` : ''}`}
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                              <div><strong>Tile Location:</strong> {incident.tile_location || 'N/A'}</div>
-                              <div><strong>Device ID:</strong> {incident.device_id || 'N/A'}</div>
-                              <div><strong>U-Height:</strong> {incident.u_height || 'N/A'}</div>
-                              <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              UUID: {incident.formatted_id || incident.id}
-                            </div>
+                    <div key={incident.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer relative" onClick={() => navigate(`/incidents/${incident.id}`)}>
+                      <div className="absolute right-4 top-4">
+                        <Badge 
+                          variant="outline"
+                          className={`text-xs border-2 ${
+                            incident.status === 'resolved' 
+                              ? "border-green-500 text-green-600 hover:bg-green-50" 
+                              : "border-red-500 text-red-600 hover:bg-red-50"
+                          }`}
+                        >
+                          {incident.status === 'resolved' ? "Resolved" : "Active"}
+                        </Badge>
+                      </div>
+                      <div className="pr-16">
+                        <div className="font-medium text-lg mb-1">
+                          {incident.title ? (
+                            // If title exists, extract the device part and apply alias
+                            (() => {
+                              const parts = incident.title.split(' - ');
+                              if (parts.length > 1) {
+                                const devicePart = parts[0];
+                                const rest = parts.slice(1).join(' - ');
+                                return `${getDeviceAlias(devicePart)} - ${rest}`;
+                              }
+                              return getDeviceAlias(incident.title);
+                            })()
+                          ) : (
+                            // Fallback if no title
+                            'Untitled Incident'
+                          )}
+                        </div>
+                        
+                        {incident.device && (
+                          <div className="text-sm text-gray-600">
+                            {getDeviceAlias(incident.device)}{incident.impacted_unit ? `-${incident.impacted_unit}` : ''} : {incident.alert_type || 'No type specified'}
+                          </div>
+                        )}
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-sm text-gray-600 mt-2">
+                          {incident.tile_location && (
+                            <div><strong>Location:</strong> {incident.tile_location}</div>
+                          )}
+                          {incident.device_id && (
+                            <div><strong>Device ID:</strong> {incident.device_id}</div>
+                          )}
+                          {incident.u_height && (
+                            <div><strong>U-Height:</strong> {incident.u_height}</div>
+                          )}
+                          <div className="whitespace-nowrap"><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
+                        </div>
+                        
+                        <div className="mt-2">
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                            {incident.datacenter_alias && (
+                              <div className="flex items-center">
+                                <Building className="h-3 w-3 mr-1 text-gray-500" />
+                                <span>{incident.datacenter_alias}</span>
+                              </div>
+                            )}
+                            {incident.datahall_alias && (
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-1 text-gray-500">
+                                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                                  <line x1="16" x2="16" y1="2" y2="6"></line>
+                                  <line x1="8" x2="8" y1="2" y2="6"></line>
+                                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                                </svg>
+                                <span>{incident.datahall_alias}</span>
+                              </div>
+                            )}
+                            {incident.tile_location && (
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-1 text-gray-500">
+                                  <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16v-2"></path>
+                                  <path d="M7.5 4.27 9 5.2"></path>
+                                  <path d="M3.29 7 12 12l8.71-5"></path>
+                                  <path d="M12 22.08V12"></path>
+                                </svg>
+                                <span>Cabinet {incident.tile_location}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </CardContent>

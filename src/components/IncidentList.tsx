@@ -209,22 +209,26 @@ const IncidentList = () => {
       <div className="grid gap-4">
         {filteredIncidents.map((incident) => (
           <Card key={incident.id} accentColor={getSeverityVariant(incident.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(incident.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(incident.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => handleIncidentClick(incident.id)}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-3 flex-1">
-                  <div className="flex items-center space-x-3 flex-wrap gap-2">
-                    <h3 className="font-semibold text-lg">{incident.title}</h3>
-                  </div>
-                  <p className="text-gray-900 font-medium">{getLocationName(incident)}</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                    <div><strong>Tile Location:</strong> {incident.tile_location || 'N/A'}</div>
-                    <div><strong>Device ID:</strong> {incident.device_id || 'N/A'}</div>
-                    <div><strong>U-Height:</strong> {incident.u_height || 'N/A'}</div>
-                    <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    UUID: {incident.formatted_id || incident.id}
-                  </div>
+            <CardContent className="p-6 relative">
+              <div className="absolute right-6 top-6">
+                <Badge 
+                  variant="outline"
+                  className={`text-xs border-2 ${
+                    incident.status === 'resolved' || incident.status === 'Resolved'
+                      ? "border-green-500 text-green-600 hover:bg-green-50" 
+                      : "border-red-500 text-red-600 hover:bg-red-50"
+                  }`}
+                >
+                  {incident.status === 'resolved' || incident.status === 'Resolved' ? "Resolved" : "Active"}
+                </Badge>
+              </div>
+              <div className="pr-16">
+                <h3 className="font-semibold text-lg mb-1">{incident.title}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                  <div><strong>Tile Location:</strong> {incident.tile_location || 'N/A'}</div>
+                  <div><strong>Device ID:</strong> {incident.device_id || 'N/A'}</div>
+                  <div><strong>U-Height:</strong> {incident.u_height || 'N/A'}</div>
+                  <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
                 </div>
                 <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
                   <Button variant="outline" size="sm" onClick={() => handleIncidentClick(incident.id)}>
