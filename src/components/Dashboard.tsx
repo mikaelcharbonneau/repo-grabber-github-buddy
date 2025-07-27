@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   // Supabase state
+  const [allAudits, setAllAudits] = useState<any[]>([]);
   const [recentAudits, setRecentAudits] = useState<any[]>([]);
   const [recentIncidents, setRecentIncidents] = useState<any[]>([]);
   const [recentReports, setRecentReports] = useState<any[]>([]);
@@ -76,14 +77,69 @@ const Dashboard = () => {
         const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
-        // Fetch recent audits
+        // Fetch recent audits with related data
         const { data: audits, error: auditsError } = await supabase
           .from('audits')
-          .select('*')
+          .select(`
+            *,
+            datacenter:datacenters!audits_datacenter_id_fkey(name),
+            datahall:datahalls!audits_datahall_id_fkey(name)
+          `)
           .order('created_at', { ascending: false })
           .limit(5);
         if (auditsError) throw auditsError;
-        setRecentAudits(audits || []);
+        
+        // Fetch auditor data separately since there's no FK relationship
+        if (audits && audits.length > 0) {
+          const auditorIds = [...new Set(audits.map(audit => audit.auditor_id))];
+          const { data: auditorsData } = await supabase
+            .from('auditors')
+            .select('id, name')
+            .in('id', auditorIds);
+
+          // Fetch incidents data for recent audits
+          const auditIds = audits.map(audit => audit.id);
+          const { data: incidentsData } = await supabase
+            .from('incidents')
+            .select('audit_id, status')
+            .in('audit_id', auditIds);
+
+          // Create incidents count map
+          const incidentsMap = new Map();
+          incidentsData?.forEach(incident => {
+            if (!incidentsMap.has(incident.audit_id)) {
+              incidentsMap.set(incident.audit_id, {
+                reported: 0,
+                resolved: 0,
+                active: 0
+              });
+            }
+            const counts = incidentsMap.get(incident.audit_id);
+            counts.reported += 1;
+            if (incident.status === 'resolved') {
+              counts.resolved += 1;
+            } else {
+              counts.active += 1;
+            }
+          });
+
+          // Map auditor names and incident counts to audits
+          const auditorsMap = new Map(auditorsData?.map(auditor => [auditor.id, auditor]) || []);
+          const enrichedAudits = audits.map(audit => ({
+            ...audit,
+            auditor: auditorsMap.get(audit.auditor_id),
+            incidents: incidentsMap.get(audit.id) || {
+              reported: 0,
+              resolved: 0,
+              active: 0
+            }
+          }));
+          setAllAudits(enrichedAudits);
+          setRecentAudits(enrichedAudits);
+        } else {
+          setAllAudits([]);
+          setRecentAudits([]);
+        }
 
         // Fetch recent incidents
         const { data: incidents, error: incidentsError } = await supabase
@@ -159,6 +215,25 @@ const Dashboard = () => {
       setDataHalls([]);
     }
   }, [filters.datacenter]);
+
+  // Apply filters when filters or date range change
+  useEffect(() => {
+    const filteredAudits = allAudits.filter(audit => {
+      // Date range filter
+      const matchesDateRange = !dateRange?.from || !dateRange?.to || 
+        (new Date(audit.created_at) >= dateRange.from && 
+         new Date(audit.created_at) <= new Date(dateRange.to.getTime() + 24 * 60 * 60 * 1000 - 1));
+      
+      // Datacenter filter  
+      const matchesDatacenter = filters.datacenter === "all" || audit.datacenter_id === filters.datacenter;
+      
+      // Data hall filter
+      const matchesDataHall = filters.dataHall === "all" || audit.datahall_id === filters.dataHall;
+      
+      return matchesDateRange && matchesDatacenter && matchesDataHall;
+    });
+    setRecentAudits(filteredAudits);
+  }, [allAudits, filters, dateRange]);
 
   // Reset data hall when datacenter changes
   const handleDatacenterChange = (value: string) => {

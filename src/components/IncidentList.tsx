@@ -39,6 +39,33 @@ const IncidentList = () => {
     return [dcName, dhName].filter(Boolean).join(' ');
   };
 
+  // Extract location information from description if not provided in structured fields
+  const extractLocationFromDescription = (description: string) => {
+    if (!description) return null;
+    // Look for patterns like "Rack X2494", "rack X2494", "Tile X2494"
+    const tileMatch = description.match(/(?:rack|tile)\s*([A-Z0-9]+)/i);
+    if (tileMatch) return tileMatch[1];
+    return null;
+  };
+
+  // Extract device information from description
+  const extractDeviceFromDescription = (description: string) => {
+    if (!description) return null;
+    // Look for patterns like "PSU2", "PDU1", etc.
+    const deviceMatch = description.match(/\b([A-Z]{2,4}\d+)\b/);
+    if (deviceMatch) return deviceMatch[1];
+    return null;
+  };
+
+  // Extract height information from description
+  const extractHeightFromDescription = (description: string) => {
+    if (!description) return null;
+    // Look for patterns like "U33", "U 33", "unit 33"
+    const heightMatch = description.match(/(?:U\s*|unit\s*)(\d+)/i);
+    if (heightMatch) return heightMatch[1];
+    return null;
+  };
+
   // Set initial status filter from URL parameters
   useEffect(() => {
     const statusParam = searchParams.get('status');
@@ -225,9 +252,9 @@ const IncidentList = () => {
               <div className="pr-16">
                 <h3 className="font-semibold text-lg mb-1">{incident.title}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                  <div><strong>Tile Location:</strong> {incident.tile_location || 'N/A'}</div>
-                  <div><strong>Device ID:</strong> {incident.device_id || 'N/A'}</div>
-                  <div><strong>U-Height:</strong> {incident.u_height || 'N/A'}</div>
+                  <div><strong>Tile Location:</strong> {incident.tile_location || extractLocationFromDescription(incident.description) || 'N/A'}</div>
+                  <div><strong>Device ID:</strong> {incident.device_id || extractDeviceFromDescription(incident.description) || 'N/A'}</div>
+                  <div><strong>U-Height:</strong> {incident.u_height || extractHeightFromDescription(incident.description) || 'N/A'}</div>
                   <div><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
                 </div>
                 <div className="flex flex-col space-y-2 ml-4" onClick={(e) => e.stopPropagation()}>
