@@ -429,49 +429,49 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                 <div className="space-y-4">
+                <div className="space-y-4">
                 {recentAudits.map(audit => (
                     <Card key={audit.id} accentColor={getSeverityVariant(audit.severity) === 'critical' ? 'border-hpe-red' : getSeverityVariant(audit.severity) === 'medium' ? 'border-hpe-orange' : getSeverityVariant(audit.severity) === 'low' ? 'border-hpe-yellow' : 'border-hpe-brand'} className="hover:shadow-hpe-brand transition-shadow cursor-pointer" onClick={() => navigate(`/audits/${audit.id}`)}>
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 min-w-0 flex-1">
-                            <div className="flex-shrink-0 self-start sm:self-auto">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex-shrink-0">
                               <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
                                 <Clipboard className="h-5 w-5 text-gray-500" />
                               </div>
                             </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-gray-900 font-medium text-sm sm:text-base leading-tight">
+                            <div>
+                              <p className="text-gray-900 font-medium">
                                 {audit.datacenter?.name || 'Unknown'} / {audit.datahall?.name || 'Unknown'}
                               </p>
-                              <p className="text-gray-600 text-sm leading-relaxed mt-1">
+                              <p className="text-gray-600">
                                 {audit.auditor?.name || 'Unknown Auditor'}
                               </p>
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-gray-500 mt-2">
-                                <span className="break-all">{audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}</span>
-                                <span className="hidden sm:inline">•</span>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                <span>{audit.custom_audit_id || `Audit #${audit.id.substring(0, 8)}`}</span>
+                                <span>•</span>
                                 <span>{new Date(audit.created_at).toLocaleDateString()}</span>
-                                <span className="hidden sm:inline">•</span>
+                                <span>•</span>
                                 <span>{audit.status}</span>
                               </div>
                             </div>
                           </div>
                           
                           {/* Incidents Section */}
-                          <div className="text-center lg:text-right shrink-0">
-                            <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">Incidents</h3>
-                            <div className="flex items-center justify-center lg:justify-end space-x-4 sm:space-x-8 text-xs sm:text-sm">
+                          <div className="text-center">
+                            <h3 className="text-sm font-medium text-gray-700 mb-3">Incidents</h3>
+                            <div className="flex items-center space-x-8 text-sm">
                               <div className="text-center">
-                                <div className="text-lg sm:text-2xl font-bold text-gray-900">{audit.incidents?.reported || 0}</div>
-                                <div className="text-gray-500 text-xs">Reported</div>
+                                <div className="text-2xl font-bold text-gray-900">{audit.incidents?.reported || 0}</div>
+                                <div className="text-gray-500">Reported</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-lg sm:text-2xl font-bold text-hpe-green">{audit.incidents?.resolved || 0}</div>
-                                <div className="text-gray-500 text-xs">Resolved</div>
+                                <div className="text-2xl font-bold text-hpe-green">{audit.incidents?.resolved || 0}</div>
+                                <div className="text-gray-500">Resolved</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-lg sm:text-2xl font-bold text-black">{audit.incidents?.active || 0}</div>
-                                <div className="text-gray-500 text-xs">Active</div>
+                                <div className="text-2xl font-bold text-black">{audit.incidents?.active || 0}</div>
+                                <div className="text-gray-500">Active</div>
                               </div>
                             </div>
                           </div>
