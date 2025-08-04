@@ -561,7 +561,7 @@ const Dashboard = () => {
                           {incident.u_height && (
                             <div><strong>U-Height:</strong> {incident.u_height}</div>
                           )}
-                          <div className="whitespace-nowrap"><strong>Created:</strong> {new Date(incident.created_at).toLocaleString()}</div>
+                          <div className="whitespace-nowrap"><strong>Reported:</strong> {new Date(incident.created_at).toLocaleString()}</div>
                         </div>
                         
                         <div className="mt-2">
