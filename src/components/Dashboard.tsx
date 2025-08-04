@@ -453,6 +453,7 @@ const Dashboard = () => {
                                 <span className="hidden sm:inline">•</span>
                                 <span>{new Date(audit.created_at).toLocaleDateString()}</span>
                                 <span className="hidden sm:inline">•</span>
+                                <span>{audit.status}</span>
                               </div>
                             </div>
                           </div>
