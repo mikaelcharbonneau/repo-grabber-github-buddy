@@ -517,10 +517,10 @@ const Dashboard = () => {
                       <div className="absolute right-4 top-4">
                         <Badge 
                           variant="outline"
-                          className={`text-xs border-2 ${
+                          className={`text-xs font-medium px-3 py-1 rounded-full border-2 transition-all duration-300 hover:scale-105 ${
                             incident.status === 'resolved' 
-                              ? "border-green-500 text-green-600 hover:bg-green-50" 
-                              : "border-red-500 text-red-600 hover:bg-red-50"
+                              ? "border-green-500 text-green-600 bg-green-50/50 hover:bg-green-100 hover:shadow-lg hover:shadow-green-200/50" 
+                              : "border-red-500 text-red-600 bg-red-50/50 hover:bg-red-100 hover:shadow-lg hover:shadow-red-200/50"
                           }`}
                         >
                           {incident.status === 'resolved' ? "Resolved" : "Active"}
