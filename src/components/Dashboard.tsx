@@ -526,111 +526,77 @@ const Dashboard = () => {
                           {incident.status === 'resolved' ? "Resolved" : "Active"}
                         </Badge>
                       </div>
-                       <div className="pr-16">
-                         <div className="font-medium text-lg mb-2">
-                           {incident.title ? (
-                             // If title exists, extract the device part and apply alias
-                             (() => {
-                               const parts = incident.title.split(' - ');
-                               if (parts.length > 1) {
-                                 const devicePart = parts[0];
-                                 const rest = parts.slice(1).join(' - ');
-                                 return `${getDeviceAlias(devicePart)} - ${rest}`;
-                               }
-                               return getDeviceAlias(incident.title);
-                             })()
-                           ) : (
-                             // Fallback if no title
-                             'Untitled Incident'
-                           )}
-                         </div>
-                         
-                         {/* Location Information */}
-                         <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                           <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Location Details</h4>
-                           <div className="grid grid-cols-2 gap-2 text-sm">
-                             <div className="flex items-center">
-                               <Building className="h-3 w-3 mr-2 text-gray-500" />
-                               <span className="text-gray-600">Datacenter:</span>
-                               <span className="ml-1 font-medium">{incident.datacenter_alias || 'N/A'}</span>
-                             </div>
-                             <div className="flex items-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-2 text-gray-500">
-                                 <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
-                                 <line x1="16" x2="16" y1="2" y2="6"></line>
-                                 <line x1="8" x2="8" y1="2" y2="6"></line>
-                                 <line x1="3" x2="21" y1="10" y2="10"></line>
-                               </svg>
-                               <span className="text-gray-600">Data Hall:</span>
-                               <span className="ml-1 font-medium">{incident.datahall_alias || 'N/A'}</span>
-                             </div>
-                             <div className="flex items-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-2 text-gray-500">
-                                 <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16v-2"></path>
-                                 <path d="M7.5 4.27 9 5.2"></path>
-                                 <path d="M3.29 7 12 12l8.71-5"></path>
-                                 <path d="M12 22.08V12"></path>
-                               </svg>
-                               <span className="text-gray-600">Tile:</span>
-                               <span className="ml-1 font-medium">{incident.tile_location || 'N/A'}</span>
-                             </div>
-                             <div className="flex items-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-2 text-gray-500">
-                                 <path d="M3 21h18"></path>
-                                 <path d="M5 21V7l8-4v18"></path>
-                                 <path d="M19 21V11l-6-4"></path>
-                               </svg>
-                               <span className="text-gray-600">U-Height:</span>
-                               <span className="ml-1 font-medium">{incident.u_height ? `U${incident.u_height}` : 'N/A'}</span>
-                             </div>
-                           </div>
-                         </div>
-
-                         {/* Device Information */}
-                         <div className="bg-blue-50 rounded-lg p-3 mb-3">
-                           <h4 className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Device Details</h4>
-                           <div className="grid grid-cols-1 gap-2 text-sm">
-                             <div className="flex items-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-2 text-gray-500">
-                                 <rect width="20" height="14" x="2" y="5" rx="2"></rect>
-                                 <line x1="2" x2="22" y1="10" y2="10"></line>
-                               </svg>
-                               <span className="text-gray-600">Device:</span>
-                               <span className="ml-1 font-medium">
-                                 {incident.device ? getDeviceAlias(incident.device) : 'N/A'}
-                               </span>
-                             </div>
-                             <div className="flex items-center">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-2 text-gray-500">
-                                 <path d="M9 12h6"></path>
-                                 <path d="M9 16h6"></path>
-                                 <path d="m5 8 2-2 2 2"></path>
-                                 <rect width="14" height="16" x="5" y="4" rx="2"></rect>
-                               </svg>
-                               <span className="text-gray-600">Device ID:</span>
-                               <span className="ml-1 font-medium font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                                 {incident.device_id || 'N/A'}
-                               </span>
-                             </div>
-                             {incident.alert_type && (
-                               <div className="flex items-center">
-                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-2 text-gray-500">
-                                   <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
-                                   <path d="M12 9v4"></path>
-                                   <path d="m12 17 .01 0"></path>
-                                 </svg>
-                                 <span className="text-gray-600">Alert Type:</span>
-                                 <span className="ml-1 font-medium">{incident.alert_type}</span>
-                               </div>
-                             )}
-                           </div>
-                         </div>
-
-                         {/* Timestamp */}
-                         <div className="text-xs text-gray-500 pt-2 border-t">
-                           <strong>Reported:</strong> {new Date(incident.created_at).toLocaleString()}
-                         </div>
-                       </div>
+                      <div className="pr-16">
+                        <div className="font-medium text-lg mb-1">
+                          {incident.title ? (
+                            // If title exists, extract the device part and apply alias
+                            (() => {
+                              const parts = incident.title.split(' - ');
+                              if (parts.length > 1) {
+                                const devicePart = parts[0];
+                                const rest = parts.slice(1).join(' - ');
+                                return `${getDeviceAlias(devicePart)} - ${rest}`;
+                              }
+                              return getDeviceAlias(incident.title);
+                            })()
+                          ) : (
+                            // Fallback if no title
+                            'Untitled Incident'
+                          )}
+                        </div>
+                        
+                        {incident.device && (
+                          <div className="text-sm text-gray-600">
+                            {getDeviceAlias(incident.device)}{incident.impacted_unit ? `-${incident.impacted_unit}` : ''} : {incident.alert_type || 'No type specified'}
+                          </div>
+                        )}
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 text-sm text-gray-600 mt-2">
+                          {incident.tile_location && (
+                            <div><strong>Location:</strong> {incident.tile_location}</div>
+                          )}
+                          {incident.device_id && (
+                            <div><strong>Device ID:</strong> {incident.device_id}</div>
+                          )}
+                          {incident.u_height && (
+                            <div><strong>U-Height:</strong> {incident.u_height}</div>
+                          )}
+                          <div className="whitespace-nowrap"><strong>Reported:</strong> {new Date(incident.created_at).toLocaleString()}</div>
+                        </div>
+                        
+                        <div className="mt-2">
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                            {incident.datacenter_alias && (
+                              <div className="flex items-center">
+                                <Building className="h-3 w-3 mr-1 text-gray-500" />
+                                <span>{incident.datacenter_alias}</span>
+                              </div>
+                            )}
+                            {incident.datahall_alias && (
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-1 text-gray-500">
+                                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                                  <line x1="16" x2="16" y1="2" y2="6"></line>
+                                  <line x1="8" x2="8" y1="2" y2="6"></line>
+                                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                                </svg>
+                                <span>{incident.datahall_alias}</span>
+                              </div>
+                            )}
+                            {incident.tile_location && (
+                              <div className="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 mr-1 text-gray-500">
+                                  <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16v-2"></path>
+                                  <path d="M7.5 4.27 9 5.2"></path>
+                                  <path d="M3.29 7 12 12l8.71-5"></path>
+                                  <path d="M12 22.08V12"></path>
+                                </svg>
+                                <span>Cabinet {incident.tile_location}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
