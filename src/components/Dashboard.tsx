@@ -453,9 +453,6 @@ const Dashboard = () => {
                                 <span className="hidden sm:inline">•</span>
                                 <span>{new Date(audit.created_at).toLocaleDateString()}</span>
                                 <span className="hidden sm:inline">•</span>
-                                <Badge variant={getStatusVariant(audit.status)} className="text-xs">
-                                  {audit.status}
-                                </Badge>
                               </div>
                             </div>
                           </div>
